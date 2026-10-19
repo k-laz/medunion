@@ -1,0 +1,20 @@
+---
+// Tinted band at the top of every inner page: breadcrumbs, title, short
+// intro, buttons. An optional right-hand card goes in the "aside" slot.
+import Breadcrumbs from './Breadcrumbs.astro';
+interface Props { url: string; h1: string; lead?: string; compact?: boolean }
+const { url, h1, lead, compact = false } = Astro.props;
+const hasAside = Astro.slots.has('aside');
+---
+
+<section class:list={['page-head', { 'page-head-compact': compact }]}>
+  <div class:list={['wrap', 'page-head-inner', { 'has-aside': hasAside }]}>
+    <div class="page-head-main">
+      <Breadcrumbs url={url} />
+      <h1>{h1}</h1>
+      {lead && <p class="lead">{lead}</p>}
+      <slot />
+    </div>
+    {hasAside && <div class="page-head-aside"><slot name="aside" /></div>}
+  </div>
+</section>

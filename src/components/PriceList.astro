@@ -1,0 +1,46 @@
+---
+// Price list with dotted leaders. Long lists get a filter box.
+import { rub } from '../lib/content';
+interface Props { items: { name: string; price: number }[]; checkedOn?: Date; id?: string }
+const { items, checkedOn, id = 'prices-filter' } = Astro.props;
+const checkedText = checkedOn?.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+
+<div class="prices" data-prices>
+  {items.length > 8 && (
+    <div class="prices-filter">
+      <label class="sr-only" for={id}>Найти в прайсе</label>
+      <input id={id} type="search" placeholder="Найти исследование или приём" autocomplete="off" />
+    </div>
+  )}
+  <dl class="price-list">
+    {items.map((p) => (
+      <div class="price-row">
+        <dt class="price-name">{p.name}</dt>
+        <span class="price-dots" aria-hidden="true"></span>
+        <dd class="price-value">{rub(p.price)}</dd>
+      </div>
+    ))}
+  </dl>
+  <p class="prices-empty" hidden>Ничего не нашлось. Уточните по телефону.</p>
+  <p class="prices-note">{checkedText ? `Цены на ${checkedText.replace(/\.$/, '')}. ` : ''}Не является публичной офертой. Точную стоимость уточняйте при записи.</p>
+</div>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-prices]')) {
+    const input = box.querySelector<HTMLInputElement>('input');
+    if (!input) continue;
+    const rows = [...box.querySelectorAll<HTMLElement>('.price-row')];
+    const empty = box.querySelector<HTMLElement>('.prices-empty')!;
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase().replace(/ё/g, 'е');
+      let shown = 0;
+      for (const r of rows) {
+        const hit = !q || r.textContent!.toLowerCase().replace(/ё/g, 'е').includes(q);
+        r.hidden = !hit;
+        if (hit) shown++;
+      }
+      empty.hidden = shown > 0;
+    });
+  }
+</script>

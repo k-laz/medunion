@@ -34,6 +34,7 @@ const canonical = new URL(url, Astro.site).href;
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="ru_RU" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>try { if (localStorage.getItem('a11y')) document.documentElement.classList.add('a11y'); } catch (e) {}</script>
   </head>
   <body>
     <a class="skip" href="#main">Перейти к содержанию</a>

@@ -1,15 +1,66 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import SearchBox from '../components/SearchBox.astro';
+import DoctorCard from '../components/DoctorCard.astro';
+import CtaBand from '../components/CtaBand.astro';
 import { clinics, integrations, phones } from '../data/site';
 import { childrenOf } from '../lib/content';
 
 const services = await getCollection('services');
-// Main directions = the sections directly under /uslugi/
-const sections = childrenOf('/uslugi/', services);
-const groups = sections.map((s) => ({ section: s, items: childrenOf(s.data.url, services).slice(0, 8) }));
-const news = (await getCollection('articles')).filter((a) => a.data.kind === 'news').slice(0, 4);
+const byUrl = new Map(services.map((s) => [s.data.url, s]));
+const short = (s: string) => s.replace(/\s*\(.*?\)/g, '').replace(/\s*в Красноярске$/, '');
+// Section names that read better shorter in a list
+const rename: Record<string, string> = {
+  '/uslugi/centr/nevrologiya/': 'Неврология',
+  '/uslugi/centr/terapiya/': 'Терапия',
+  '/uslugi/ortopediya-/': 'Ортопедия (подбор стелек)',
+};
+
+// Quick links under the search box
+const popular = [
+  ['/uslugi/diagnostika/mrt/', 'МРТ открытого типа'],
+  ['/uslugi/diagnostika/mrt-1-5-tesla/', 'МРТ 1,5 Тесла'],
+  ['/uslugi/diagnostika/mskt/', 'КТ'],
+  ['/uslugi/diagnostika/ultrazvukovaya-diagnostika/', 'УЗИ'],
+  ['/uslugi/diagnostika/laboratornaya-diagnostika/', 'Анализы'],
+  ['/uslugi/centr/ginekologiya/', 'Гинеколог'],
+  ['/uslugi/centr/nevrologiya/', 'Невролог'],
+  ['/uslugi/pediatriya1/', 'Педиатр'],
+].filter(([u]) => byUrl.has(u));
+
+// Specialties = sections of the polyclinic, plus the other top sections
+const specialties = childrenOf('/uslugi/centr/', services);
+const topSections = childrenOf('/uslugi/', services).filter((s) => s.data.url !== '/uslugi/centr/');
+const directions = [...specialties, ...topSections]
+  .map((s) => ({ url: s.data.url, label: rename[s.data.url] ?? short(s.data.h1) }))
+  .sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+const firstCount = 15;
+
+const features = [
+  { url: '/uslugi/diagnostika/mrt/', title: 'МРТ открытого типа', text: 'Исследование без замкнутого тоннеля. Есть и высокопольный томограф 1,5 Тесла.', tone: 'blue' },
+  { url: '/uslugi/vyezd-vracha-na-dom/', title: 'Выезд врача на дом', text: 'Педиатр, невролог и другие специалисты приедут к вам.', tone: 'green' },
+  { url: '/uslugi/klinika-blokady-boli/', title: 'Клиника блокады боли', text: 'Лечебные блокады нервов и суставов.', tone: 'sand' },
+  { url: '/uslugi/pediatriya1/', title: 'Детское отделение', text: 'Педиатр, детские специалисты, УЗИ, МРТ и КТ для детей.', tone: 'rose' },
+].filter((f) => byUrl.has(f.url));
+
+const doctors = (await getCollection('doctors'))
+  .map((d) => ({ d, n: services.filter((s) => s.data.doctors.some((r) => r.id === d.id)).length }))
+  .sort((a, b) => b.n - a.n || a.d.data.name.localeCompare(b.d.data.name, 'ru'))
+  .slice(0, 4)
+  .map((x) => x.d);
+
+const articles = await getCollection('articles');
+const sales = articles.filter((a) => a.data.kind === 'sale').slice(0, 4);
+const news = articles.filter((a) => a.data.kind === 'news').slice(0, 4);
+
+const clinicPage: Record<string, string> = {
+  kurchatova: '/contacts/klinika-na-kurchatova/',
+  instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
+  kansk: '/contacts/klinika-v-kanske/',
+};
 const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 ---
 
 <Base
@@ -17,42 +68,112 @@ const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}
   description="МРТ, КТ, рентген, УЗИ, анализы и приём врачей в Медюнион: Красноярск, Курчатова, 17 и Инструментальная, 12/35, Канск, Урицкого, 8. Запись онлайн."
   url="/"
 >
-  <section class="home-hero">
-    <div class="wrap home-hero-inner">
-      <div>
-        <h1>Медицинские центры Медюнион в Красноярске и Канске</h1>
-        <p class="lead">Диагностика и приём врачей для взрослых и детей. МРТ открытого типа и 1,5 Тесла, КТ, рентген, УЗИ, анализы.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
-          <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
-        </div>
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-main">
+        <h1>Медицинские центры Медюнион в&nbsp;Красноярске и&nbsp;Канске</h1>
+        <p class="lead">Диагностика и приём врачей для взрослых и детей. Три клиники, запись онлайн.</p>
+        <SearchBox id="q-home" large placeholder="Гинеколог, невролог, МРТ, УЗИ, анализы" />
+        <nav class="chips" aria-label="Популярное">
+          {popular.map(([u, label]) => <a class="chip" href={u}>{label}</a>)}
+        </nav>
       </div>
-      <ul class="home-clinics">
-        {Object.entries(clinics).map(([key, c]) => (
-          <li>
-            <a href={key === 'kurchatova' ? '/contacts/klinika-na-kurchatova/' : key === 'instrumentalnaya' ? '/contacts/klinika-na-instrumentalnoy/' : '/contacts/klinika-v-kanske/'}>
-              {c.city}, {c.address}
-            </a>
-            <span class="muted">{c.hours[0]}</span>
-          </li>
-        ))}
-      </ul>
+      <aside class="hero-card">
+        <p class="hero-card-title">Запись на приём</p>
+        <a class="btn btn-primary btn-wide" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+        <a class="hero-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+        <p class="muted">Красноярск, обе клиники</p>
+        <a class="hero-phone hero-phone-sm" href={`tel:${phones.kansk.tel}`}>{phones.kansk.display}</a>
+        <p class="muted">Канск</p>
+      </aside>
     </div>
   </section>
 
-  <div class="wrap home-sections">
-    {groups.map(({ section, items }) => (
-      <section class="home-group">
-        <h2><a href={section.data.url}>{section.data.h1}</a></h2>
-        <ul>{items.map((i) => <li><a href={i.data.url}>{i.data.h1}</a></li>)}</ul>
-      </section>
-    ))}
-  </div>
+  <div class="wrap">
+    <section class="block">
+      <div class="block-head">
+        <h2>Направления</h2>
+        <a class="link-more" href="/uslugi/">Все услуги</a>
+      </div>
+      <ul class="dir-list">
+        {directions.slice(0, firstCount).map((s) => <li><a href={s.url}>{s.label}</a></li>)}
+      </ul>
+      {directions.length > firstCount && (
+        <details class="dir-more">
+          <summary><span class="plus" aria-hidden="true"></span><span class="dir-more-open">Показать все направления</span><span class="dir-more-close">Свернуть</span></summary>
+          <ul class="dir-list">
+            {directions.slice(firstCount).map((s) => <li><a href={s.url}>{s.label}</a></li>)}
+          </ul>
+        </details>
+      )}
+    </section>
 
-  {news.length > 0 && (
-    <div class="wrap home-news">
-      <h2><a href="/news/">Новости</a></h2>
-      <ul class="link-grid">{news.map((n) => <li><a href={n.data.url}>{n.data.h1}</a></li>)}</ul>
+    {features.length > 0 && (
+      <section class="block feature-grid" aria-label="Особые направления">
+        {features.map((f) => (
+          <a class={`feature feature-${f.tone}`} href={f.url}>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+            <span class="feature-link">Подробнее <Fragment set:html={arrow} /></span>
+          </a>
+        ))}
+      </section>
+    )}
+
+    <section class="block near">
+      <div class="near-text">
+        <h2>Медюнион рядом</h2>
+        <p>Три клиники: две в Красноярске и одна в Канске.</p>
+        <a class="btn btn-quiet" href="/contacts/">Все адреса и контакты</a>
+      </div>
+      <ul class="near-list">
+        {Object.entries(clinics).map(([key, c]) => (
+          <li>
+            <a href={clinicPage[key]}>
+              <span class="clinic-city">{c.city}</span>
+              <strong>{c.address}</strong>
+              <span class="muted">{c.hours.join(' · ')}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {doctors.length > 0 && (
+      <section class="block">
+        <div class="block-head">
+          <h2>Врачи</h2>
+          <a class="link-more" href="/vrachi/">Все врачи</a>
+        </div>
+        <div class="doctor-grid doctor-grid-4">
+          {doctors.map((doc) => (
+            <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <div class="block two-col">
+      {sales.length > 0 && (
+        <section>
+          <div class="block-head">
+            <h2>Акции</h2>
+            <a class="link-more" href="/sales/">Все акции</a>
+          </div>
+          <ul class="tile-grid tile-grid-1">{sales.map((s) => <li><a class="tile" href={s.data.url}><span>{s.data.h1}</span><Fragment set:html={arrow} /></a></li>)}</ul>
+        </section>
+      )}
+      {news.length > 0 && (
+        <section>
+          <div class="block-head">
+            <h2>Новости</h2>
+            <a class="link-more" href="/news/">Все новости</a>
+          </div>
+          <ul class="tile-grid tile-grid-1">{news.map((n) => <li><a class="tile" href={n.data.url}><span>{n.data.h1}</span><Fragment set:html={arrow} /></a></li>)}</ul>
+        </section>
+      )}
     </div>
-  )}
+
+    <div class="page-body"><CtaBand /></div>
+  </div>
 </Base>

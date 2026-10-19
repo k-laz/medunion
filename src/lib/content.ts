@@ -36,5 +36,18 @@ export async function servicesOfDoctor(doctorId: string) {
 
 export const rub = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
 
+/** Surname and first name initials, skipping anything in brackets, e.g. "(Зубова)". */
+export const initials = (name: string) =>
+  name.replace(/\(.*?\)/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
+
+/** "1 год", "3 года", "11 лет" */
+export const years = (n: number) => {
+  const m10 = n % 10, m100 = n % 100;
+  return `${n} ${m10 === 1 && m100 !== 11 ? 'год' : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? 'года' : 'лет'}`;
+};
+
 export type Service = CollectionEntry<'services'>;
 export type Doctor = CollectionEntry<'doctors'>;
+
+/** Shorter label for link tiles: the city is already obvious on the page. */
+export const tileLabel = (h1: string) => h1.replace(/\s+в Красноярске$/, '');

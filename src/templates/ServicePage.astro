@@ -1,59 +1,111 @@
 ---
 import { getCollection, getEntries, render, type CollectionEntry } from 'astro:content';
-import BookingPanel from '../components/BookingPanel.astro';
+import PageHead from '../components/PageHead.astro';
+import InfoCard from '../components/InfoCard.astro';
+import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
-import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { childrenOf } from '../lib/content';
+import CtaBand from '../components/CtaBand.astro';
+import { childrenOf, tileLabel } from '../lib/content';
+import { integrations, phones } from '../data/site';
 
 interface Props { entry: CollectionEntry<'services'> }
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
+const hasText = (entry.body ?? '').trim().length > 0;
 const doctors = d.doctors.length ? await getEntries(d.doctors) : [];
 const children = childrenOf(d.url, await getCollection('services'));
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+
+const tabs = [
+  children.length && { id: 'sub', label: 'Услуги раздела' },
+  hasText && { id: 'about', label: 'Описание' },
+  d.prices.length && { id: 'prices', label: 'Цены' },
+  doctors.length && { id: 'doctors', label: 'Врачи' },
+  d.faq.length && { id: 'faq', label: 'Вопросы' },
+].filter(Boolean) as { id: string; label: string }[];
 ---
 
-<div class="wrap service">
-  <div class="service-head">
-    <Breadcrumbs url={d.url} />
-    <h1>{d.h1}</h1>
-    {d.lead && <p class="lead">{d.lead}</p>}
+<PageHead url={d.url} h1={d.h1} lead={d.lead}>
+  <div class="cta-row">
+    <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться на приём</a>
+    <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
   </div>
+  <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
+</PageHead>
 
-  <div class="service-aside">
-    <BookingPanel prices={d.prices} clinicKeys={d.clinics} checkedOn={d.pricesCheckedOn} />
-  </div>
+{tabs.length > 1 && (
+  <nav class="tabs" aria-label="Разделы страницы">
+    <div class="wrap tabs-row">{tabs.map((t) => <a href={`#${t.id}`}>{t.label}</a>)}</div>
+  </nav>
+)}
 
-  <div class="service-main">
-    {children.length > 0 && (
-      <ul class="link-grid">
-        {children.map((c) => <li><a href={c.data.url}>{c.data.h1}</a></li>)}
-      </ul>
-    )}
-
-    {doctors.length > 0 && (
-      <section class="doctors" aria-labelledby="doctors-h">
-        <h2 id="doctors-h">Врачи</h2>
-        <div class="doctor-list">
-          {doctors.map((doc) => (
-            <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
-          ))}
-        </div>
-      </section>
-    )}
-
-    <div class="prose"><Content /></div>
-
-    {d.faq.length > 0 && (
-      <section class="faq" aria-labelledby="faq-h">
-        <h2 id="faq-h">Частые вопросы</h2>
-        {d.faq.map((item) => (
-          <details>
-            <summary>{item.q}</summary>
-            <p>{item.a}</p>
-          </details>
+<div class="wrap page-body">
+  {children.length > 0 && (
+    <section id="sub" class="block">
+      <h2>Услуги раздела</h2>
+      <ul class="tile-grid">
+        {children.map((c) => (
+          <li><a class="tile" href={c.data.url}><span>{tileLabel(c.data.h1)}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
         ))}
-      </section>
-    )}
-  </div>
+      </ul>
+    </section>
+  )}
+
+  {hasText && (
+    <section id="about" class="block">
+      <h2 class="sr-only">Описание</h2>
+      <div class="clamp" data-clamp>
+        <div class="prose"><Content /></div>
+      </div>
+      <button class="more-btn" type="button" data-clamp-toggle hidden>Показать полностью</button>
+    </section>
+  )}
+
+  {d.prices.length > 0 && (
+    <section id="prices" class="block">
+      <h2>Цены</h2>
+      <PriceList items={d.prices} checkedOn={d.pricesCheckedOn} />
+    </section>
+  )}
+
+  {doctors.length > 0 && (
+    <section id="doctors" class="block">
+      <h2>Врачи</h2>
+      <div class="doctor-grid">
+        {doctors.map((doc) => (
+          <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {d.faq.length > 0 && (
+    <section id="faq" class="block faq">
+      <h2>Частые вопросы</h2>
+      {d.faq.map((item) => (
+        <details>
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </section>
+  )}
+
+  <CtaBand />
 </div>
+
+<script>
+  // Long descriptions start folded, like a "read more". The full text is
+  // always in the page for search engines and screen readers.
+  for (const box of document.querySelectorAll<HTMLElement>('[data-clamp]')) {
+    const btn = box.parentElement!.querySelector<HTMLButtonElement>('[data-clamp-toggle]')!;
+    if (box.scrollHeight < 640) continue;
+    box.classList.add('clamp-on');
+    btn.hidden = false;
+    btn.addEventListener('click', () => {
+      const open = box.classList.toggle('clamp-open');
+      btn.textContent = open ? 'Свернуть' : 'Показать полностью';
+    });
+  }
+</script>

@@ -1,22 +1,52 @@
 ---
-import { clinics } from '../data/site';
+import { clinics, phones, integrations } from '../data/site';
 const year = new Date().getFullYear();
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const pages: Record<string, string> = {
+  kurchatova: '/contacts/klinika-na-kurchatova/',
+  instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
+  kansk: '/contacts/klinika-v-kanske/',
+};
 ---
 
 <footer class="site-footer">
   <div class="wrap">
-    <div class="footer-clinics">
-      {Object.values(clinics).map((c) => (
-        <div class="footer-clinic">
-          <p class="footer-clinic-name">{c.name}</p>
+    <div class="footer-top">
+      <div class="footer-col">
+        <p class="footer-head">Пациентам</p>
+        <a href="/uslugi/">Услуги</a>
+        <a href="/vrachi/">Врачи</a>
+        <a href="/ceny/">Цены</a>
+        <a href="/sales/">Акции</a>
+        <a href="/articles/">Статьи врачей</a>
+        <a href="/news/">Новости</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-head">Направления</p>
+        <a href="/uslugi/diagnostika/">Диагностика</a>
+        <a href="/uslugi/centr/">Поликлиника</a>
+        <a href="/uslugi/pediatriya1/">Педиатрия</a>
+        <a href="/uslugi/vyezd-vracha-na-dom/">Выезд врача на дом</a>
+        <a href="/uslugi/klinika-blokady-boli/">Клиника блокады боли</a>
+      </div>
+      {Object.entries(clinics).map(([key, c]) => (
+        <div class="footer-col">
+          <p class="footer-head"><a href={pages[key]}>{c.name}</a></p>
           <p>{c.city}, {c.address}</p>
           <p><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
           {c.hours.map((h) => <p class="muted">{h}</p>)}
         </div>
       ))}
     </div>
+
+    <div class="footer-cta">
+      <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться на приём</a>
+      <a class="footer-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+    </div>
+
     <div class="footer-legal">
       <nav aria-label="Документы">
+        <a href="/company/">О компании</a>
         <a href="/company/licenzii-i-egryul/">Лицензии и ЕГРЮЛ</a>
         <a href="/pacientam/pravila-predostavleniya-platnyh-medicinskih-uslug/">Правила платных услуг</a>
         <a href="/pacientam/obsluzhivanie-oms-dms/">ОМС и ДМС</a>

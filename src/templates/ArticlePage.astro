@@ -1,27 +1,20 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
-import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { integrations, phones } from '../data/site';
+import PageHead from '../components/PageHead.astro';
+import CtaBand from '../components/CtaBand.astro';
 
 interface Props { entry: CollectionEntry<'articles'> | CollectionEntry<'pages'> }
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
 const isArticle = 'kind' in d;
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 ---
 
-<div class="wrap article">
-  <Breadcrumbs url={d.url} />
-  <h1>{d.h1}</h1>
-  <div class="prose"><Content /></div>
-  {isArticle && (
-    <aside class="article-cta">
-      <p>Есть вопросы по теме? Запишитесь на приём или позвоните.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
-        <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
-      </div>
-    </aside>
-  )}
+<PageHead url={d.url} h1={d.h1} compact />
+
+<div class="wrap page-body">
+  <article class="prose block">
+    <Content />
+  </article>
+  {isArticle && <CtaBand title="Есть вопросы по теме?" text="Запишитесь на приём к врачу онлайн или по телефону." />}
 </div>

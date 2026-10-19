@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { clinics, type ClinicKey } from '../data/site';
+import PageHead from '../components/PageHead.astro';
+import { clinics, integrations, type ClinicKey } from '../data/site';
 
 interface Props { entry: CollectionEntry<'pages'> }
 const d = Astro.props.entry.data;
@@ -12,22 +12,26 @@ const pageFor: Record<ClinicKey, string> = {
   kansk: '/contacts/klinika-v-kanske/',
 };
 const mapUrl = (k: ClinicKey) => `https://yandex.ru/maps/?text=${encodeURIComponent(`${clinics[k].city}, ${clinics[k].address}, Медюнион`)}`;
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 ---
 
-<div class="wrap article">
-  <Breadcrumbs url={d.url} />
-  <h1>{d.h1}</h1>
-  <div class="clinic-grid">
+<PageHead url={d.url} h1={d.h1} compact />
+
+<div class="wrap page-body">
+  <div class="clinic-grid block">
     {keys.map((k) => {
       const c = clinics[k];
       return (
         <section class="clinic-card">
-          <h2>{d.layout === 'clinic' ? 'Адрес и часы работы' : <a href={pageFor[k]}>{c.name}</a>}</h2>
-          <p class="booking-address">{c.city}, {c.address}</p>
+          <p class="clinic-city">{c.city}</p>
+          <h2>{d.layout === 'clinic' ? c.address : <a href={pageFor[k]}>{c.address}</a>}</h2>
           {c.district && <p class="muted">{c.district}</p>}
           <ul class="hours">{c.hours.map((h) => <li>{h}</li>)}</ul>
-          <p><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
-          <p><a href={mapUrl(k)} target="_blank" rel="noopener">Открыть на Яндекс Картах</a></p>
+          <p class="clinic-phone"><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться</a>
+            <a class="btn btn-quiet" href={mapUrl(k)} target="_blank" rel="noopener">Как добраться</a>
+          </div>
         </section>
       );
     })}

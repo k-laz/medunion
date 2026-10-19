@@ -1,18 +1,27 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import Breadcrumbs from '../components/Breadcrumbs.astro';
+import PageHead from '../components/PageHead.astro';
 import DoctorCard from '../components/DoctorCard.astro';
+import CtaBand from '../components/CtaBand.astro';
 
 interface Props { entry: CollectionEntry<'listings'> }
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
+const intro = (entry.body ?? '').trim();
 const under = <T extends { data: { url: string } }>(list: T[]) => list.filter((e) => e.data.url !== d.url && e.data.url.startsWith(d.url));
+const clean = (s: string) => s.replace(/\s*в Красноярске$/, '').replace(/^"|"$/g, '');
 
 let doctors: CollectionEntry<'doctors'>[] = [];
+let groups: { url: string; label: string }[] = [];
 let links: { url: string; label: string }[] = [];
 if (d.of === 'doctors') {
   doctors = under(await getCollection('doctors')).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
+  // Specialty filters: the doctor sections under /vrachi/
+  groups = (await getCollection('listings'))
+    .filter((l) => l.data.of === 'doctors' && l.data.url !== '/vrachi/' && l.data.url.split('/').length === 4)
+    .map((l) => ({ url: l.data.url, label: clean(l.data.h1) }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 } else if (d.of === 'prices') {
   links = under(await getCollection('prices')).map((p) => ({ url: p.data.url, label: p.data.h1 }));
 } else {
@@ -20,27 +29,34 @@ if (d.of === 'doctors') {
   const items = (await getCollection('articles')).filter((a) => a.data.kind === kind);
   const listed = d.of === 'articles' ? under(items) : items;
   links = listed.map((a) => ({ url: a.data.url, label: a.data.h1 }));
-  // Article sections: also link the category pages.
   if (d.of === 'articles') {
     const cats = under(await getCollection('listings')).filter((l) => l.data.of === 'articles');
-    links = [...cats.map((c) => ({ url: c.data.url, label: c.data.h1 })), ...links];
+    groups = cats.map((c) => ({ url: c.data.url, label: c.data.h1 })).sort((a, b) => a.label.localeCompare(b.label, 'ru'));
   }
 }
 links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 ---
 
-<div class="wrap article listing">
-  <Breadcrumbs url={d.url} />
-  <h1>{d.h1}</h1>
-  <div class="prose"><Content /></div>
+<PageHead url={d.url} h1={d.h1} compact>
+  {groups.length > 0 && (
+    <nav class="chips" aria-label="Разделы">
+      {groups.map((g) => <a class="chip" href={g.url}>{g.label}</a>)}
+    </nav>
+  )}
+</PageHead>
 
-  {doctors.length > 0 && (
-    <div class="doctor-list">
-      {doctors.map((doc) => (
-        <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
-      ))}
-    </div>
+<div class="wrap page-body">
+  {intro && intro.length > 120 && <div class="prose block"><Content /></div>}
+
+  {doctors.length > 0 && <div class="doctor-grid block">{doctors.map((doc) => (
+    <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+  ))}</div>}
+
+  {links.length > 0 && (
+    <ul class:list={['tile-grid', 'block', { 'tile-grid-2': d.of !== 'prices' }]}>
+      {links.map((l) => <li><a class="tile" href={l.url}><span>{l.label}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>)}
+    </ul>
   )}
 
-  {links.length > 0 && <ul class="link-grid">{links.map((l) => <li><a href={l.url}>{l.label}</a></li>)}</ul>}
+  <CtaBand />
 </div>

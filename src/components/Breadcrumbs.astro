@@ -4,14 +4,12 @@ interface Props { url: string }
 const trail = await breadcrumbs(Astro.props.url);
 ---
 
-{trail.length > 0 && (
-  <nav class="crumbs" aria-label="Вы здесь">
-    <a href="/">Главная</a>
-    {trail.map((c) => (
-      <>
-        <span aria-hidden="true">/</span>
-        <a href={c.url}>{c.label}</a>
-      </>
-    ))}
-  </nav>
-)}
+<nav class="crumbs" aria-label="Вы здесь">
+  <a href="/">Главная</a>
+  {trail.map((c) => (
+    <>
+      <span aria-hidden="true">›</span>
+      <a href={c.url}>{c.label}</a>
+    </>
+  ))}
+</nav>

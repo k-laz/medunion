@@ -1,61 +1,83 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
-import BookingPanel from '../components/BookingPanel.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { servicesOfDoctor } from '../lib/content';
-import { clinics } from '../data/site';
+import PriceList from '../components/PriceList.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { servicesOfDoctor, initials, years, tileLabel } from '../lib/content';
+import { clinics, integrations, phones } from '../data/site';
 
 interface Props { entry: CollectionEntry<'doctors'> }
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
+const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id);
-const initials = d.name.replace(/\(.*?\)/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
-const years = (n: number) => {
-  const m10 = n % 10, m100 = n % 100;
-  return `${n} ${m10 === 1 && m100 !== 11 ? 'год' : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? 'года' : 'лет'}`;
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const pages: Record<string, string> = {
+  kurchatova: '/contacts/klinika-na-kurchatova/',
+  instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
+  kansk: '/contacts/klinika-v-kanske/',
 };
-const facts = [
-  d.qualification,
-  d.experienceYears ? `Стаж ${years(d.experienceYears)}` : '',
-  d.clinics.length ? d.clinics.map((k) => `${clinics[k].city}, ${clinics[k].address}`).join('; ') : '',
-].filter(Boolean);
 ---
 
-<div class="wrap service">
-  <div class="service-head">
+<section class="page-head page-head-compact">
+  <div class="wrap">
     <Breadcrumbs url={d.url} />
-    <div class="doctor-head">
-      {d.photo ? <img class="doctor-photo doctor-photo-lg" src={d.photo} alt={d.name} width="120" height="120" /> : <div class="doctor-photo doctor-photo-lg doctor-initials" aria-hidden="true">{initials}</div>}
-      <div>
-        <h1>{d.name}</h1>
-        <p class="lead">{d.specialty}</p>
-      </div>
+  </div>
+</section>
+
+<div class="wrap doctor-page">
+  <aside class="doctor-side">
+    <div class="doctor-portrait">
+      {d.photo ? <img src={d.photo} alt={d.name} /> : <span aria-hidden="true">{initials(d.name)}</span>}
     </div>
-    {facts.length > 0 && <ul class="facts">{facts.map((f) => <li>{f}</li>)}</ul>}
-  </div>
+    <div class="doctor-side-actions">
+      <a class="btn btn-primary btn-wide" href={bookingUrl} target="_blank" rel="noopener">Записаться на приём</a>
+      <a class="btn btn-quiet btn-wide" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+    </div>
+  </aside>
 
-  <div class="service-aside">
-    <BookingPanel prices={d.prices} clinicKeys={d.clinics} />
-  </div>
+  <div class="doctor-main">
+    <h1>{d.name}</h1>
+    <p class="lead">{d.specialty}</p>
 
-  <div class="service-main">
-    <div class="prose"><Content /></div>
+    <dl class="doctor-facts">
+      {d.experienceYears && (<div><dt>Стаж работы</dt><dd>{years(d.experienceYears)}</dd></div>)}
+      {d.qualification && (<div><dt>Категория</dt><dd>{d.qualification}</dd></div>)}
+      {d.clinics.length > 0 && (
+        <div>
+          <dt>Ведёт приём</dt>
+          <dd>{d.clinics.map((k, i) => <>{i > 0 && ', '}<a href={pages[k]}>{clinics[k].city}, {clinics[k].address}</a></>)}</dd>
+        </div>
+      )}
+      {d.specialization && (<div><dt>Специализация</dt><dd>{d.specialization}</dd></div>)}
+    </dl>
 
-    {d.specialization && <p><strong>Специализация:</strong> {d.specialization}</p>}
+    {hasText && <div class="prose block"><Content /></div>}
 
     {d.education.length > 0 && (
-      <section>
+      <section class="block">
         <h2>Образование</h2>
         <ul class="prose-list">{d.education.map((e) => <li>{e}</li>)}</ul>
       </section>
     )}
 
+    {d.prices.length > 0 && (
+      <section class="block">
+        <h2>Стоимость приёма</h2>
+        <PriceList items={d.prices} />
+      </section>
+    )}
+
     {services.length > 0 && (
-      <section>
+      <section class="block">
         <h2>Услуги</h2>
-        <ul class="link-grid">{services.map((s) => <li><a href={s.data.url}>{s.data.h1}</a></li>)}</ul>
+        <ul class="tile-grid tile-grid-2">
+          {services.map((s) => <li><a class="tile" href={s.data.url}><span>{tileLabel(s.data.h1)}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>)}
+        </ul>
       </section>
     )}
   </div>
 </div>
+
+<div class="wrap page-body"><CtaBand title="Запишитесь к врачу" /></div>
