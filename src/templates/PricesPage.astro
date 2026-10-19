@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { rub } from '../lib/content';
+import { integrations } from '../data/site';
+
+interface Props { entry: CollectionEntry<'prices'> }
+const d = Astro.props.entry.data;
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+---
+
+<div class="wrap article">
+  <Breadcrumbs url={d.url} />
+  <h1>{d.h1}</h1>
+  {d.items.length > 0 ? (
+    <dl class="price-list price-list-page">
+      {d.items.map((p) => (
+        <div class="price-row">
+          <dt class="price-name">{p.name}</dt>
+          <span class="price-dots" aria-hidden="true"></span>
+          <dd class="price-value">{rub(p.price)}</dd>
+        </div>
+      ))}
+    </dl>
+  ) : (
+    <p>Цены уточняйте по телефону.</p>
+  )}
+  <p class="muted">Не является публичной офертой. Точную стоимость уточняйте при записи.</p>
+  <p><a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a></p>
+</div>

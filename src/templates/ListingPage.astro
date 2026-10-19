@@ -1,0 +1,46 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import DoctorCard from '../components/DoctorCard.astro';
+
+interface Props { entry: CollectionEntry<'listings'> }
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const under = <T extends { data: { url: string } }>(list: T[]) => list.filter((e) => e.data.url !== d.url && e.data.url.startsWith(d.url));
+
+let doctors: CollectionEntry<'doctors'>[] = [];
+let links: { url: string; label: string }[] = [];
+if (d.of === 'doctors') {
+  doctors = under(await getCollection('doctors')).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
+} else if (d.of === 'prices') {
+  links = under(await getCollection('prices')).map((p) => ({ url: p.data.url, label: p.data.h1 }));
+} else {
+  const kind = d.of === 'news' ? 'news' : d.of === 'sales' ? 'sale' : 'article';
+  const items = (await getCollection('articles')).filter((a) => a.data.kind === kind);
+  const listed = d.of === 'articles' ? under(items) : items;
+  links = listed.map((a) => ({ url: a.data.url, label: a.data.h1 }));
+  // Article sections: also link the category pages.
+  if (d.of === 'articles') {
+    const cats = under(await getCollection('listings')).filter((l) => l.data.of === 'articles');
+    links = [...cats.map((c) => ({ url: c.data.url, label: c.data.h1 })), ...links];
+  }
+}
+links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+---
+
+<div class="wrap article listing">
+  <Breadcrumbs url={d.url} />
+  <h1>{d.h1}</h1>
+  <div class="prose"><Content /></div>
+
+  {doctors.length > 0 && (
+    <div class="doctor-list">
+      {doctors.map((doc) => (
+        <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+      ))}
+    </div>
+  )}
+
+  {links.length > 0 && <ul class="link-grid">{links.map((l) => <li><a href={l.url}>{l.label}</a></li>)}</ul>}
+</div>

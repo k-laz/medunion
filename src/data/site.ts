@@ -13,7 +13,8 @@ export const clinics = {
     address: 'ул. Курчатова, 17, стр. 15',
     district: 'Октябрьский район',
     phone: phones.main,
-    hours: ['Пн–Пт 07:30–21:00', 'Сб 08:00–18:00'],
+    // From the clinic's own contact page, October 2026. The old site header said 21:00 / 18:00.
+    hours: ['Пн–Пт 07:30–20:00', 'Сб 08:00–17:00', 'Вс выходной'],
   },
   instrumentalnaya: {
     name: 'Медюнион на Инструментальной',
@@ -21,8 +22,7 @@ export const clinics = {
     address: 'ул. Инструментальная, 12/35',
     district: '',
     phone: phones.main,
-    // TODO: confirm with the clinic. The old homepage says this location now opens on Sundays.
-    hours: ['Пн–Пт 07:30–21:00', 'Сб 08:00–18:00'],
+    hours: ['Пн–Пт 07:30–20:00', 'Сб 08:00–17:00', 'Вс 09:00–14:00'],
   },
   kansk: {
     name: 'Медюнион в Канске',
@@ -30,7 +30,7 @@ export const clinics = {
     address: 'ул. Урицкого, 8',
     district: '',
     phone: phones.kansk,
-    hours: ['Уточняйте по телефону'],
+    hours: ['Пн–Пт 08:00–20:00', 'Сб 08:30–18:00', 'Вс выходной'],
   },
 } as const;
 

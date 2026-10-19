@@ -5,7 +5,7 @@ description: Приём гинеколога, гинеколога-эндокр�
 h1: Приём гинеколога, гинеколога-эндокринолога и детского гинеколога
 lead: Взрослый, детский и подростковый приём на Курчатова, 17, а также консультации гинеколога-эндокринолога. Рекомендуем посещать гинеколога раз в полгода.
 clinics: [kurchatova]
-doctors: [yureva-zubova-inna-aleksandrovna, gaynulina-dinara-amrulovna, kolova-lyudmila-mikhaylovna]
+doctors: [imported/vrachi/vrachi-medyunion/yureva-zubova-inna-aleksandrovna, imported/vrachi/vrachi-ginekologi/gaynulina-dinara-amrulovna, imported/vrachi/vrachi-ginekologi/kolova-lyudmila-mikhaylovna]
 pricesCheckedOn: 2026-10-19
 prices:
   - name: Консультация гинеколога

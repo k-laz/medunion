@@ -1,23 +1,58 @@
 ---
-// Temporary home page for the preview. The real one comes once the
-// rest of the content is migrated.
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import { clinics, integrations, phones } from '../data/site';
+import { childrenOf } from '../lib/content';
+
 const services = await getCollection('services');
-const doctors = await getCollection('doctors');
+// Main directions = the sections directly under /uslugi/
+const sections = childrenOf('/uslugi/', services);
+const groups = sections.map((s) => ({ section: s, items: childrenOf(s.data.url, services).slice(0, 8) }));
+const news = (await getCollection('articles')).filter((a) => a.data.kind === 'news').slice(0, 4);
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 ---
 
 <Base
-  title="Медюнион: сеть медицинских центров в Красноярске и Канске"
-  description="Медюнион: МРТ, КТ, рентген, УЗИ и приём врачей в Красноярске на Курчатова и Инструментальной и в Канске на Урицкого. Запись онлайн и по телефону."
+  title="Медюнион: медицинские центры в Красноярске и Канске"
+  description="МРТ, КТ, рентген, УЗИ, анализы и приём врачей в Медюнион: Красноярск, Курчатова, 17 и Инструментальная, 12/35, Канск, Урицкого, 8. Запись онлайн."
   url="/"
 >
-  <div class="wrap home">
-    <h1>Медюнион</h1>
-    <p class="lead">Черновик нового сайта. Готовые страницы:</p>
-    <ul class="home-list">
-      {services.map((s) => <li><a href={s.data.url}>{s.data.h1}</a></li>)}
-      {doctors.map((d) => <li><a href={d.data.url}>{d.data.name}</a></li>)}
-    </ul>
+  <section class="home-hero">
+    <div class="wrap home-hero-inner">
+      <div>
+        <h1>Медицинские центры Медюнион в Красноярске и Канске</h1>
+        <p class="lead">Диагностика и приём врачей для взрослых и детей. МРТ открытого типа и 1,5 Тесла, КТ, рентген, УЗИ, анализы.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+          <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+        </div>
+      </div>
+      <ul class="home-clinics">
+        {Object.entries(clinics).map(([key, c]) => (
+          <li>
+            <a href={key === 'kurchatova' ? '/contacts/klinika-na-kurchatova/' : key === 'instrumentalnaya' ? '/contacts/klinika-na-instrumentalnoy/' : '/contacts/klinika-v-kanske/'}>
+              {c.city}, {c.address}
+            </a>
+            <span class="muted">{c.hours[0]}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="wrap home-sections">
+    {groups.map(({ section, items }) => (
+      <section class="home-group">
+        <h2><a href={section.data.url}>{section.data.h1}</a></h2>
+        <ul>{items.map((i) => <li><a href={i.data.url}>{i.data.h1}</a></li>)}</ul>
+      </section>
+    ))}
   </div>
+
+  {news.length > 0 && (
+    <div class="wrap home-news">
+      <h2><a href="/news/">Новости</a></h2>
+      <ul class="link-grid">{news.map((n) => <li><a href={n.data.url}>{n.data.h1}</a></li>)}</ul>
+    </div>
+  )}
 </Base>

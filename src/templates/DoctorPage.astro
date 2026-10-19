@@ -1,0 +1,61 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BookingPanel from '../components/BookingPanel.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { servicesOfDoctor } from '../lib/content';
+import { clinics } from '../data/site';
+
+interface Props { entry: CollectionEntry<'doctors'> }
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const services = await servicesOfDoctor(entry.id);
+const initials = d.name.replace(/\(.*?\)/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
+const years = (n: number) => {
+  const m10 = n % 10, m100 = n % 100;
+  return `${n} ${m10 === 1 && m100 !== 11 ? 'год' : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? 'года' : 'лет'}`;
+};
+const facts = [
+  d.qualification,
+  d.experienceYears ? `Стаж ${years(d.experienceYears)}` : '',
+  d.clinics.length ? d.clinics.map((k) => `${clinics[k].city}, ${clinics[k].address}`).join('; ') : '',
+].filter(Boolean);
+---
+
+<div class="wrap service">
+  <div class="service-head">
+    <Breadcrumbs url={d.url} />
+    <div class="doctor-head">
+      {d.photo ? <img class="doctor-photo doctor-photo-lg" src={d.photo} alt={d.name} width="120" height="120" /> : <div class="doctor-photo doctor-photo-lg doctor-initials" aria-hidden="true">{initials}</div>}
+      <div>
+        <h1>{d.name}</h1>
+        <p class="lead">{d.specialty}</p>
+      </div>
+    </div>
+    {facts.length > 0 && <ul class="facts">{facts.map((f) => <li>{f}</li>)}</ul>}
+  </div>
+
+  <div class="service-aside">
+    <BookingPanel prices={d.prices} clinicKeys={d.clinics} />
+  </div>
+
+  <div class="service-main">
+    <div class="prose"><Content /></div>
+
+    {d.specialization && <p><strong>Специализация:</strong> {d.specialization}</p>}
+
+    {d.education.length > 0 && (
+      <section>
+        <h2>Образование</h2>
+        <ul class="prose-list">{d.education.map((e) => <li>{e}</li>)}</ul>
+      </section>
+    )}
+
+    {services.length > 0 && (
+      <section>
+        <h2>Услуги</h2>
+        <ul class="link-grid">{services.map((s) => <li><a href={s.data.url}>{s.data.h1}</a></li>)}</ul>
+      </section>
+    )}
+  </div>
+</div>

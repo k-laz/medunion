@@ -127,7 +127,8 @@ p { margin: 0 0 1rem; }
   border-bottom: 2px dotted #a9b2c6;
 }
 .price-value { margin: 0; white-space: nowrap; font-weight: 600; line-height: 1.35; }
-.booking-places { border-top: 1px solid var(--line); padding-top: 14px; margin-bottom: 14px; }
+.booking-places { margin-bottom: 14px; }
+.price-list + .booking-places { border-top: 1px solid var(--line); padding-top: 14px; }
 .booking-place p { margin: 0; font-size: var(--step--1); }
 .booking-place + .booking-place { margin-top: 10px; }
 .booking-address { font-weight: 600; color: var(--ink); }
@@ -180,4 +181,67 @@ p { margin: 0 0 1rem; }
 
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+
+/* Breadcrumbs */
+.crumbs { display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--step--1); color: var(--muted); margin-bottom: 12px; }
+.crumbs a { color: var(--muted); text-decoration: none; }
+.crumbs a:hover { color: var(--brand); text-decoration: underline; }
+
+/* Lists of links to sub-pages */
+.link-grid { list-style: none; padding: 0; margin: 0 0 32px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 24px; }
+.link-grid li { border-bottom: 1px solid var(--line); }
+.link-grid a { display: block; padding: 11px 0; color: var(--ink); text-decoration: none; }
+.link-grid a:hover { color: var(--brand); }
+
+/* Doctor page */
+.doctor-head { display: flex; gap: 20px; align-items: center; }
+.doctor-photo-lg { width: 112px; height: 112px; flex: none; font-size: var(--step-2); }
+.doctor-head h1 { margin-bottom: 4px; }
+.doctor-head .lead { margin: 0; }
+.facts { list-style: none; padding: 0; margin: 16px 0 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+.facts li { background: var(--mist); border-radius: 999px; padding: 4px 12px; font-size: var(--step--1); }
+.prose-list { padding-left: 1.25rem; max-width: 70ch; }
+.prose-list li { margin-bottom: 0.4rem; }
+
+/* Articles and simple pages */
+.article { padding-top: 32px; padding-bottom: 64px; }
+.article > h1 { max-width: 30ch; }
+.prose img { max-width: 100%; height: auto; border-radius: var(--radius); }
+.prose table { border-collapse: collapse; width: 100%; margin: 0 0 1rem; font-size: var(--step--1); }
+.prose th, .prose td { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: left; vertical-align: top; }
+.prose h2 + p, .prose h3 + p { margin-top: 0; }
+.article-cta { margin-top: 40px; padding: 20px; background: var(--mist); border-radius: var(--radius); max-width: 70ch; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.price-list-page { max-width: 760px; }
+.price-list-page .price-name { font-size: var(--step-0); max-width: 80%; }
+
+/* Contacts */
+.clinic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 8px 0 24px; }
+.clinic-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+.clinic-card h2 { font-size: var(--step-1); margin: 0 0 10px; }
+.clinic-card h2 a { color: var(--ink); }
+.clinic-card p { margin: 0 0 8px; }
+.hours { list-style: none; padding: 0; margin: 0 0 10px; }
+
+/* Home */
+.home-hero { background: var(--mist); }
+.home-hero-inner { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: center; padding-top: 48px; padding-bottom: 48px; }
+.home-hero h1 { max-width: 20ch; }
+.home-clinics { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.home-clinics li { background: var(--paper); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 2px; }
+.home-clinics a { color: var(--ink); font-weight: 600; text-decoration: none; }
+.home-clinics a:hover { color: var(--brand); }
+.home-sections { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px 32px; padding-top: 40px; }
+.home-group h2 { font-size: var(--step-1); margin: 16px 0 8px; }
+.home-group h2 a { color: var(--ink); text-decoration: none; }
+.home-group ul { list-style: none; padding: 0; margin: 0; }
+.home-group li a { display: block; padding: 5px 0; color: var(--muted); text-decoration: none; font-size: var(--step--1); }
+.home-group li a:hover { color: var(--brand); }
+.home-news { padding-top: 24px; padding-bottom: 64px; }
+.home-news h2 a { color: var(--ink); text-decoration: none; }
+
+@media (max-width: 900px) {
+  .home-hero-inner { grid-template-columns: 1fr; gap: 24px; padding-top: 32px; padding-bottom: 32px; }
+  .doctor-photo-lg { width: 80px; height: 80px; }
 }

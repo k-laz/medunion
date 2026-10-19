@@ -1,112 +1,59 @@
 ---
-// One route builds every service and doctor page at the exact address
-// it had on the old Bitrix site (the `url` field in each Markdown file).
-import { getCollection, getEntries, render } from 'astro:content';
+// One route builds every content page at the exact address it had on the
+// old Bitrix site (the `url` field in each Markdown file).
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import BookingPanel from '../components/BookingPanel.astro';
-import DoctorCard from '../components/DoctorCard.astro';
+import ServicePage from '../templates/ServicePage.astro';
+import DoctorPage from '../templates/DoctorPage.astro';
+import ArticlePage from '../templates/ArticlePage.astro';
+import PricesPage from '../templates/PricesPage.astro';
+import ListingPage from '../templates/ListingPage.astro';
+import ContactsPage from '../templates/ContactsPage.astro';
 import { clinics } from '../data/site';
 
 export async function getStaticPaths() {
-  const services = await getCollection('services');
-  const doctors = await getCollection('doctors');
-  const strip = (u: string) => u.replace(/^\/|\/$/g, '');
-  return [
-    ...services.map((entry) => ({ params: { path: strip(entry.data.url) }, props: { kind: 'service', entry } })),
-    ...doctors.map((entry) => ({ params: { path: strip(entry.data.url) }, props: { kind: 'doctor', entry } })),
-  ];
+  const strip = (u: string) => decodeURI(u).replace(/^\/|\/$/g, '');
+  const kinds = ['services', 'doctors', 'articles', 'prices', 'listings', 'pages'] as const;
+  const seen = new Map<string, string>();
+  const paths = [];
+  for (const kind of kinds) {
+    for (const entry of await getCollection(kind)) {
+      const url = entry.data.url;
+      if (url === '/') continue; // the home page has its own file
+      if (seen.has(url)) throw new Error(`Two files claim ${url}: ${seen.get(url)} and ${kind}/${entry.id}`);
+      seen.set(url, `${kind}/${entry.id}`);
+      paths.push({ params: { path: strip(url) }, props: { kind, entry } });
+    }
+  }
+  return paths;
 }
 
-const { kind, entry } = Astro.props as any;
-const { Content } = await render(entry);
+const { kind, entry } = Astro.props as { kind: string; entry: any };
 const d = entry.data;
 
-const doctorList = kind === 'service' && d.doctors.length ? await getEntries(d.doctors) : [];
-
-// Structured data so Yandex understands who and where.
+const site = Astro.site!;
 const jsonLd =
-  kind === 'service'
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'MedicalClinic',
-        name: 'Медюнион',
-        url: new URL(d.url, Astro.site).href,
-        address: d.clinics.map((k: keyof typeof clinics) => ({
-          '@type': 'PostalAddress',
-          addressLocality: clinics[k].city,
-          streetAddress: clinics[k].address,
-          addressCountry: 'RU',
-        })),
-        telephone: clinics[d.clinics[0] as keyof typeof clinics].phone.display,
-      }
-    : {
-        '@context': 'https://schema.org',
-        '@type': 'Physician',
-        name: d.name,
-        medicalSpecialty: d.specialty,
-        url: new URL(d.url, Astro.site).href,
-      };
+  kind === 'doctors'
+    ? { '@context': 'https://schema.org', '@type': 'Physician', name: d.name, medicalSpecialty: d.specialty, url: new URL(d.url, site).href }
+    : kind === 'services'
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'MedicalClinic',
+          name: 'Медюнион',
+          url: new URL(d.url, site).href,
+          address: (d.clinics.length ? d.clinics : ['kurchatova', 'instrumentalnaya']).map((k: keyof typeof clinics) => ({
+            '@type': 'PostalAddress', addressLocality: clinics[k].city, streetAddress: clinics[k].address, addressCountry: 'RU',
+          })),
+        }
+      : null;
 ---
 
 <Base title={d.title} description={d.description} url={d.url}>
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-
-  {kind === 'service' && (
-    <div class="wrap service">
-      <div class="service-head">
-        <h1>{d.h1}</h1>
-        {d.lead && <p class="lead">{d.lead}</p>}
-      </div>
-
-      <div class="service-aside">
-        <BookingPanel prices={d.prices} clinicKeys={d.clinics} checkedOn={d.pricesCheckedOn} />
-      </div>
-
-      <div class="service-main">
-        {doctorList.length > 0 && (
-          <section class="doctors" aria-labelledby="doctors-h">
-            <h2 id="doctors-h">Врачи</h2>
-            <div class="doctor-list">
-              {doctorList.map((doc) => (
-                <DoctorCard
-                  name={doc.data.name}
-                  specialty={doc.data.specialty}
-                  url={doc.data.url}
-                  photo={doc.data.photo}
-                  experienceYears={doc.data.experienceYears}
-                  clinicKeys={doc.data.clinics}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        <div class="prose">
-          <Content />
-        </div>
-
-        {d.faq.length > 0 && (
-          <section class="faq" aria-labelledby="faq-h">
-            <h2 id="faq-h">Частые вопросы</h2>
-            {d.faq.map((item: { q: string; a: string }) => (
-              <details>
-                <summary>{item.q}</summary>
-                <p>{item.a}</p>
-              </details>
-            ))}
-          </section>
-        )}
-      </div>
-    </div>
-  )}
-
-  {kind === 'doctor' && (
-    <div class="wrap doctor-page">
-      <h1>{d.name}</h1>
-      <p class="lead">{d.specialty}</p>
-      <div class="prose">
-        <Content />
-      </div>
-    </div>
-  )}
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  {kind === 'services' && <ServicePage entry={entry} />}
+  {kind === 'doctors' && <DoctorPage entry={entry} />}
+  {kind === 'articles' && <ArticlePage entry={entry} />}
+  {kind === 'prices' && <PricesPage entry={entry} />}
+  {kind === 'listings' && <ListingPage entry={entry} />}
+  {kind === 'pages' && (d.layout ? <ContactsPage entry={entry} /> : <ArticlePage entry={entry} />)}
 </Base>

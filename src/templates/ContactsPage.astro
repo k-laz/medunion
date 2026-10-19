@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { clinics, type ClinicKey } from '../data/site';
+
+interface Props { entry: CollectionEntry<'pages'> }
+const d = Astro.props.entry.data;
+const keys: ClinicKey[] = d.layout === 'clinic' && d.clinic ? [d.clinic] : (Object.keys(clinics) as ClinicKey[]);
+const pageFor: Record<ClinicKey, string> = {
+  kurchatova: '/contacts/klinika-na-kurchatova/',
+  instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
+  kansk: '/contacts/klinika-v-kanske/',
+};
+const mapUrl = (k: ClinicKey) => `https://yandex.ru/maps/?text=${encodeURIComponent(`${clinics[k].city}, ${clinics[k].address}, Медюнион`)}`;
+---
+
+<div class="wrap article">
+  <Breadcrumbs url={d.url} />
+  <h1>{d.h1}</h1>
+  <div class="clinic-grid">
+    {keys.map((k) => {
+      const c = clinics[k];
+      return (
+        <section class="clinic-card">
+          <h2>{d.layout === 'clinic' ? 'Адрес и часы работы' : <a href={pageFor[k]}>{c.name}</a>}</h2>
+          <p class="booking-address">{c.city}, {c.address}</p>
+          {c.district && <p class="muted">{c.district}</p>}
+          <ul class="hours">{c.hours.map((h) => <li>{h}</li>)}</ul>
+          <p><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
+          <p><a href={mapUrl(k)} target="_blank" rel="noopener">Открыть на Яндекс Картах</a></p>
+        </section>
+      );
+    })}
+  </div>
+  <p class="muted">E-mail: <a href="mailto:info-med@medunion.group">info-med@medunion.group</a></p>
+</div>

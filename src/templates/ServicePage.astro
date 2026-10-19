@@ -1,0 +1,59 @@
+---
+import { getCollection, getEntries, render, type CollectionEntry } from 'astro:content';
+import BookingPanel from '../components/BookingPanel.astro';
+import DoctorCard from '../components/DoctorCard.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { childrenOf } from '../lib/content';
+
+interface Props { entry: CollectionEntry<'services'> }
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const doctors = d.doctors.length ? await getEntries(d.doctors) : [];
+const children = childrenOf(d.url, await getCollection('services'));
+---
+
+<div class="wrap service">
+  <div class="service-head">
+    <Breadcrumbs url={d.url} />
+    <h1>{d.h1}</h1>
+    {d.lead && <p class="lead">{d.lead}</p>}
+  </div>
+
+  <div class="service-aside">
+    <BookingPanel prices={d.prices} clinicKeys={d.clinics} checkedOn={d.pricesCheckedOn} />
+  </div>
+
+  <div class="service-main">
+    {children.length > 0 && (
+      <ul class="link-grid">
+        {children.map((c) => <li><a href={c.data.url}>{c.data.h1}</a></li>)}
+      </ul>
+    )}
+
+    {doctors.length > 0 && (
+      <section class="doctors" aria-labelledby="doctors-h">
+        <h2 id="doctors-h">Врачи</h2>
+        <div class="doctor-list">
+          {doctors.map((doc) => (
+            <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <div class="prose"><Content /></div>
+
+    {d.faq.length > 0 && (
+      <section class="faq" aria-labelledby="faq-h">
+        <h2 id="faq-h">Частые вопросы</h2>
+        {d.faq.map((item) => (
+          <details>
+            <summary>{item.q}</summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </section>
+    )}
+  </div>
+</div>

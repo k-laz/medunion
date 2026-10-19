@@ -24,7 +24,12 @@ That turns on Metrica, Bitrix24 call tracking and chat, the messenger widget, an
 |---|---|
 | Phones, addresses, opening hours, integration ids | `src/data/site.ts` |
 | Service pages (text, prices, doctors, FAQ) | `src/content/services/**/*.md` |
-| Doctor pages | `src/content/doctors/*.md` |
+| Doctor pages | `src/content/doctors/**/*.md` |
+| Articles, news, offers | `src/content/articles/**/*.md` |
+| Price pages | `src/content/prices/**/*.md` |
+| Section and list pages (Врачи, Статьи, Цены) | `src/content/listings/**/*.md` |
+| Other pages (company, contacts, patient info) | `src/content/pages/**/*.md` |
+| Redirects from old addresses | `deploy/redirects.csv`, `deploy/redirects.nginx.conf` |
 | Which fields every page needs | `src/content.config.ts` |
 | Page layout (header, footer, SEO tags) | `src/layouts/Base.astro`, `src/components/` |
 | Colors and fonts | `src/styles/global.css` |
@@ -54,7 +59,24 @@ The script reads the live site slowly and changes nothing there. It writes:
 
 Add `--images` to also download the images used inside page content.
 
-The imported files are raw material. They get sorted into `src/content/` (services, doctors, prices, articles) in a separate step.
+The imported files are raw material. Turn them into site pages with:
+
+```bash
+npm run convert
+```
+
+This sorts every page into `src/content/<kind>/imported/` (services, doctors, prices, articles, listings, pages), cleans up titles and descriptions so none repeat, merges duplicate pages, and writes the redirect list for every old address that no longer has its own page:
+
+- `deploy/redirects.csv` old address, new address
+- `deploy/redirects.nginx.conf` the same as nginx 301 rules, to include in the server config
+
+Running it again overwrites everything under `imported/`. Files outside `imported/` (like the hand written gynecology page) are never touched, and a hand written file wins if it uses the same `url`. So once you start editing an imported page by hand, move it out of `imported/` first.
+
+Known gaps after import:
+
+- Price pages only have the first batch of items, because the old site loads the rest with a button. The full price list has to come from the clinic.
+- Images and PDFs still point to `https://medunion.group/upload/`. Download them before the old site is switched off.
+- Doctor photos and the Kansk subdomain are not imported.
 
 ## Integrations kept from the old site
 
