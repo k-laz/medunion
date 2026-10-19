@@ -13,5 +13,10 @@
     "astro": "^7.4.1"
   },
   "type": "module",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "node-html-parser": "9.0.3",
+    "turndown": "7.2.4",
+    "turndown-plugin-gfm": "1.0.2"
+  }
 }

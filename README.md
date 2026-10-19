@@ -39,6 +39,23 @@ That turns on Metrica, Bitrix24 call tracking and chat, the messenger widget, an
 
 If a required field is missing or too long, `npm run build` stops and tells you which file and field.
 
+## Importing content from the old Bitrix site
+
+```bash
+npm run import -- --limit 20   # quick test run first
+npm run import                 # the whole site, about 10 to 20 minutes
+```
+
+The script reads the live site slowly and changes nothing there. It writes:
+
+- `import/pages/` one Markdown file per working page, at the same path as its old URL
+- `import/report.csv` every address found, with status and title
+- `import/broken.csv` addresses that are dead or redirect (these need redirects on the new site)
+
+Add `--images` to also download the images used inside page content.
+
+The imported files are raw material. They get sorted into `src/content/` (services, doctors, prices, articles) in a separate step.
+
 ## Integrations kept from the old site
 
 - **MedFlex** online booking (connected to the clinic's medical system)
