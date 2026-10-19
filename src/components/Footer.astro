@@ -1,0 +1,29 @@
+---
+import { clinics } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-clinics">
+      {Object.values(clinics).map((c) => (
+        <div class="footer-clinic">
+          <p class="footer-clinic-name">{c.name}</p>
+          <p>{c.city}, {c.address}</p>
+          <p><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
+          {c.hours.map((h) => <p class="muted">{h}</p>)}
+        </div>
+      ))}
+    </div>
+    <div class="footer-legal">
+      <nav aria-label="Документы">
+        <a href="/company/licenzii-i-egryul/">Лицензии и ЕГРЮЛ</a>
+        <a href="/pacientam/pravila-predostavleniya-platnyh-medicinskih-uslug/">Правила платных услуг</a>
+        <a href="/pacientam/obsluzhivanie-oms-dms/">ОМС и ДМС</a>
+        <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a>
+      </nav>
+      <p class="warning">Имеются противопоказания. Необходима консультация специалиста.</p>
+      <p class="muted">© {year} Медюнион</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,54 @@
+// Facts used on every page. Change them here once and every page updates.
+
+export const phones = {
+  main: { display: '+7 (391) 220-03-03', tel: '+73912200303' },
+  second: { display: '+7 (391) 227-40-31', tel: '+73912274031' },
+  kansk: { display: '+7 (39161) 4-10-04', tel: '+73916141004' },
+};
+
+export const clinics = {
+  kurchatova: {
+    name: 'Медюнион на Курчатова',
+    city: 'Красноярск',
+    address: 'ул. Курчатова, 17, стр. 15',
+    district: 'Октябрьский район',
+    phone: phones.main,
+    hours: ['Пн–Пт 07:30–21:00', 'Сб 08:00–18:00'],
+  },
+  instrumentalnaya: {
+    name: 'Медюнион на Инструментальной',
+    city: 'Красноярск',
+    address: 'ул. Инструментальная, 12/35',
+    district: '',
+    phone: phones.main,
+    // TODO: confirm with the clinic. The old homepage says this location now opens on Sundays.
+    hours: ['Пн–Пт 07:30–21:00', 'Сб 08:00–18:00'],
+  },
+  kansk: {
+    name: 'Медюнион в Канске',
+    city: 'Канск',
+    address: 'ул. Урицкого, 8',
+    district: '',
+    phone: phones.kansk,
+    hours: ['Уточняйте по телефону'],
+  },
+} as const;
+
+export type ClinicKey = keyof typeof clinics;
+
+// Third-party services embedded in the site. These ids are copied from the
+// current Bitrix site, so bookings, CRM leads and statistics keep flowing to
+// the same accounts after the switch.
+export const integrations = {
+  metrikaId: 108194831,
+  medflexUser: 'f003f028f3bd05d936b335f721f949aa',
+  bitrix24: {
+    callTracker: 'https://cdn-ru.bitrix24.ru/b37371128/crm/tag/call.tracker.js',
+    siteButton: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js',
+  },
+  dailyGrowWidgetId: 'b4486417-63a6-4218-89b2-8db8a6f40779',
+};
+
+// Analytics, call tracking and chat only load on the real site.
+// Preview builds stay silent so test visits don't pollute Metrica.
+export const isProduction = import.meta.env.PUBLIC_SITE_ENV === 'production';

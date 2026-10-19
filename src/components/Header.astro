@@ -1,0 +1,31 @@
+---
+import { phones, integrations } from '../data/site';
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const nav = [
+  { href: '/uslugi/', label: 'Услуги' },
+  { href: '/vrachi/', label: 'Врачи' },
+  { href: '/ceny/', label: 'Цены' },
+  { href: '/contacts/', label: 'Контакты' },
+];
+---
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="/">
+      <span class="brand-name">Медюнион</span>
+      <span class="brand-sub">медицинские центры в Красноярске и Канске</span>
+    </a>
+    <nav class="main-nav" aria-label="Основное меню">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <a class="header-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+      <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-bar" role="navigation" aria-label="Быстрые действия">
+  <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>Позвонить</a>
+  <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться</a>
+</div>

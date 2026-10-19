@@ -1,0 +1,53 @@
+---
+import { clinics, integrations, type ClinicKey } from '../data/site';
+
+interface Props {
+  prices: { name: string; price: number }[];
+  clinicKeys: ClinicKey[];
+  checkedOn?: Date;
+}
+const { prices, clinicKeys, checkedOn } = Astro.props;
+const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const rub = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
+const places = clinicKeys.map((k) => clinics[k]);
+const checkedText = checkedOn?.toLocaleDateString('ru-RU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<aside class="booking" aria-label="Цены и запись">
+  {prices.length > 0 && (
+    <dl class="price-list">
+      {prices.map((p) => (
+        <div class="price-row">
+          <dt class="price-name">{p.name}</dt>
+          <span class="price-dots" aria-hidden="true"></span>
+          <dd class="price-value">{rub(p.price)}</dd>
+        </div>
+      ))}
+    </dl>
+  )}
+
+  <div class="booking-places">
+    {places.map((c) => (
+      <div class="booking-place">
+        <p class="booking-address">{c.city}, {c.address}</p>
+        <p class="muted">{c.hours.join(', ')}</p>
+      </div>
+    ))}
+  </div>
+
+  <div class="booking-actions">
+    <a class="btn btn-primary btn-wide" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+    {places.map((c) => (
+      <a class="btn btn-quiet btn-wide" href={`tel:${c.phone.tel}`}>
+        {c.phone.display}
+      </a>
+    ))}
+  </div>
+
+  {checkedText && <p class="booking-note">Цены на {checkedText}. Не является публичной офертой.</p>}
+</aside>

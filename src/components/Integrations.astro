@@ -1,0 +1,39 @@
+---
+// Metrica, MedFlex booking, Bitrix24 CRM and the messenger widget.
+// MedFlex always loads (booking must work on previews too, for testing).
+// The rest only load on the production build.
+import { integrations, isProduction } from '../data/site';
+const { metrikaId, medflexUser, bitrix24, dailyGrowWidgetId } = integrations;
+---
+
+<!-- Online booking: MedFlex, connected to the clinic's medical system -->
+<div id="medflexRoundWidgetData" data-src={`https://booking.medflex.ru/?user=${medflexUser}&isRoundWidget=true`}></div>
+<script is:inline defer src="https://booking.medflex.ru/components/round/round_widget_button.js"></script>
+
+{isProduction && (
+  <>
+    <script is:inline define:vars={{ metrikaId }}>
+      (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+        m[i].l = 1 * new Date();
+        k = e.createElement(t); a = e.getElementsByTagName(t)[0];
+        k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
+      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=' + metrikaId, 'ym');
+      ym(metrikaId, 'init', { webvisor: true, clickmap: true, accurateTrackBounce: true, trackLinks: true });
+    </script>
+    <noscript><div><img src={`https://mc.yandex.ru/watch/${metrikaId}`} style="position:absolute;left:-9999px" alt="" /></div></noscript>
+
+    <script is:inline define:vars={{ src: bitrix24.callTracker }}>
+      (function (d, u) { var s = d.createElement('script'); s.async = true; s.src = u + '?' + (Date.now() / 60000 | 0); d.head.appendChild(s); })(document, src);
+    </script>
+    <script is:inline define:vars={{ src: bitrix24.siteButton }}>
+      (function (d, u) { var s = d.createElement('script'); s.async = true; s.src = u + '?' + (Date.now() / 60000 | 0); d.head.appendChild(s); })(document, src);
+    </script>
+
+    <script is:inline define:vars={{ dailyGrowWidgetId }}>
+      window.dgSocialWidgetData = window.dgSocialWidgetData || [];
+      window.dgSocialWidgetData.push({ widgetId: dailyGrowWidgetId, apiUrl: 'https://app.daily-grow.com/sw/api/v1' });
+    </script>
+    <script is:inline async src="https://app.daily-grow.com/social-widget/init.js"></script>
+  </>
+)}

@@ -1,0 +1,39 @@
+---
+import { clinics, type ClinicKey } from '../data/site';
+
+interface Props {
+  name: string;
+  specialty: string;
+  url: string;
+  photo?: string;
+  experienceYears?: number;
+  clinicKeys: ClinicKey[];
+}
+const { name, specialty, url, photo, experienceYears, clinicKeys } = Astro.props;
+// Surname + first name initials, skipping anything in brackets, e.g. "(Зубова)".
+const initials = name
+  .replace(/\(.*?\)/g, '')
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((w) => w[0])
+  .join('');
+const years = (n: number) => {
+  const m10 = n % 10, m100 = n % 100;
+  const word = m10 === 1 && m100 !== 11 ? 'год' : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? 'года' : 'лет';
+  return `${n} ${word}`;
+};
+---
+
+<article class="doctor">
+  {photo ? (
+    <img class="doctor-photo" src={photo} alt={name} width="96" height="96" loading="lazy" />
+  ) : (
+    <div class="doctor-photo doctor-initials" aria-hidden="true">{initials}</div>
+  )}
+  <div>
+    <h3 class="doctor-name"><a href={url}>{name}</a></h3>
+    <p class="doctor-meta">{specialty}{experienceYears ? `, стаж ${years(experienceYears)}` : ''}</p>
+    <p class="muted">{clinicKeys.map((k) => clinics[k].address).join('; ')}</p>
+  </div>
+</article>

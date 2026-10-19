@@ -1,0 +1,23 @@
+---
+// Temporary home page for the preview. The real one comes once the
+// rest of the content is migrated.
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+const services = await getCollection('services');
+const doctors = await getCollection('doctors');
+---
+
+<Base
+  title="Медюнион: сеть медицинских центров в Красноярске и Канске"
+  description="Медюнион: МРТ, КТ, рентген, УЗИ и приём врачей в Красноярске на Курчатова и Инструментальной и в Канске на Урицкого. Запись онлайн и по телефону."
+  url="/"
+>
+  <div class="wrap home">
+    <h1>Медюнион</h1>
+    <p class="lead">Черновик нового сайта. Готовые страницы:</p>
+    <ul class="home-list">
+      {services.map((s) => <li><a href={s.data.url}>{s.data.h1}</a></li>)}
+      {doctors.map((d) => <li><a href={d.data.url}>{d.data.name}</a></li>)}
+    </ul>
+  </div>
+</Base>
