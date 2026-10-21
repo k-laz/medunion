@@ -5,6 +5,7 @@ description: "Блокада крестцово-подвздошного соч�
 h1: "Блокада крестцово-подвздошного сочленения (КПС)"
 doctors:
   - "imported/vrachi/vrachi-neyrokhirurgi/pachema-liliya-sergeevna"
+teaser: "Эффективное обезболивание таза и поясницы."
 prices:
   - name: "Блокада крестцово-подвздошного сочленения (с одной стороны)"
     price: 7000

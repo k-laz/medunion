@@ -51,3 +51,9 @@ export type Doctor = CollectionEntry<'doctors'>;
 
 /** Shorter label for link tiles: the city is already obvious on the page. */
 export const tileLabel = (h1: string) => h1.replace(/\s+в Красноярске$/, '');
+
+/** First sentence of a teaser, cut to about 140 characters at a word. */
+export const shortTeaser = (t: string) => {
+  const first = t.match(/^.{20,}?[.!?](\s|$)/)?.[0].trim() ?? t;
+  return first.length <= 140 ? first : first.slice(0, 140).replace(/\s+\S*$/, '') + '…';
+};

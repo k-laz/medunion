@@ -6,6 +6,7 @@ h1: "ЭХО-сердца детям"
 doctors:
   - "imported/vrachi/otdelenie-diagnostiki-/timofeeva-darya-aleksandrovna"
   - "imported/vrachi/vrachi-medyunion/shurdesova-mariya-viktorovna"
+teaser: "Заботливая проверка, маленького сердечка"
 ---
 
 ## Эхокардиография (Эхо-КГ) детям: зачем и почему важно?

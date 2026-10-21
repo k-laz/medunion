@@ -1,8 +1,17 @@
 ---
 url: "/uslugi/centr/kardiologiya/"
 title: "Кардиология | Медюнион"
-description: "Ультразвуковая диагностика, Функциональная диагностика, Кардиология С помощью эхокардиографии можно оценить размеры полостей сердца, толщину стенок"
+description: "Кардиология в Медюнион, Красноярск. Цены, врачи, запись онлайн и по телефону +7 (391) 220-03-03."
 h1: "Кардиология"
+doctors:
+  - "imported/vrachi/otdelenie-diagnostiki-/shinkarenko-elena-vladimirovna"
+  - "imported/vrachi/otdelenie-diagnostiki-/moiseeva-ekaterina-yurevna"
+  - "imported/vrachi/vrachi-medyunion/shtegman-oleg-anatolevich"
+  - "imported/vrachi/vrachi-medyunion/shurdesova-mariya-viktorovna"
+  - "imported/vrachi/vrachi-medyunion/malakhaeva-zhanna-vyacheslavovna"
+related:
+  - "/uslugi/diagnostika/ultrazvukovaya-diagnostika/ekho-serdtsa/"
+  - "/uslugi/diagnostika/funktsionalnaya-diagnostika/kholterovskoe-monitorirovanie/"
 prices:
   - name: "Консультация кардиолога Штегман О.А., ДМН (повторная)"
     price: 3200
@@ -13,65 +22,3 @@ prices:
   - name: "Консультация кардиолога (первичная)"
     price: 2600
 ---
-
-Ультразвуковая диагностика, Функциональная диагностика, Кардиология
-
-С помощью эхокардиографии можно оценить размеры полостей сердца, толщину стенок, сократимость, наличие и размеры рубцов, состояние и функцию клапанов, наличие внутрисердечных тромбов.
-
-Кардиология
-
-Диагностика заболеваний сердца и сосудов на современном высококачественном оборудовании. Лечение и наблюдение у квалифицированного врача кардиолога.
-
-Функциональная диагностика, Кардиология
-
-В нашем центре аппараты для холтеровского мониторирования очень компактные и удобные. Их почти незаметно под одеждой, и, соответственно, незаметны для окружающих.
-
-Врач ультразвуковой диагностики
-
-[Шинкаренко Елена Владимировна](/vrachi/vrachi-medyunion/shinkarenko-elena-vladimirovna/)[
-
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-Врач ультразвуковой диагностики
-
-[Моисеева Екатерина Юрьевна](/vrachi/vrachi-medyunion/moiseeva-ekaterina-yurevna/)[
-
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-Кардиолог, аритмолог
-
-[Штегман Олег Анатольевич](/vrachi/vrachi-medyunion/shtegman-oleg-anatolevich/)[
-
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-Кардиолог, функциональный диагност
-
-[Шурдесова Мария Викторовна](/vrachi/vrachi-medyunion/shurdesova-mariya-viktorovna/)[
-
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-Терапевт, кардиолог
-
-[Малахаева Жанна Вячеславовна](/vrachi/vrachi-medyunion/malakhaeva-zhanna-vyacheslavovna/)[
-
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-01.01.2025 - бессрочно
-
-**
-
-##### Приём кардиолога + ЭХО-сердца (УЗИ) + ЭКГ (электрокардиограмма) всего за 5500 рублей
-
-**
-
-Специальная цена: 5500 рублей

@@ -253,6 +253,9 @@ p { margin: 0 0 1rem; }
   padding: 16px 18px; border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); text-decoration: none; line-height: 1.35;
 }
 .tile svg { flex: none; color: var(--muted); }
+.tile-text { display: grid; gap: 4px; }
+.tile-teaser { font-size: var(--step--1); color: var(--muted); line-height: 1.4; }
+.tile:hover .tile-teaser { color: var(--muted); }
 .tile:hover { background: var(--tint); color: var(--brand); }
 .tile:hover svg { color: var(--brand); }
 @media (max-width: 900px) { .tile-grid, .tile-grid-2 { grid-template-columns: 1fr; } }

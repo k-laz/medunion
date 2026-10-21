@@ -5,7 +5,7 @@ import InfoCard from '../components/InfoCard.astro';
 import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { childrenOf, tileLabel } from '../lib/content';
+import { childrenOf, tileLabel, shortTeaser } from '../lib/content';
 import { integrations, phones } from '../data/site';
 
 interface Props { entry: CollectionEntry<'services'> }
@@ -14,7 +14,9 @@ const d = entry.data;
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const doctors = d.doctors.length ? await getEntries(d.doctors) : [];
-const children = childrenOf(d.url, await getCollection('services'));
+const allServices = await getCollection('services');
+const children = childrenOf(d.url, allServices);
+const related = d.related.map((u) => allServices.find((x) => x.data.url === u)).filter((x) => x !== undefined);
 const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 
 const tabs = [
@@ -46,7 +48,18 @@ const tabs = [
       <h2>Услуги раздела</h2>
       <ul class="tile-grid">
         {children.map((c) => (
-          <li><a class="tile" href={c.data.url}><span>{tileLabel(c.data.h1)}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
+          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{tileLabel(c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {related.length > 0 && (
+    <section class="block">
+      <h2>Смотрите также</h2>
+      <ul class="tile-grid">
+        {related.map((c) => (
+          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{tileLabel(c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
         ))}
       </ul>
     </section>

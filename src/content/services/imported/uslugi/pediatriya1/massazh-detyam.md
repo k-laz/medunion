@@ -6,6 +6,7 @@ h1: "Массаж детям"
 doctors:
   - "imported/vrachi/vrachi-medyunion/goroshko-svetlana-mikhaylovna"
   - "imported/vrachi/vrachi-medyunion/shpakovskiy-stanislav-viktorovich"
+teaser: "Массаж детям - путь к сильному телу и крепкому здоровью"
 ---
 
 ### Массаж Детям

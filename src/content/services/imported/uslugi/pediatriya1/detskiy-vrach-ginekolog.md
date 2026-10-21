@@ -3,6 +3,7 @@ url: "/uslugi/pediatriya1/detskiy-vrach-ginekolog/"
 title: "Детский врач-гинеколог | Медюнион"
 description: "Забота о здоровье юных пациенток Проблемы с которыми обращаются: • месячные приходят когда угодно или их нет совсем; • живот болит так, что из кровати не встать"
 h1: "Детский врач-гинеколог"
+teaser: "Забота о здоровье юных пациенток"
 ---
 
 [![Детский врач-гинеколог](https://medunion.group/upload/iblock/ae0/02mkjgziatd8rv6zwe7ztd6wa1dj9kiu.jpg "Детский врач-гинеколог")](https://medunion.group/upload/iblock/ae0/02mkjgziatd8rv6zwe7ztd6wa1dj9kiu.jpg "Детский врач-гинеколог")

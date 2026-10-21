@@ -5,6 +5,7 @@ description: "Забота о чистой коже и здоровье наши
 h1: "Прием детского дерматовенеролога"
 doctors:
   - "imported/vrachi/vrachi-medyunion/smykova-anastasiya-nikolaevna"
+teaser: "Забота о чистой коже и здоровье наших детей"
 ---
 
 [![Прием детского дерматовенеролога](https://medunion.group/upload/iblock/a73/vrtz0f1456m7mtx6vzcadl8betegszk0.jpg "Прием детского дерматовенеролога")](https://medunion.group/upload/iblock/a73/vrtz0f1456m7mtx6vzcadl8betegszk0.jpg "Прием детского дерматовенеролога")

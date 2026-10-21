@@ -193,6 +193,67 @@ function splitBlocks(body) {
   return { main: lines.slice(0, cut).join('\n'), blocks };
 }
 
+// Widgets the old site renders inside service pages, which Turndown
+// flattens into confusing text:
+//  * sub-page cards: a section label, a link with the page title, a teaser
+//    ("Гинекология / Рекомендуем посещать..." repeated for every card);
+//  * doctor cards: specialty, linked name, "Телефон", phone number;
+//  * promo cards at the end: "01.01.2025 - бессрочно", "**", "5%".
+// They come out of the body. Teasers are kept for the sub-page tiles and
+// the doctors are attached to the page like the "Сотрудники" block.
+function stripCards(md, url) {
+  // Promo cards always close the page: cut from the first validity date.
+  const promo = md.search(/^\s*\d{2}\.\d{2}\.\d{4}\s*[-–]\s*(бессрочно|\d{2}\.\d{2}\.\d{4})\s*$/m);
+  if (promo >= 0) md = md.slice(0, promo);
+  const paras = md.split(/\n\s*\n/);
+  const trimmed = paras.map((x) => x.trim());
+  const cardLink = /^\[([^\]]+)\]\((\/uslugi\/[^)\s]+)\)$/;
+  const doctorLink = /^\[([^\]]+)\]\((\/vrachi\/[^)\s]+)\)\[?$/;
+  const fragment = (t) => !t || /^(\[|\]|\]\(|\[\]\()/.test(t) && !/^\[[^\]]+\]\(/.test(t);
+  const isLabel = (t) => t.length > 0 && t.length < 120 && !/[.!?]$/.test(t) && !t.includes('](') && !/^[#*\-\[]/.test(t);
+  const drop = new Set();
+  const teasers = new Map();
+  const doctors = [];
+  const related = []; // cards pointing to pages in other sections
+  const prevReal = (i) => { for (let j = i - 1; j >= 0; j--) if (!fragment(trimmed[j])) return j; return -1; };
+  trimmed.forEach((t, i) => {
+    let m;
+    if ((m = t.match(cardLink)) && m[2] !== url) {
+      drop.add(i);
+      if (!m[2].startsWith(url) && !related.includes(m[2])) related.push(m[2]);
+      const j = prevReal(i);
+      if (j >= 0 && isLabel(trimmed[j])) drop.add(j);
+      const next = trimmed[i + 1] || '';
+      if (next && !next.includes('](') && !/^[\[#*]/.test(next) && /[.!?»)]$|\s\S+\s\S+\s/.test(next)) {
+        drop.add(i + 1);
+        teasers.set(m[2], { text: decode(next.replace(/\s+/g, ' ')), fromParent: m[2].startsWith(url) });
+      }
+    } else if ((m = t.match(doctorLink))) {
+      drop.add(i);
+      doctors.push(m[2]);
+      const j = prevReal(i);
+      if (j >= 0 && isLabel(trimmed[j])) drop.add(j);
+      for (let k = i + 1; k < Math.min(i + 5, trimmed.length); k++) {
+        if (fragment(trimmed[k]) || trimmed[k] === 'Телефон' || /^\[[^\]]*\]\(tel:/.test(trimmed[k])) drop.add(k);
+        else break;
+      }
+    } else if (/^\*{2}$/.test(t)) drop.add(i);
+  });
+  return { text: paras.filter((_, i) => !drop.has(i)).join('\n\n'), teasers, doctors, related };
+}
+
+// Words that say what a price is about: abbreviations (КТ, МРТ, ФГС) and
+// 5-letter stems of longer words, minus generic ones.
+const GENERIC_STEMS = new Set(['консу', 'прием', 'приём', 'врача', 'перви', 'повто', 'красн', 'медюн', 'детск', 'взрос', 'одной', 'сторо', 'обсле', 'компл', 'допол', 'иссле', 'услуг', 'лечен', 'центр', 'отдел', 'медиц']);
+function topicKeys(s = '') {
+  const out = new Set();
+  for (const m of s.matchAll(/[А-ЯЁA-Z]{2,}(?![а-яё])/g)) out.add(m[0].toLowerCase());
+  for (const w of s.toLowerCase().replace(/ё/g, 'е').split(/[^а-яa-z]+/)) {
+    if (w.length >= 4 && !GENERIC_STEMS.has(w.slice(0, 5))) out.add(w.slice(0, 5));
+  }
+  return out;
+}
+
 function cleanBody(md) {
   const internalLinkOnly = /^\s*(?:-\s*)?\[[^\]]*\]\((\/[^)]*)\)\s*(?:—|-)?\s*$/;
   const emptyLinkBits = /^\s*(\[|\]\([^)]*\)|\[\]\([^)]*\)(\[)?|\\?\[)\s*$/;
@@ -477,14 +538,43 @@ async function main() {
     bump('doctors');
   }
 
+  // Teasers from section cards, keyed by the sub-page they describe.
+  const teasers = new Map();
+  for (const [url, { body }] of pages) {
+    if (classify(url) !== 'service') continue;
+    for (const [child, t] of stripCards(splitBlocks(body).main, url).teasers) {
+      // Prefer the teaser from the page's own parent section
+      if (!teasers.has(child) || (t.fromParent && !teasers.get(child).fromParent)) teasers.set(child, t);
+    }
+  }
+  const serviceUrls = [...pages.keys()].filter((u) => classify(u) === 'service');
+  const servicePrices = (url, h1, block) => {
+    let items = parsePriceBlock(block);
+    // The old site shows 1.5 Tesla prices on its open-type MRI pages; keep them off those pages.
+    if (url.startsWith('/uslugi/diagnostika/mrt/')) items = items.filter((p) => !/1[,.]\s?5\s?(Т|Тл|Тесла)/i.test(p.name));
+    // Section pages on the old site often show a stock price list (gastroscopy,
+    // proctology...) that has nothing to do with the section. Keep only prices
+    // that mention the section or one of its sub-pages.
+    const children = serviceUrls.filter((u) => u !== url && u.startsWith(url));
+    if (children.length) {
+      const ctx = new Set([...topicKeys(h1), ...children.flatMap((u) => [...topicKeys(decode(pages.get(u).fm.h1 || ''))])]);
+      const norm = (t) => t.toLowerCase().replace(/ё/g, 'е');
+      const before = items.length;
+      items = items.filter((p) => [...ctx].some((k) => norm(p.name).includes(k)));
+      if (items.length < before) console.log(`  prices on ${url}: kept ${items.length} of ${before}`);
+    }
+    return items;
+  };
+
   for (const [url, { fm, body }] of pages) {
     const kind = classify(url);
     if (manual.has(url)) { live.add(url); continue; }
     const h1 = decode(fm.h1);
     if (kind === 'service') {
       const { main, blocks } = splitBlocks(body);
-      const text = cleanBody(main);
-      for (const doc of links(blocks['Сотрудники'], '/vrachi/')) {
+      const cards = stripCards(main, url);
+      const text = cleanBody(cards.text);
+      for (const doc of [...links(blocks['Сотрудники'], '/vrachi/'), ...cards.doctors]) {
         const slug = segs(doc).at(-1);
         if (!serviceDoctors.has(url)) serviceDoctors.set(url, new Set());
         serviceDoctors.get(url).add(slug);
@@ -495,8 +585,9 @@ async function main() {
         description: makeDescription({ description: fm.description, url, h1, body: text }),
         h1: h1 || decode(fm.title),
         doctors,
-        // The old site shows 1.5 Tesla prices on its open-type MRI pages; keep them off those pages.
-        prices: parsePriceBlock(blocks['Цены']).filter((p) => !(url.startsWith('/uslugi/diagnostika/mrt/') && /1[,.]\s?5\s?(Т|Тл|Тесла)/i.test(p.name))),
+        teaser: teasers.get(url)?.text,
+        related: cards.related,
+        prices: servicePrices(url, h1, blocks['Цены']),
       }, text);
       live.add(url);
       bump('services');
@@ -507,6 +598,7 @@ async function main() {
       let text = cleanBody(main);
       // Articles start with their category name and a teaser line, drop the category line.
       text = text.replace(/^[А-ЯЁ][а-яё ]+\n\n/, '');
+      text = text.split(/\n\n/).filter((p) => p.trim() !== h1).join('\n\n');
       await write('articles', url, {
         title: makeTitle({ title: fm.title, h1, url }),
         description: makeDescription({ description: fm.description, url, h1, body: text }),

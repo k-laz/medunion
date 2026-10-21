@@ -8,6 +8,7 @@ doctors:
   - "imported/vrachi/vrachi-medyunion/kozulina-ekaterina-aleksandrovna"
   - "imported/vrachi/vrachi-medyunion/razumova-irina-vladimirovna"
   - "imported/vrachi/vrachi-medyunion/zaytseva-zhanna-gennadevna"
+teaser: "Неврология — медицинская наука, занимающаяся изучением функционирования нервной системы"
 ---
 
 Головные боли, головокружение, тики, онемение, необычная слабость, изменение походки или вопросы по двигательному развитию — с такими жалобами ребёнка можно показать детскому неврологу.

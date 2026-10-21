@@ -5,6 +5,7 @@ description: "Клиника «Медюнион» предлагает эффе�
 h1: "Блокада затылочных нервов"
 doctors:
   - "imported/vrachi/vrachi-neyrokhirurgi/pachema-liliya-sergeevna"
+teaser: "Лечение головной боли и невралгий в области затылка с помощью инъекционного введения лекарственных препаратов."
 prices:
   - name: "Блокада затылочных нервов"
     price: 3600

@@ -33,6 +33,10 @@ const services = defineCollection({
     ...seo,
     h1: z.string(),
     lead: z.string().optional(),
+    // One line shown on this page's tile in its parent section
+    teaser: z.string().optional(),
+    // Addresses of pages in other sections worth linking from this one
+    related: z.array(z.string()).default([]),
     prices: z.array(price).default([]),
     pricesCheckedOn: z.coerce.date().optional(),
     // Where the service is offered. Empty = both Krasnoyarsk clinics are shown.
