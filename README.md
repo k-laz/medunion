@@ -75,8 +75,15 @@ Running it again overwrites everything under `imported/`. Files outside `importe
 Known gaps after import:
 
 - Price pages only have the first batch of items, because the old site loads the rest with a button. The full price list has to come from the clinic.
-- Images and PDFs still point to `https://medunion.group/upload/`. Download them before the old site is switched off.
-- Doctor photos and the Kansk subdomain are not imported.
+- Images and documents (licenses, OMS documents) still load from `https://medunion.group/upload/`. Before the old site is switched off, run this on a computer that can open medunion.group:
+
+  ```bash
+  npm run files
+  ```
+
+  It saves every file the pages use into `public/upload/` and points the pages at the local copies. Running `npm run convert` again afterwards keeps the local copies.
+- The old site has no doctor photos, so there were none to import. Put photos in `public/doctors/` and add `photo: /doctors/name.jpg` to the doctor's file.
+- The Kansk subdomain is not imported.
 
 ## Integrations kept from the old site
 

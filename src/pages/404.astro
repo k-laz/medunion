@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import SearchBox from '../components/SearchBox.astro';
+import { phones } from '../data/site';
+---
+
+<Base title="Страница не найдена | Медюнион" description="Такой страницы нет на сайте Медюнион. Найдите услугу или врача через поиск или позвоните нам." url="/404/" noindex>
+  <section class="page-head">
+    <div class="wrap page-head-inner">
+      <h1>Страница не найдена</h1>
+      <p class="lead">Возможно, адрес изменился. Найдите нужную услугу или врача через поиск, или позвоните: <a href={`tel:${phones.main.tel}`}>{phones.main.display}</a>.</p>
+      <SearchBox id="q-404" large />
+      <nav class="chips" aria-label="Разделы">
+        <a class="chip" href="/">Главная</a>
+        <a class="chip" href="/uslugi/">Услуги</a>
+        <a class="chip" href="/vrachi/">Врачи</a>
+        <a class="chip" href="/ceny/">Цены</a>
+        <a class="chip" href="/contacts/">Клиники</a>
+      </nav>
+    </div>
+  </section>
+</Base>

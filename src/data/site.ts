@@ -36,6 +36,15 @@ export const clinics = {
 
 export type ClinicKey = keyof typeof clinics;
 
+// Legal details shown in the footer. Copied from the "Сведения о медицинской
+// организации" page of the old site; check against the current license.
+export const legal = {
+  name: 'ООО «МЕДЮНИОН»',
+  inn: '2464239120',
+  license: 'Лицензия № ЛО-41-01019-24/00359549 от 02.09.2019, выдана Министерством здравоохранения Красноярского края',
+  address: '660062, г. Красноярск, ул. Курчатова, 17, стр. 15',
+};
+
 // Third-party services embedded in the site. These ids are copied from the
 // current Bitrix site, so bookings, CRM leads and statistics keep flowing to
 // the same accounts after the switch.

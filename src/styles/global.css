@@ -265,7 +265,7 @@ p { margin: 0 0 1rem; }
 .page-head-inner { padding-top: 28px; padding-bottom: 44px; }
 .page-head-inner.has-aside { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: start; }
 .page-head-compact .page-head-inner { padding-top: 24px; padding-bottom: 32px; }
-.page-head-compact > .wrap { padding-top: 18px; padding-bottom: 2px; }
+.page-head-crumbs > .wrap { padding-top: 18px; padding-bottom: 2px; }
 .page-head h1 { max-width: 24ch; }
 .page-head .lead { margin-bottom: 24px; }
 .page-head-main > .cta-row { margin-top: 24px; }

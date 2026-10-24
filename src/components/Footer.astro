@@ -1,5 +1,5 @@
 ---
-import { clinics, phones, integrations } from '../data/site';
+import { clinics, phones, integrations, legal } from '../data/site';
 const year = new Date().getFullYear();
 const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 const pages: Record<string, string> = {
@@ -53,6 +53,7 @@ const pages: Record<string, string> = {
         <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a>
       </nav>
       <p class="warning">Имеются противопоказания. Необходима консультация специалиста.</p>
+      <p class="muted">{legal.name}, ИНН {legal.inn}. {legal.license}. <a href="/company/svedeniya-o-medicinskoj-organizacii/">Сведения о медицинской организации</a></p>
       <p class="muted">© {year} Медюнион</p>
     </div>
   </div>

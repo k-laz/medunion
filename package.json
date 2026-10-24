@@ -6,7 +6,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "import": "node scripts/import-bitrix.mjs",
-    "convert": "node scripts/convert-import.mjs"
+    "convert": "node scripts/convert-import.mjs",
+    "files": "node scripts/download-files.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

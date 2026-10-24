@@ -273,17 +273,23 @@ function topicKeys(s = '') {
   return out;
 }
 
+const safeDecode = (u) => { try { return decodeURIComponent(u); } catch { return u; } };
+
 function cleanBody(md) {
   const internalLinkOnly = /^\s*(?:-\s*)?\[[^\]]*\]\((\/[^)]*)\)\s*(?:—|-)?\s*$/;
   const emptyLinkBits = /^\s*(\[|\]\([^)]*\)|\[\]\([^)]*\)(\[)?|\\?\[)\s*$/;
   const out = [];
   md = md.replace(/\*\*([^*\n]+?)\s*\n\s*\*\*/g, '**$1**'); // bold that wrapped a line break
+  // Document lists: "[Лицензия](/upload/x.pdf "…")", then the size, then an empty icon link.
+  // Keep them as a list of links with type and size; the link-only cleanup below would drop them.
+  md = md.replace(/^\s*\[([^\]]+)\]\((\/upload\/[^)\s]+\.(pdf|docx?|xlsx?|rtf|zip))(?:\s+"[^"]*")?\)\s*\n(?:\s*\n)*\s*([\d,.]+\s*[КМ]б)?\s*$/gim,
+    (_, name, href, ext, size) => `- [${name}](${href}) (${ext.toUpperCase()}${size ? ', ' + size.trim() : ''})`);
   for (const raw of md.split('\n')) {
     const s = raw.trim();
     if (DROP_LINES.some((re) => re.test(s))) continue;
     if (emptyLinkBits.test(s)) continue;
     if (/^\[\]\([^)]*\)/.test(s)) continue;
-    if (internalLinkOnly.test(s)) continue;
+    if (internalLinkOnly.test(s) && !/\]\(\/upload\//.test(s)) continue;
     if (/^#{1,6}\s*$/.test(s)) continue; // empty heading
     // Two trailing spaces were a <br> on the old site: keep it as a Markdown line break.
     out.push(/\S {2,}$/.test(raw) && !/^#/.test(s) ? raw.replace(/\s+$/, '') + '\\' : raw.replace(/\s+$/, ''));
@@ -291,7 +297,9 @@ function cleanBody(md) {
   return out
     .join('\n')
     .replace(/\\\n(\s*\n|\s*$)/g, '\n$1') // no line break before a blank line or at the end
-    .replace(/\]\(\/upload\//g, `](${OLD_SITE}/upload/`) // files and images still live on the old server for now
+    // Files: use the local copy in public/upload once `npm run files` has fetched it,
+    // otherwise keep loading it from the old server.
+    .replace(/\]\((\/upload\/[^)\s]+)/g, (all, path) => (existsSync(join('public', safeDecode(path))) ? all : `](${OLD_SITE}${path}`))
     .replace(/\n{3,}/g, '\n\n')
     .trim()
     // The same paragraph twice (a teaser above the full text): keep the first.
@@ -398,7 +406,11 @@ async function write(collection, url, data, body = '') {
   pending.push({ collection, url, data, body });
 }
 async function flush() {
-  for (const { collection, url, data, body } of pending) {
+  for (const { collection, url, data, body: raw } of pending) {
+    // The page title repeated as the first line of text
+    const norm = (t) => t.replace(/[*#\s]/g, '').toLowerCase();
+    const lines = raw.trimStart().split('\n');
+    const body = data.h1 && norm(lines[0] || '') === norm(data.h1) ? lines.slice(1).join('\n').trim() : raw;
     const rel = url.replace(/^\/|\/$/g, '') || 'index';
     const file = join(CONTENT, collection, 'imported', `${decodeURIComponent(rel)}.md`);
     await mkdir(dirname(file), { recursive: true });

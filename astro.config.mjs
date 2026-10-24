@@ -11,5 +11,5 @@ export default defineConfig({
   // Same URLs = Yandex keeps the rankings it already gave these pages.
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [sitemap()],
+  integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') })],
 });
