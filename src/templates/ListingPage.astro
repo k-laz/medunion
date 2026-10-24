@@ -28,13 +28,15 @@ if (d.of === 'doctors') {
   const kind = d.of === 'news' ? 'news' : d.of === 'sales' ? 'sale' : 'article';
   const items = (await getCollection('articles')).filter((a) => a.data.kind === kind);
   const listed = d.of === 'articles' ? under(items) : items;
+  // News: newest first. Everything else alphabetical.
+  if (d.of === 'news') listed.sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0));
   links = listed.map((a) => ({ url: a.data.url, label: a.data.h1 }));
   if (d.of === 'articles') {
     const cats = under(await getCollection('listings')).filter((l) => l.data.of === 'articles');
     groups = cats.map((c) => ({ url: c.data.url, label: c.data.h1 })).sort((a, b) => a.label.localeCompare(b.label, 'ru'));
   }
 }
-links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 ---
 
 <PageHead url={d.url} h1={d.h1} compact>

@@ -52,7 +52,7 @@ const doctors = (await getCollection('doctors'))
 
 const articles = await getCollection('articles');
 const sales = articles.filter((a) => a.data.kind === 'sale').slice(0, 4);
-const news = articles.filter((a) => a.data.kind === 'news').slice(0, 4);
+const news = articles.filter((a) => a.data.kind === 'news').sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)).slice(0, 4);
 
 const clinicPage: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',

@@ -47,9 +47,9 @@ category: "lechebnoe-delo"
 
 #### В медицинских центрах Медюнион вы можете прийти на приём к опытным врачам-пульмонологам:
 
-- [Еганова Т.А.](https://medunion.group/vrachi/vrachi-medyunion/eganova-tatyana-aleksandrovna/) - стаж 11 лет, основное место работы ГБУЗ Красноярская межрайонная клиническая больница № 20 имени И.С. Берзона
-- [Красковская Н.Л.](https://medunion.group/vrachi/vrachi-medyunion/kraskovskaya-natalya-leonidovna/)\- стаж более 40 лет, врач высшей категории
-- [Лихачева Л.В.](https://medunion.group/vrachi/vrachi-medyunion/likhacheva-lyudmila-vladimirovna/) - стаж более 40 лет, врач высшей категории
-- [Мищук Е.В.](https://medunion.group/vrachi/vrachi-medyunion/mishchuk-elena-viktorovna-/)\- детский пульмонолог, аллерголог-иммунолог, стаж 17 лет
+- [Еганова Т.А.](/vrachi/vrachi-medyunion/) - стаж 11 лет, основное место работы ГБУЗ Красноярская межрайонная клиническая больница № 20 имени И.С. Берзона
+- [Красковская Н.Л.](/vrachi/vrachi-medyunion/kraskovskaya-natalya-leonidovna/)\- стаж более 40 лет, врач высшей категории
+- [Лихачева Л.В.](/vrachi/vrachi-medyunion/) - стаж более 40 лет, врач высшей категории
+- [Мищук Е.В.](/vrachi/vrachi-medyunion/mishchuk-elena-viktorovna-/)\- детский пульмонолог, аллерголог-иммунолог, стаж 17 лет
 
 **Запись на приём по телефону 8 (391) 200-03-03**

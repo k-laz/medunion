@@ -93,6 +93,9 @@ const decode = (s = '') =>
 
 const plain = (md) =>
   md
+    .replace(/^[\d  ]+\s*₽\s*$/gm, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/^#+\s*/gm, '')
@@ -145,9 +148,11 @@ function makeTitle({ title, h1, url, city = 'Красноярске' }) {
   return cutAtWord(t, 80);
 }
 
-function makeDescription({ description, url, h1, body }) {
+function makeDescription({ description, url, h1, body, mustMention }) {
   let d = decode(description);
-  const bad = !d || d.length < 50 || GENERIC_DESCRIPTIONS.some((re) => re.test(d)) || (isLor(d) && !isLor(url + ' ' + h1));
+  if (/<\/?[a-z]|<[a-z]/i.test(d)) d = ''; // HTML pasted into the description field
+  const bad = !d || d.length < 50 || GENERIC_DESCRIPTIONS.some((re) => re.test(d)) || (isLor(d) && !isLor(url + ' ' + h1))
+    || (mustMention && !d.includes(mustMention)); // e.g. a doctor page describing someone else
   if (bad) {
     const text = plain(body);
     d = text.length >= 60 ? firstSentences(text, 160) : '';
@@ -176,21 +181,35 @@ const DROP_LINES = [
 ];
 
 function splitBlocks(body) {
-  // Returns { main, blocks: { label: text } } cutting at the first trailing block label.
+  // Returns { main, blocks: { label: text } }. Everything after the first
+  // block label belongs to blocks, with one exception: on many pages the old
+  // site prints the price list ("Цены") *before* the page's description, so
+  // once the price items end, the text that follows goes back to main.
   const lines = body.split('\n');
-  let cut = lines.length;
   const blocks = {};
+  const main = [];
+  const priceLine = (t) => !t || /^\[[^\]]+\]\(\/ceny\/[^)]*\)$/.test(t) || /^[\d  ]+\s*₽?$/.test(t);
+  let label = null; // current block, or null while in main text
+  const morePrices = (i) => {
+    for (let j = i + 1; j < lines.length; j++) {
+      const t = lines[j].trim();
+      if (BLOCK_LABELS.includes(t)) return false;
+      if (/^\[[^\]]+\]\(\/ceny\//.test(t)) return true;
+    }
+    return false;
+  };
   for (let i = 0; i < lines.length; i++) {
     const s = lines[i].trim();
-    if (BLOCK_LABELS.includes(s) && i > 0) {
-      if (cut === lines.length) cut = i;
-      let j = i + 1;
-      const chunk = [];
-      while (j < lines.length && !BLOCK_LABELS.includes(lines[j].trim())) chunk.push(lines[j++]);
-      blocks[s] = (blocks[s] || '') + chunk.join('\n');
-    }
+    // A label before any text is the page's category ("Новости"), not a block.
+    const started = lines.slice(0, i).some((l) => l.trim());
+    if (BLOCK_LABELS.includes(s) && started) { label = s; blocks[s] = blocks[s] || ''; continue; }
+    // Price items are over when no more price links follow before the next block: back to the text.
+    // (A line between price items is an item's description and stays in the block.)
+    if (label === 'Цены' && !priceLine(s) && !morePrices(i)) label = null;
+    if (label) blocks[label] += lines[i] + '\n';
+    else main.push(lines[i]);
   }
-  return { main: lines.slice(0, cut).join('\n'), blocks };
+  return { main: main.join('\n'), blocks };
 }
 
 // Widgets the old site renders inside service pages, which Turndown
@@ -258,19 +277,34 @@ function cleanBody(md) {
   const internalLinkOnly = /^\s*(?:-\s*)?\[[^\]]*\]\((\/[^)]*)\)\s*(?:—|-)?\s*$/;
   const emptyLinkBits = /^\s*(\[|\]\([^)]*\)|\[\]\([^)]*\)(\[)?|\\?\[)\s*$/;
   const out = [];
+  md = md.replace(/\*\*([^*\n]+?)\s*\n\s*\*\*/g, '**$1**'); // bold that wrapped a line break
   for (const raw of md.split('\n')) {
     const s = raw.trim();
     if (DROP_LINES.some((re) => re.test(s))) continue;
     if (emptyLinkBits.test(s)) continue;
     if (/^\[\]\([^)]*\)/.test(s)) continue;
     if (internalLinkOnly.test(s)) continue;
-    out.push(raw.replace(/\s+$/, ''));
+    if (/^#{1,6}\s*$/.test(s)) continue; // empty heading
+    // Two trailing spaces were a <br> on the old site: keep it as a Markdown line break.
+    out.push(/\S {2,}$/.test(raw) && !/^#/.test(s) ? raw.replace(/\s+$/, '') + '\\' : raw.replace(/\s+$/, ''));
   }
   return out
     .join('\n')
+    .replace(/\\\n(\s*\n|\s*$)/g, '\n$1') // no line break before a blank line or at the end
     .replace(/\]\(\/upload\//g, `](${OLD_SITE}/upload/`) // files and images still live on the old server for now
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .trim()
+    // The same paragraph twice (a teaser above the full text): keep the first.
+    .split('\n\n')
+    .filter(function (p) {
+      const key = p.replace(/\s+/g, ' ').trim();
+      if (key.length < 60) return true;
+      this.seen ??= new Set();
+      if (this.seen.has(key)) return false;
+      this.seen.add(key);
+      return true;
+    }, {})
+    .join('\n\n');
 }
 
 function parsePriceBlock(text = '') {
@@ -318,6 +352,7 @@ function parseDoctor(body) {
       label = null; // the list ended, what follows is the bio
     }
     if (label) { fields[label].push(decode(s.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1'))); continue; }
+    if (/^[\d  ]+\s*₽$/.test(s)) continue; // stray price from a price widget
     bio.push(s);
   }
   const years = Number((fields['Стаж работы по специальности'] || []).join(' ').match(/\d+/)?.[0] || 0);
@@ -369,6 +404,40 @@ async function flush() {
     await mkdir(dirname(file), { recursive: true });
     await writeFile(file, frontmatter({ url, ...data }) + (body ? `\n${body}\n` : ''));
   }
+}
+
+// Links inside page text: make links to the old domain relative, send links
+// to retired addresses straight to their new page (no redirect hop), and
+// unlink addresses that exist nowhere (leftovers from older site versions).
+function fixLinks(redirects, live) {
+  const dec = (u) => { try { return decodeURI(u); } catch { return u; } };
+  const moved = new Map([...redirects].map(([f, t]) => [dec(f), t]));
+  const liveDec = new Set([...live].map(dec));
+  let changed = 0;
+  const fix = (url) => {
+    const m = url.match(/^(?:https?:\/\/(?:www\.)?medunion\.group)?(\/[^?#\s]*)([?#].*)?$/);
+    if (!m) return url; // external site, mail, phone
+    let path = m[1];
+    if (path.startsWith('/upload/')) return url; // files: handled by the import's --images step
+    if (!/\.\w+$/.test(path) && !path.endsWith('/')) path += '/';
+    const d = dec(path);
+    if (liveDec.has(d)) return path + (m[2] || '');
+    if (moved.has(d)) return moved.get(d) + (m[2] || '');
+    return null; // nowhere to go
+  };
+  for (const p of pending) {
+    const before = p.body;
+    p.body = p.body
+      // images that point nowhere are dropped
+      .replace(/!\[[^\]]*\]\(([^)\s]+)[^)]*\)/g, (all, u) => (fix(u) === null ? '' : all))
+      .replace(/(?<!!)\[([^\]]*)\]\(([^)\s]+)([^)]*)\)/g, (all, text, u, rest) => {
+        const to = fix(u);
+        if (to === null) return text;
+        return to === u ? all : `[${text}](${to}${rest})`;
+      });
+    if (p.body !== before) changed++;
+  }
+  return changed;
 }
 
 // Which copy to keep when the old site published the same page twice.
@@ -522,7 +591,7 @@ async function main() {
     const name = decode(fm.h1);
     const title = cutAtWord(`${name}, ${(d.specialty || 'врач').toLowerCase()} в ${city}`, 80);
     const description = makeDescription({
-      description: fm.description, url, h1: name,
+      description: fm.description, url, h1: name, mustMention: name.split(/\s+/)[0],
       body: `${name}, ${(d.specialty || 'врач').toLowerCase()}${d.qualification ? ', ' + d.qualification.toLowerCase() : ''}${d.experienceYears ? ', стаж ' + d.experienceYears + ' лет' : ''}. ${d.bio}`,
     });
     await write('doctors', url, {
@@ -599,12 +668,24 @@ async function main() {
       // Articles start with their category name and a teaser line, drop the category line.
       text = text.replace(/^[А-ЯЁ][а-яё ]+\n\n/, '');
       text = text.split(/\n\n/).filter((p) => p.trim() !== h1).join('\n\n');
+      // Offers start with the discount ("5%") and how long it runs ("01.01.2025 - бессрочно").
+      let discount, period, date;
+      if (type === 'news') {
+        text = text.replace(/^\s*(\d{2})\.(\d{2})\.(\d{4})\s*$/m, (_, d, m, y) => { date = `${y}-${m}-${d}`; return ''; }).trim();
+      }
+      if (type === 'sale') {
+        text = text.replace(/^\s*(\d{1,2}\s?%)\s*$/m, (_, d) => { discount = d.replace(/\s/g, ''); return ''; });
+        text = text.replace(/^\s*(\d{2}\.\d{2}\.\d{2,4})\s*[-–]\s*(бессрочно|\d{2}\.\d{2}\.\d{2,4})\s*$/m, (_, a, b) => { period = b === 'бессрочно' ? `с ${a}, бессрочно` : `с ${a} по ${b}`; return ''; });
+        const plainH1 = h1.toLowerCase().replace(/[^а-яёa-z0-9]/g, '');
+        text = text.split(/\n\n/).filter((p) => p.replace(/\*/g, '').toLowerCase().replace(/[^а-яёa-z0-9]/g, '') !== plainH1).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+      }
       await write('articles', url, {
         title: makeTitle({ title: fm.title, h1, url }),
         description: makeDescription({ description: fm.description, url, h1, body: text }),
         h1: h1 || decode(fm.title),
         kind: type,
         category: type === 'article' ? s[1] : undefined,
+        discount, period, date,
       }, text);
       live.add(url);
       bump('articles');
@@ -703,6 +784,7 @@ async function main() {
     else redirects.set(from, t);
   }
 
+  const relinked = fixLinks(redirects, live);
   const retitled = makeTitlesUnique();
   const redescribed = makeDescriptionsUnique();
   await flush();
@@ -718,6 +800,7 @@ async function main() {
 
   console.log('Written:', counts);
   console.log(`Duplicate pages merged: ${dupes}. Titles made unique: ${retitled}. Descriptions made unique: ${redescribed}.`);
+  console.log(`Pages with links fixed: ${relinked}`);
   console.log(`Redirects: ${redirects.size} (deploy/redirects.csv, deploy/redirects.nginx.conf)`);
   console.log(`Kept as hand-written (not overwritten): ${[...manual].join(', ') || 'none'}`);
 }

@@ -69,6 +69,9 @@ const articles = defineCollection({
     ...seo,
     h1: z.string(),
     kind: z.enum(['article', 'news', 'sale']),
+    discount: z.string().optional(), // offers: "5%"
+    period: z.string().optional(), // offers: "с 01.01.2025, бессрочно"
+    date: z.coerce.date().optional(), // news
     category: z.string().optional(),
   }),
 });

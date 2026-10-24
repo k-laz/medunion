@@ -430,3 +430,7 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
   html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }
 }
+
+/* Offers */
+.offer-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 4px 0 0; color: var(--muted); }
+.offer-badge { padding: 4px 12px; border-radius: 999px; background: var(--brand); color: #fff; font-weight: 600; }

@@ -10,7 +10,17 @@ const { Content } = await render(entry);
 const isArticle = 'kind' in d;
 ---
 
-<PageHead url={d.url} h1={d.h1} compact />
+<PageHead url={d.url} h1={d.h1} compact>
+  {'date' in d && d.date && (
+    <p class="offer-meta"><time datetime={d.date.toISOString().slice(0, 10)}>{d.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time></p>
+  )}
+  {'discount' in d && (d.discount || d.period) && (
+    <p class="offer-meta">
+      {d.discount && <span class="offer-badge">−{d.discount}</span>}
+      {d.period && <span>Действует {d.period}</span>}
+    </p>
+  )}
+</PageHead>
 
 <div class="wrap page-body">
   <article class="prose block">

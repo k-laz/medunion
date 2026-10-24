@@ -1,7 +1,7 @@
 ---
 url: "/pacientam/obsluzhivanie-oms-dms/perechen-strahovyh-kompanij-dms/"
 title: "Перечень страховых компаний ОМС | Медюнион"
-description: "<table<tbody<tr<td colspan=\"2\"<br</td<td<br</td</tr<tr<td colspan=\"2\"<p</p<pФилиал ООО «СК «Ингосстрах-М» в г."
+description: "Филиал ООО «СК «Ингосстрах-М» в г.Красноярск — Медика-Восток Полное наименование: Филиал Общества с ограниченной ответственностью «Страховая компания"
 h1: "Перечень страховых компаний ОМС"
 ---
 
