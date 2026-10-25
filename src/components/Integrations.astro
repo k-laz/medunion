@@ -3,7 +3,7 @@
 // MedFlex always loads (booking must work on previews too, for testing).
 // The rest only load on the production build.
 import { integrations, isProduction } from '../data/site';
-const { metrikaId, medflexUser, bitrix24, dailyGrowWidgetId } = integrations;
+const { metrikaId, medflexUser, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
 ---
 
 <!-- Online booking: MedFlex, connected to the clinic's medical system -->
@@ -35,5 +35,18 @@ const { metrikaId, medflexUser, bitrix24, dailyGrowWidgetId } = integrations;
       window.dgSocialWidgetData.push({ widgetId: dailyGrowWidgetId, apiUrl: 'https://app.daily-grow.com/sw/api/v1' });
     </script>
     <script is:inline async src="https://app.daily-grow.com/social-widget/init.js"></script>
+
+    <!-- Top.Mail.Ru counter (VK ads) -->
+    <script is:inline define:vars={{ topMailRuId }}>
+      var _tmr = window._tmr || (window._tmr = []);
+      _tmr.push({ id: topMailRuId, type: 'pageView', start: new Date().getTime() });
+      (function (d, id) {
+        if (d.getElementById(id)) return;
+        var ts = d.createElement('script'); ts.async = true; ts.id = id;
+        ts.src = 'https://top-fwz1.mail.ru/js/code.js';
+        d.head.appendChild(ts);
+      })(document, 'tmr-code');
+    </script>
+    <noscript><div><img src={`https://top-fwz1.mail.ru/counter?id=${topMailRuId};js=na`} style="position:absolute;left:-9999px" alt="" /></div></noscript>
   </>
 )}

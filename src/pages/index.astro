@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import SearchBox from '../components/SearchBox.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { clinics, integrations, phones } from '../data/site';
+import { clinics, integrations, phones, bookingPage } from '../data/site';
 import { childrenOf } from '../lib/content';
 
 const services = await getCollection('services');
@@ -59,7 +59,7 @@ const clinicPage: Record<string, string> = {
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
   kansk: '/contacts/klinika-v-kanske/',
 };
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 ---
 
@@ -80,7 +80,7 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
       </div>
       <aside class="hero-card">
         <p class="hero-card-title">Запись на приём</p>
-        <a class="btn btn-primary btn-wide" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+        <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться онлайн</a>
         <a class="hero-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
         <p class="muted">Красноярск, обе клиники</p>
         <a class="hero-phone hero-phone-sm" href={`tel:${phones.kansk.tel}`}>{phones.kansk.display}</a>

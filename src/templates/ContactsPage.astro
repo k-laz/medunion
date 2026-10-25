@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
-import { clinics, integrations, type ClinicKey } from '../data/site';
+import { clinics, integrations, type ClinicKey, bookingPage } from '../data/site';
 
 interface Props { entry: CollectionEntry<'pages'> }
 const d = Astro.props.entry.data;
@@ -12,7 +12,7 @@ const pageFor: Record<ClinicKey, string> = {
   kansk: '/contacts/klinika-v-kanske/',
 };
 const mapUrl = (k: ClinicKey) => `https://yandex.ru/maps/?text=${encodeURIComponent(`${clinics[k].city}, ${clinics[k].address}, Медюнион`)}`;
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 ---
 
 <PageHead url={d.url} h1={d.h1} compact />
@@ -29,7 +29,7 @@ const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}
           <ul class="hours">{c.hours.map((h) => <li>{h}</li>)}</ul>
           <p class="clinic-phone"><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
           <div class="cta-row">
-            <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться</a>
+            <a class="btn btn-primary" href={bookingUrl}>Записаться</a>
             <a class="btn btn-quiet" href={mapUrl(k)} target="_blank" rel="noopener">Как добраться</a>
           </div>
         </section>

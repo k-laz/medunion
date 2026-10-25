@@ -56,7 +56,16 @@ export const integrations = {
     siteButton: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js',
   },
   dailyGrowWidgetId: 'b4486417-63a6-4218-89b2-8db8a6f40779',
+  // Top.Mail.Ru (VK) counter, used for VK ads. Same id as on the old site.
+  topMailRuId: '3628693',
+  // Yandex Webmaster ownership check. If the old site was verified with a
+  // <meta name="yandex-verification"> tag, put its content here, e.g. 'a1b2c3d4e5f6'.
+  yandexVerification: '',
 };
+
+// Every "Записаться" button leads here. The page embeds the MedFlex booking.
+export const bookingPage = '/appointment/';
+export const medflexUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 
 // Analytics, call tracking and chat only load on the real site.
 // Preview builds stay silent so test visits don't pollute Metrica.

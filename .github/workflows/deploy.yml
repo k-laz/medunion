@@ -1,0 +1,57 @@
+# Builds the site on every push to main and uploads it to the server.
+# Until the server secrets are added in GitHub (Settings > Secrets and
+# variables > Actions), it only builds and checks, and skips the upload.
+#
+# Secrets:
+#   DEPLOY_HOST   server address, e.g. 123.45.67.89
+#   DEPLOY_USER   ssh user on the server, e.g. deploy
+#   DEPLOY_KEY    private ssh key for that user (the whole file)
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency: deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (production)
+        run: npm run build
+        env:
+          PUBLIC_SITE_ENV: production
+
+      - name: Check the nginx redirect list
+        run: |
+          sudo apt-get install -y -q nginx-light >/dev/null
+          printf 'events {}\nhttp { server { listen 8080; include %s; } }\n' "$PWD/deploy/redirects.nginx.conf" > /tmp/test.conf
+          sudo nginx -t -c /tmp/test.conf
+
+      - name: Upload to the server
+        if: ${{ env.DEPLOY_HOST != '' }}
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          SSH="ssh -i ~/.ssh/id_deploy"
+          rsync -az --delete -e "$SSH" dist/ "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/site/"
+          rsync -az -e "$SSH" deploy/redirects.nginx.conf "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/redirects.conf"
+          $SSH "$DEPLOY_USER@$DEPLOY_HOST" 'sudo /usr/sbin/nginx -t && sudo /usr/sbin/nginx -s reload'
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}

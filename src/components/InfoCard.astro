@@ -1,13 +1,13 @@
 ---
 // White card in the page head: starting price, where, when, book.
-import { clinics, integrations, type ClinicKey } from '../data/site';
+import { clinics, integrations, type ClinicKey, bookingPage } from '../data/site';
 import { rub } from '../lib/content';
 
 interface Props { prices?: { name: string; price: number }[]; clinicKeys?: ClinicKey[] }
 const { prices = [] } = Astro.props;
 const clinicKeys = Astro.props.clinicKeys?.length ? Astro.props.clinicKeys : (['kurchatova', 'instrumentalnaya'] as ClinicKey[]);
 const from = prices.length ? Math.min(...prices.map((p) => p.price)) : 0;
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 const phonesShown = [...new Map(clinicKeys.map((k) => [clinics[k].phone.tel, clinics[k].phone])).values()];
 ---
 
@@ -24,7 +24,7 @@ const phonesShown = [...new Map(clinicKeys.map((k) => [clinics[k].phone.tel, cli
     ))}
   </ul>
   <div class="info-actions">
-    <a class="btn btn-primary btn-wide" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+    <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться онлайн</a>
     {phonesShown.map((p) => <a class="btn btn-quiet btn-wide" href={`tel:${p.tel}`}>{p.display}</a>)}
   </div>
 </aside>

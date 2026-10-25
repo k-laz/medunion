@@ -553,10 +553,16 @@ async function manualUrls() {
 
 const segs = (u) => u.split('/').filter(Boolean);
 
+// Addresses served by hand-made pages in src/pages/ (e.g. appointment.astro -> /appointment/).
+async function handmadeUrls() {
+  const names = (await readdir('src/pages')).filter((n) => n.endsWith('.astro') && !n.startsWith('[') && !['index.astro', '404.astro'].includes(n));
+  return new Set(names.map((n) => `/${n.replace(/\.astro$/, '')}/`));
+}
+
 function classify(url) {
   const s = segs(url);
   if (url === '/') return 'home';
-  const dropped = ['/appointment/', '/articles/rss/', '/news/rss/', '/sitemap/', '/info/', '/patients/', '/ostavit-otzyv-o-nashej-rabote/'];
+  const dropped = ['/articles/rss/', '/news/rss/', '/sitemap/', '/info/', '/patients/', '/ostavit-otzyv-o-nashej-rabote/'];
   if (dropped.includes(url) || s[0] === 'landings' || s[0] === 'gallery') return 'drop';
   if (s[0] === 'o-nas') return 'alias';
   if (s[0] === 'uslugi') return 'service';
@@ -572,6 +578,7 @@ async function main() {
     await rm(join(CONTENT, col, 'imported'), { recursive: true, force: true });
   }
   const manual = await manualUrls();
+  for (const u of await handmadeUrls()) manual.add(u);
   const report = readCsv(await readFile(join(IMPORT, 'report.csv'), 'utf8'));
   const pages = new Map();
   for (const f of await walk(join(IMPORT, 'pages'))) {
@@ -807,7 +814,7 @@ async function main() {
   await writeFile(
     'deploy/redirects.nginx.conf',
     '# Permanent (301) redirects from old Bitrix addresses. Include inside the server { } block.\n# nginx matches the decoded path, so non-Latin characters are written as-is.\n' +
-      sorted.map(([f, t]) => `location = "${decodeURI(f)}" { return 301 ${encodeURI(decodeURI(t))}; }`).join('\n') + '\n',
+      sorted.map(([f, t]) => `location = "${safeDecode(f)}" { return 301 ${encodeURI(safeDecode(t))}; }`).join('\n') + '\n',
   );
 
   console.log('Written:', counts);

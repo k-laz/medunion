@@ -1,0 +1,22 @@
+---
+// Cookie notice (Metrica and the other counters use cookies). Shown once;
+// the choice is remembered on this device.
+---
+
+<div class="cookie" role="region" aria-label="Уведомление о cookie" hidden data-cookie>
+  <p>Мы используем файлы cookie и Яндекс Метрику, чтобы сайт работал удобнее. Подробнее в <a href="/politika-konfidencialnosti/">политике конфиденциальности</a>.</p>
+  <button class="btn btn-primary" type="button" data-cookie-ok>Хорошо</button>
+</div>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-cookie]');
+  if (box) {
+    let seen = false;
+    try { seen = !!localStorage.getItem('cookie-ok'); } catch {}
+    if (!seen) box.hidden = false;
+    box.querySelector('[data-cookie-ok]')!.addEventListener('click', () => {
+      try { localStorage.setItem('cookie-ok', '1'); } catch {}
+      box.hidden = true;
+    });
+  }
+</script>

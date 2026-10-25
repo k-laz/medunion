@@ -1,7 +1,7 @@
 ---
-import { clinics, phones, integrations, legal } from '../data/site';
+import { clinics, phones, integrations, legal, bookingPage } from '../data/site';
 const year = new Date().getFullYear();
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
@@ -40,7 +40,7 @@ const pages: Record<string, string> = {
     </div>
 
     <div class="footer-cta">
-      <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться на приём</a>
+      <a class="btn btn-primary" href={bookingUrl}>Записаться на приём</a>
       <a class="footer-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
     </div>
 

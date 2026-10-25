@@ -1,8 +1,8 @@
 ---
-import { integrations, phones } from '../data/site';
+import { integrations, phones, bookingPage } from '../data/site';
 interface Props { title?: string; text?: string }
 const { title = 'Запишитесь на приём', text = 'Онлайн или по телефону, в удобной для вас клинике.' } = Astro.props;
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 ---
 
 <section class="cta-band">
@@ -11,7 +11,7 @@ const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}
     <p>{text}</p>
   </div>
   <div class="cta-row">
-    <a class="btn btn-light" href={bookingUrl} target="_blank" rel="noopener">Записаться онлайн</a>
+    <a class="btn btn-light" href={bookingUrl}>Записаться онлайн</a>
     <a class="btn btn-ghost-light" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
   </div>
 </section>

@@ -4,7 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PriceList from '../components/PriceList.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { servicesOfDoctor, initials, years, tileLabel } from '../lib/content';
-import { clinics, integrations, phones } from '../data/site';
+import { clinics, integrations, phones, bookingPage } from '../data/site';
 
 interface Props { entry: CollectionEntry<'doctors'> }
 const { entry } = Astro.props;
@@ -12,7 +12,7 @@ const d = entry.data;
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id);
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
@@ -32,7 +32,7 @@ const pages: Record<string, string> = {
       {d.photo ? <img src={d.photo} alt={d.name} /> : <span aria-hidden="true">{initials(d.name)}</span>}
     </div>
     <div class="doctor-side-actions">
-      <a class="btn btn-primary btn-wide" href={bookingUrl} target="_blank" rel="noopener">Записаться на приём</a>
+      <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться на приём</a>
       <a class="btn btn-quiet btn-wide" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
     </div>
   </aside>

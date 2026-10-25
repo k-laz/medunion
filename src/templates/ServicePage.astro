@@ -6,7 +6,7 @@ import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { childrenOf, tileLabel, shortTeaser } from '../lib/content';
-import { integrations, phones } from '../data/site';
+import { integrations, phones, bookingPage } from '../data/site';
 
 interface Props { entry: CollectionEntry<'services'> }
 const { entry } = Astro.props;
@@ -17,7 +17,7 @@ const doctors = d.doctors.length ? await getEntries(d.doctors) : [];
 const allServices = await getCollection('services');
 const children = childrenOf(d.url, allServices);
 const related = d.related.map((u) => allServices.find((x) => x.data.url === u)).filter((x) => x !== undefined);
-const bookingUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
+const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 
 const tabs = [
   children.length && { id: 'sub', label: 'Услуги раздела' },
@@ -30,7 +30,7 @@ const tabs = [
 
 <PageHead url={d.url} h1={d.h1} lead={d.lead}>
   <div class="cta-row">
-    <a class="btn btn-primary" href={bookingUrl} target="_blank" rel="noopener">Записаться на приём</a>
+    <a class="btn btn-primary" href={bookingUrl}>Записаться на приём</a>
     <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
   </div>
   <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
