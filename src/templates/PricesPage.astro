@@ -2,7 +2,6 @@
 import type { CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import PriceList from '../components/PriceList.astro';
-import CtaBand from '../components/CtaBand.astro';
 
 interface Props { entry: CollectionEntry<'prices'> }
 const d = Astro.props.entry.data;
@@ -14,5 +13,4 @@ const d = Astro.props.entry.data;
   <section class="block narrow">
     {d.items.length > 0 ? <PriceList items={d.items} /> : <p>Цены уточняйте по телефону.</p>}
   </section>
-  <CtaBand />
 </div>

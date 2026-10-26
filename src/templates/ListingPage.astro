@@ -2,7 +2,6 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import DoctorCard from '../components/DoctorCard.astro';
-import CtaBand from '../components/CtaBand.astro';
 
 interface Props { entry: CollectionEntry<'listings'> }
 const { entry } = Astro.props;
@@ -60,5 +59,4 @@ if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
     </ul>
   )}
 
-  <CtaBand />
 </div>

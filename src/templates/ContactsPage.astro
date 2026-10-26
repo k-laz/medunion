@@ -29,7 +29,6 @@ const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booki
           <ul class="hours">{c.hours.map((h) => <li>{h}</li>)}</ul>
           <p class="clinic-phone"><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
           <div class="cta-row">
-            <a class="btn btn-primary" href={bookingUrl}>Записаться</a>
             <a class="btn btn-quiet" href={mapUrl(k)} target="_blank" rel="noopener">Как добраться</a>
           </div>
         </section>

@@ -90,11 +90,6 @@ p { margin: 0 0 1rem; }
 .topbar-cities a:hover, .topbar-link:hover { color: var(--brand); }
 .topbar-link { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
 .topbar-phone { color: var(--ink); font-weight: 600; text-decoration: none; }
-.topbar-book {
-  display: inline-flex; align-items: center; gap: 8px; align-self: stretch;
-  padding: 0 18px; background: var(--brand); color: #fff; font-weight: 600; text-decoration: none;
-}
-.topbar-book:hover { background: var(--brand-dark); color: #fff; }
 
 /* Header */
 .site-header { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
@@ -111,6 +106,7 @@ p { margin: 0 0 1rem; }
 .icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: none; color: var(--ink); cursor: pointer; }
 .icon-btn:hover { background: var(--surface); color: var(--brand); }
 .menu-btn { display: none; }
+.header-book { min-height: 44px; padding: 0 20px; margin-left: 8px; }
 .header-search { border-top: 1px solid var(--line); padding: 16px 0; background: #fff; }
 
 /* Slide-in menu */
@@ -136,6 +132,9 @@ p { margin: 0 0 1rem; }
   .topbar { display: none; }
   .header-row { min-height: 64px; }
   .brand-sub { display: none; }
+  .header-book { display: none; }
+  /* phones have the bottom bar with Позвонить / Записаться, so no second set of buttons */
+  .info-actions, .doctor-side-actions { display: none; }
   .mobile-bar {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
@@ -459,3 +458,5 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 .cookie p { margin: 0; }
 .cookie .btn { min-height: 40px; padding: 0 18px; flex: none; }
 @media (max-width: 760px) { .cookie { left: 8px; right: 8px; bottom: 84px; max-width: none; } }
+
+.footer-cta-label { color: rgba(255,255,255,.6); }

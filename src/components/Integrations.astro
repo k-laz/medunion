@@ -1,14 +1,9 @@
 ---
-// Metrica, MedFlex booking, Bitrix24 CRM and the messenger widget.
-// MedFlex always loads (booking must work on previews too, for testing).
-// The rest only load on the production build.
+// Metrica, Top.Mail.Ru, Bitrix24 CRM and the messenger widget. They only
+// load on the production build. (MedFlex booking lives on /appointment/.)
 import { integrations, isProduction } from '../data/site';
-const { metrikaId, medflexUser, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
+const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
 ---
-
-<!-- Online booking: MedFlex, connected to the clinic's medical system -->
-<div id="medflexRoundWidgetData" data-src={`https://booking.medflex.ru/?user=${medflexUser}&isRoundWidget=true`}></div>
-<script is:inline defer src="https://booking.medflex.ru/components/round/round_widget_button.js"></script>
 
 {isProduction && (
   <>

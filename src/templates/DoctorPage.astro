@@ -2,7 +2,6 @@
 import { render, type CollectionEntry } from 'astro:content';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PriceList from '../components/PriceList.astro';
-import CtaBand from '../components/CtaBand.astro';
 import { servicesOfDoctor, initials, years, tileLabel } from '../lib/content';
 import { clinics, integrations, phones, bookingPage } from '../data/site';
 
@@ -80,4 +79,4 @@ const pages: Record<string, string> = {
   </div>
 </div>
 
-<div class="wrap page-body"><CtaBand title="Запишитесь к врачу" /></div>
+<div class="page-body"></div>

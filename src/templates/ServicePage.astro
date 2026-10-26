@@ -4,7 +4,6 @@ import PageHead from '../components/PageHead.astro';
 import InfoCard from '../components/InfoCard.astro';
 import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
-import CtaBand from '../components/CtaBand.astro';
 import { childrenOf, tileLabel, shortTeaser } from '../lib/content';
 import { integrations, phones, bookingPage } from '../data/site';
 
@@ -29,10 +28,6 @@ const tabs = [
 ---
 
 <PageHead url={d.url} h1={d.h1} lead={d.lead}>
-  <div class="cta-row">
-    <a class="btn btn-primary" href={bookingUrl}>Записаться на приём</a>
-    <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
-  </div>
   <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
 </PageHead>
 
@@ -105,7 +100,6 @@ const tabs = [
     </section>
   )}
 
-  <CtaBand />
 </div>
 
 <script>
