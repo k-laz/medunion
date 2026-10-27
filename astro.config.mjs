@@ -11,5 +11,7 @@ export default defineConfig({
   // Same URLs = Yandex keeps the rankings it already gave these pages.
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // The floating Astro toolbar in `npm run dev` covers the mobile booking bar.
+  devToolbar: { enabled: false },
   integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') })],
 });

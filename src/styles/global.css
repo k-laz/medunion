@@ -188,6 +188,10 @@ p { margin: 0 0 1rem; }
 @media (max-width: 900px) {
   .hero-inner { grid-template-columns: 1fr; gap: 28px; padding-top: 32px; padding-bottom: 32px; }
 }
+@media (max-width: 760px) {
+  /* phones have the bottom bar with Позвонить / Записаться */
+  .hero-card { display: none; }
+}
 
 /* Blocks */
 .block { margin-top: 56px; }
