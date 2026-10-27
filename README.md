@@ -85,6 +85,10 @@ Known gaps after import:
 - The old site has no doctor photos, so there were none to import. Put photos in `public/doctors/` and add `photo: /doctors/name.jpg` to the doctor's file.
 - The Kansk subdomain is not imported.
 
+## Preview link
+
+Every push to `main` also publishes a preview at https://k-laz.github.io/medunion/ (GitHub Pages, `.github/workflows/preview.yml`), for showing the site before launch. Search engines are told not to index it and analytics are off. Old-address redirects only work on the real server.
+
 ## Putting it online
 
 See [deploy/SERVER.md](deploy/SERVER.md): one-time server setup (nginx on a Russian VPS), then every push to `main` builds and uploads the site automatically through GitHub Actions. The nginx config with https, caching and the old-address redirects is in `deploy/nginx/`.
