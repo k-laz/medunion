@@ -1,6 +1,8 @@
 ---
-import { phones, integrations, bookingPage } from '../data/site';
+import { getCollection } from 'astro:content';
+import { phones, clinics, bookingPage } from '../data/site';
 import SearchBox from './SearchBox.astro';
+import { childrenOf } from '../lib/content';
 const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 const nav = [
   { href: '/uslugi/', label: 'Услуги' },
@@ -11,6 +13,14 @@ const nav = [
   { href: '/contacts/', label: 'Клиники' },
 ];
 const current = Astro.url.pathname;
+// Main service directions for the mobile menu
+const short = (t: string) => t.replace(/\s*\(.*?\)/g, '').replace(/\s*в Красноярске$/, '');
+const directions = childrenOf('/uslugi/', await getCollection('services')).map((d) => ({ href: d.data.url, label: short(d.data.h1) }));
+const clinicPage: Record<string, string> = {
+  kurchatova: '/contacts/klinika-na-kurchatova/',
+  instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
+  kansk: '/contacts/klinika-v-kanske/',
+};
 ---
 
 <div class="topbar">
@@ -49,8 +59,9 @@ const current = Astro.url.pathname;
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" /><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
       </button>
       <a class="btn btn-primary header-book" href={bookingUrl}>Записаться</a>
-      <button class="icon-btn menu-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="menu-panel" aria-label="Меню">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+      <button class="icon-btn menu-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="menu" aria-label="Меню">
+        <svg class="icon-open" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
       </button>
     </div>
   </div>
@@ -60,19 +71,34 @@ const current = Astro.url.pathname;
   </div>
 </header>
 
-<div class="menu-panel" id="menu-panel" hidden>
-  <div class="menu-sheet">
-    <button class="icon-btn menu-close" type="button" data-menu-toggle aria-label="Закрыть меню">
-      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
-    </button>
-    <nav aria-label="Меню">
-      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+<div class="menu" id="menu" aria-hidden="true">
+  <div class="menu-inner">
+    <SearchBox id="q-menu" />
+
+    <nav class="menu-nav" aria-label="Меню">
+      <details class="menu-group">
+        <summary>Услуги<span class="menu-chev" aria-hidden="true"></span></summary>
+        <ul>
+          {directions.map((d) => <li><a href={d.href}>{d.label}</a></li>)}
+          <li><a class="menu-all" href="/uslugi/">Все услуги</a></li>
+        </ul>
+      </details>
+      {nav.filter((i) => i.href !== '/uslugi/').map((item) => <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>)}
+    </nav>
+
+    <section class="menu-clinics" aria-label="Клиники">
+      {Object.entries(clinics).map(([key, c]) => (
+        <div class="menu-clinic">
+          <a class="menu-clinic-addr" href={clinicPage[key]}>{c.city}, {c.address}</a>
+          <span class="muted">{c.hours[0]}</span>
+          <a class="menu-clinic-phone" href={`tel:${c.phone.tel}`}>{c.phone.display}</a>
+        </div>
+      ))}
+    </section>
+
+    <div class="menu-small">
       <a href="/company/">О компании</a>
       <a href="/pacientam/obsluzhivanie-oms-dms/">ОМС и ДМС</a>
-    </nav>
-    <div class="menu-contacts">
-      <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться на приём</a>
-      <a class="btn btn-quiet btn-wide" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
       <button class="topbar-link" type="button" data-a11y-toggle aria-pressed="false">Версия для слабовидящих</button>
     </div>
   </div>
@@ -94,16 +120,21 @@ const current = Astro.url.pathname;
     if (open) searchRow.querySelector('input')?.focus();
   });
 
-  // Slide-in menu
-  const panel = document.getElementById('menu-panel')!;
+  // Drop-down menu under the header (phones and tablets)
+  const menu = document.getElementById('menu')!;
+  const header = document.querySelector<HTMLElement>('.site-header')!;
+  const toggles = document.querySelectorAll<HTMLButtonElement>('[data-menu-toggle]');
   const setMenu = (open: boolean) => {
-    panel.hidden = !open;
+    if (open) menu.style.top = `${header.getBoundingClientRect().bottom}px`;
+    menu.classList.toggle('is-open', open);
+    menu.setAttribute('aria-hidden', String(!open));
     document.documentElement.classList.toggle('menu-open', open);
-    document.querySelectorAll('[data-menu-toggle]').forEach((b) => b.setAttribute('aria-expanded', String(open)));
+    toggles.forEach((b) => b.setAttribute('aria-expanded', String(open)));
   };
-  document.querySelectorAll('[data-menu-toggle]').forEach((b) => b.addEventListener('click', () => setMenu(panel.hidden)));
-  panel.addEventListener('click', (e) => { if (e.target === panel) setMenu(false); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) setMenu(false); });
+  toggles.forEach((b) => b.addEventListener('click', () => setMenu(!menu.classList.contains('is-open'))));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  window.addEventListener('resize', () => { if (window.innerWidth > 1080) setMenu(false); });
 
   // Large text, high contrast version. Remembered on this device.
   const root = document.documentElement;

@@ -109,16 +109,37 @@ p { margin: 0 0 1rem; }
 .header-book { min-height: 44px; padding: 0 20px; margin-left: 8px; }
 .header-search { border-top: 1px solid var(--line); padding: 16px 0; background: #fff; }
 
-/* Slide-in menu */
-.menu-panel { position: fixed; inset: 0; z-index: 60; background: rgba(27, 35, 51, .35); }
-.menu-sheet {
-  position: absolute; top: 0; right: 0; bottom: 0; width: min(380px, 100%);
-  background: #fff; padding: 72px 28px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px;
+/* Drop-down menu (phones and tablets): opens under the header, header stays */
+.menu {
+  position: fixed; left: 0; right: 0; bottom: 0; top: 64px; z-index: 45;
+  background: #fff; overflow-y: auto; overscroll-behavior: contain;
+  opacity: 0; visibility: hidden; transform: translateY(-8px);
+  transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
 }
-.menu-close { position: absolute; top: 16px; right: 16px; }
-.menu-sheet nav { display: flex; flex-direction: column; }
-.menu-sheet nav a { padding: 12px 0; color: var(--ink); text-decoration: none; font-size: var(--step-1); border-bottom: 1px solid var(--line); }
-.menu-contacts { display: grid; gap: 10px; }
+.menu.is-open { opacity: 1; visibility: visible; transform: none; transition: opacity .18s ease, transform .18s ease; }
+.menu-inner { max-width: 640px; margin: 0 auto; padding: 16px 16px 120px; display: grid; gap: 24px; }
+.menu-nav { display: flex; flex-direction: column; }
+.menu-nav > a, .menu-group > summary {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 2px; border-bottom: 1px solid var(--line);
+  color: var(--ink); text-decoration: none; font-size: 1.25rem; font-weight: 500; cursor: pointer; list-style: none;
+}
+.menu-nav > a[aria-current] { color: var(--brand); }
+.menu-group > summary::-webkit-details-marker { display: none; }
+.menu-chev { width: 10px; height: 10px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-3px) rotate(45deg); transition: transform .15s; }
+.menu-group[open] .menu-chev { transform: translateY(3px) rotate(-135deg); }
+.menu-group ul { list-style: none; margin: 0; padding: 6px 0 10px 12px; border-bottom: 1px solid var(--line); }
+.menu-group li a { display: block; padding: 10px 0; color: var(--ink); text-decoration: none; }
+.menu-group .menu-all { color: var(--brand); font-weight: 600; }
+.menu-clinics { display: grid; gap: 10px; }
+.menu-clinic { display: grid; gap: 2px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--surface); font-size: var(--step--1); }
+.menu-clinic-addr { color: var(--ink); font-weight: 600; font-size: 1rem; text-decoration: none; }
+.menu-clinic-phone { font-weight: 600; text-decoration: none; margin-top: 4px; }
+.menu-small { display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: var(--step--1); }
+.menu-small a { color: var(--muted); text-decoration: none; }
+.menu-btn .icon-close, .menu-btn[aria-expanded="true"] .icon-open { display: none; }
+.menu-btn[aria-expanded="true"] .icon-close { display: block; }
+@media (min-width: 1081px) { .menu { display: none; } }
 
 .mobile-bar { display: none; }
 
