@@ -7,9 +7,7 @@ kind: "article"
 category: "pediatriya"
 ---
 
-[![Прием врача педиатра и узких специалистов для детей](https://medunion.group/upload/iblock/286/khse3c713tzmlyaxzoihr341ellzt6ty.png "Прием врача педиатра и узких специалистов для детей")](https://medunion.group/upload/iblock/286/khse3c713tzmlyaxzoihr341ellzt6ty.png "Прием врача педиатра и узких специалистов для детей")
-
-Педиатрия
+![Прием врача педиатра и узких специалистов для детей](https://medunion.group/upload/iblock/286/khse3c713tzmlyaxzoihr341ellzt6ty.png)
 
 Приём врача педиатра в медцентре «Медюнион»:\
 консультация, диагностика и забота о здоровье ребёнка

@@ -12,7 +12,7 @@ doctors:
 teaser: "Ультразвуковое исследование для самых маленьких и подростков"
 ---
 
-[![УЗИ детям](https://medunion.group/upload/iblock/c9f/carolu142orz127wz4h334hp3ccqta72.jpg "УЗИ детям")](https://medunion.group/upload/iblock/c9f/carolu142orz127wz4h334hp3ccqta72.jpg "УЗИ детям")
+![УЗИ детям](https://medunion.group/upload/iblock/c9f/carolu142orz127wz4h334hp3ccqta72.jpg)
 
 Ультразвуковое исследование для самых маленьких и подростков
 

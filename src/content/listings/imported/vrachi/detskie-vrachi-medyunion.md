@@ -4,6 +4,24 @@ title: "Детские врачи \"Медюнион\" в Красноярске
 description: "Детские врачи \"Медюнион\": Медюнион в Красноярске и Канске. Запись онлайн и по телефону +7 (391) 220-03-03."
 h1: "Детские врачи \"Медюнион\""
 of: "doctors"
+members:
+  - "/vrachi/vrachi-medyunion/baranova-elena-vyacheslavovna/"
+  - "/vrachi/detskie-vrachi-medyunion/veremeeva-natalya-nikolaevna/"
+  - "/vrachi/vrachi-ginekologi/gaynulina-dinara-amrulovna/"
+  - "/vrachi/vrachi-medyunion/gelfanova-natalya-anatolevna/"
+  - "/vrachi/vrachi-medyunion/zaytseva-zhanna-gennadevna/"
+  - "/vrachi/vrachi-medyunion/ivanyukova-svetlana-petrovna/"
+  - "/vrachi/vrachi-medyunion/kozulina-ekaterina-aleksandrovna/"
+  - "/vrachi/vrachi-medyunion/maysner-dmitriy-sergeevich/"
+  - "/vrachi/vrachi-pediatry/matyskina-natalya-vladimirovna/"
+  - "/vrachi/vrachi-otorinolaringologi/mirakhmadov-mardan-shavkatovich-/"
+  - "/vrachi/vrachi-medyunion/mishchuk-elena-viktorovna-/"
+  - "/vrachi/otdelenie-diagnostiki-/moiseeva-ekaterina-yurevna/"
+  - "/vrachi/detskie-vrachi-medyunion/omurali-aktilek/"
+  - "/vrachi/vrachi-medyunion/razumova-irina-vladimirovna/"
+  - "/vrachi/vrachi-medyunion/smykova-anastasiya-nikolaevna/"
+  - "/vrachi/otdelenie-diagnostiki-/starikova-irina-vadimovna/"
+  - "/vrachi/otdelenie-diagnostiki-/timofeeva-darya-aleksandrovna/"
+  - "/vrachi/otdelenie-diagnostiki-/shinkarenko-elena-vladimirovna/"
+  - "/vrachi/vrachi-medyunion/shpakovskiy-stanislav-viktorovich/"
 ---
-
-Аллерголог-иммунолог, педиатр, пульмонолог

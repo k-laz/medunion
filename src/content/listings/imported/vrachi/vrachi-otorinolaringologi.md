@@ -4,4 +4,7 @@ title: "Врачи-оториноларингологи | Медюнион"
 description: "Лор в Красноярске с эндоскопическим осмотром. Лор врачи для взрослых и детей в Красноярске"
 h1: "Врачи-оториноларингологи"
 of: "doctors"
+members:
+  - "/vrachi/vrachi-medyunion/maysner-dmitriy-sergeevich/"
+  - "/vrachi/vrachi-otorinolaringologi/mirakhmadov-mardan-shavkatovich-/"
 ---

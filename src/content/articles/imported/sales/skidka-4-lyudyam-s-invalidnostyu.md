@@ -8,7 +8,7 @@ discount: "4%"
 period: "с 29.12.25, бессрочно"
 ---
 
-[![Скидка 4% людям с инвалидностью](https://medunion.group/upload/iblock/613/elmsj5z1aq8ant0d2oqwp9cuib7zrhcs.jpg "Скидка 4% людям с инвалидностью")](https://medunion.group/upload/iblock/613/elmsj5z1aq8ant0d2oqwp9cuib7zrhcs.jpg "Скидка 4% людям с инвалидностью")
+![Скидка 4% людям с инвалидностью](https://medunion.group/upload/iblock/613/elmsj5z1aq8ant0d2oqwp9cuib7zrhcs.jpg)
 
 ***Медюнион с заботой о каждом!***
 

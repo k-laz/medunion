@@ -7,9 +7,7 @@ kind: "article"
 category: "onkologiya-i-mammologiya"
 ---
 
-[![Техника самообследования молочных желез](https://medunion.group/upload/iblock/3aa/0t6pfcqg3ney51suwro0jtom7ycpqffj.jpeg "Техника самообследования молочных желез")](https://medunion.group/upload/iblock/3aa/0t6pfcqg3ney51suwro0jtom7ycpqffj.jpeg "Техника самообследования молочных желез")
-
-Онкология и маммология
+![Техника самообследования молочных желез](https://medunion.group/upload/iblock/3aa/0t6pfcqg3ney51suwro0jtom7ycpqffj.jpeg)
 
 1. Стоя перед зеркалом, осмотреть грудь, поднять руки – должна сохраниться симметрия.
 2. Тремя пальцами надавить на грудь, начиная от верхней боковой части, ближе к подмышке.

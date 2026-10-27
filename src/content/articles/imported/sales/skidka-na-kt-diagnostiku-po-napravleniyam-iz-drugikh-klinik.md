@@ -7,7 +7,7 @@ kind: "sale"
 discount: "5%"
 ---
 
-[![Скидка на КТ диагностику по направлениям из других клиник](https://medunion.group/upload/iblock/a05/2v9leo5wtcccdl6mtmmxtapoxy4jbe38.jpg "Скидка на КТ диагностику по направлениям из других клиник")](https://medunion.group/upload/iblock/a05/2v9leo5wtcccdl6mtmmxtapoxy4jbe38.jpg "Скидка на КТ диагностику по направлениям из других клиник")
+![Скидка на КТ диагностику по направлениям из других клиник](https://medunion.group/upload/iblock/a05/2v9leo5wtcccdl6mtmmxtapoxy4jbe38.jpg)
 
 4.03.2026-бессрочно
 

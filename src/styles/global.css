@@ -328,6 +328,7 @@ p { margin: 0 0 1rem; }
 .prose { max-width: 72ch; }
 .prose h2 { font-size: 1.5rem; margin: 2rem 0 0.75rem; }
 .prose h3 { margin: 1.5rem 0 0.5rem; }
+.prose h4, .prose h5, .prose h6 { font-size: 1.125rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
 .prose ul, .prose ol { padding-left: 1.25rem; margin: 0 0 1rem; }
 .prose li { margin-bottom: 0.35rem; }
 .prose li::marker { color: var(--brand); }
@@ -485,3 +486,16 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 @media (max-width: 760px) { .cookie { left: 8px; right: 8px; bottom: 84px; max-width: none; } }
 
 .footer-cta-label { color: rgba(255,255,255,.6); }
+
+/* Services catalog (/uslugi/) */
+.catalog { columns: 3 300px; column-gap: 40px; margin-top: 40px; }
+.catalog-group { break-inside: avoid; margin-bottom: 36px; }
+.catalog-group h2 { font-size: var(--step-1); margin: 0 0 10px; padding-bottom: 10px; border-bottom: 2px solid var(--brand); }
+.catalog-group h2 a { color: var(--ink); text-decoration: none; }
+.catalog-group h2 a:hover { color: var(--brand); }
+.catalog-group ul { list-style: none; margin: 0; padding: 0; }
+.catalog-group li a { display: block; padding: 7px 0; color: var(--ink); text-decoration: none; line-height: 1.35; }
+.catalog-group li a:hover { color: var(--brand); text-decoration: underline; }
+
+.subpages { margin-top: 40px; }
+.chip[aria-current] { background: var(--brand); border-color: var(--brand); color: #fff; }

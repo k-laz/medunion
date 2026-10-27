@@ -7,9 +7,7 @@ kind: "article"
 category: "pediatriya"
 ---
 
-[![Наработка иммунитета у детей](https://medunion.group/upload/iblock/d8e/4od1zlvjq7i5g0bnf1p4thwr8rbctbfs.webp "Наработка иммунитета у детей")](https://medunion.group/upload/iblock/d8e/4od1zlvjq7i5g0bnf1p4thwr8rbctbfs.webp "Наработка иммунитета у детей")
-
-Педиатрия
+![Наработка иммунитета у детей](https://medunion.group/upload/iblock/d8e/4od1zlvjq7i5g0bnf1p4thwr8rbctbfs.webp)
 
 Ребёнок подрастает, начинает ходить в детский сад, и тут начинается самый стрессовый период для родителей… Малютка начинает часто болеть. Это явление можно назвать «наработкой иммунитета». Рассказываем о том, как пережить этот непростой этап и наконец-то уйти с больничных.
 

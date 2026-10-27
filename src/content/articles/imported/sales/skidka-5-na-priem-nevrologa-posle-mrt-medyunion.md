@@ -8,7 +8,7 @@ discount: "5%"
 period: "с 01.01.2025, бессрочно"
 ---
 
-[![Скидка 5% на прием невролога после МРТ  ](https://medunion.group/upload/iblock/1e7/62bizbhfpzosocvax4b52rcic318rrsj.png "Скидка 5% на прием невролога после МРТ  ")](https://medunion.group/upload/iblock/1e7/62bizbhfpzosocvax4b52rcic318rrsj.png "Скидка 5% на прием невролога после МРТ  ")
+![Скидка 5% на прием невролога после МРТ  ](https://medunion.group/upload/iblock/1e7/62bizbhfpzosocvax4b52rcic318rrsj.png)
 
 Скидка 5% на консультацию невролога при прохождении МРТ диагностики
 

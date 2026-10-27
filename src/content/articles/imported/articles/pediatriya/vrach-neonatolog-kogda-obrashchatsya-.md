@@ -7,9 +7,7 @@ kind: "article"
 category: "pediatriya"
 ---
 
-[![Врач неонатолог  когда обращаться ](https://medunion.group/upload/iblock/76b/jrllxju1qs5pvcqezpi7dr4qrbxl5xee.png "Врач неонатолог  когда обращаться ")](https://medunion.group/upload/iblock/76b/jrllxju1qs5pvcqezpi7dr4qrbxl5xee.png "Врач неонатолог  когда обращаться ")
-
-Педиатрия
+![Врач неонатолог  когда обращаться ](https://medunion.group/upload/iblock/76b/jrllxju1qs5pvcqezpi7dr4qrbxl5xee.png)
 
 Кто такой врач-неонатолог?
 

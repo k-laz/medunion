@@ -6,7 +6,7 @@ h1: "МРТ детям"
 teaser: "Диагностика, которую пройдут даже малыши"
 ---
 
-[![МРТ детям](https://medunion.group/upload/iblock/9f7/37s14p9yh0qljh2vcz98ktl4foul55bj.jpeg "МРТ детям")](https://medunion.group/upload/iblock/9f7/37s14p9yh0qljh2vcz98ktl4foul55bj.jpeg "МРТ детям")
+![МРТ детям](https://medunion.group/upload/iblock/9f7/37s14p9yh0qljh2vcz98ktl4foul55bj.jpeg)
 
 Диагностика, которую пройдут даже малыши
 

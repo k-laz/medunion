@@ -4,7 +4,8 @@ import PageHead from '../components/PageHead.astro';
 import InfoCard from '../components/InfoCard.astro';
 import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
-import { childrenOf, tileLabel, shortTeaser } from '../lib/content';
+import SearchBox from '../components/SearchBox.astro';
+import { childrenOf, tileLabel, shortTeaser, shortName } from '../lib/content';
 import { integrations, phones, bookingPage } from '../data/site';
 
 interface Props { entry: CollectionEntry<'services'> }
@@ -18,7 +19,17 @@ const children = childrenOf(d.url, allServices);
 const related = d.related.map((u) => allServices.find((x) => x.data.url === u)).filter((x) => x !== undefined);
 const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 
-const tabs = [
+// /uslugi/ is the catalog: every section with its services, plus search.
+const isCatalog = d.url === '/uslugi/';
+const ORDER = ['/uslugi/diagnostika/', '/uslugi/centr/', '/uslugi/pediatriya1/', '/uslugi/vyezd-vracha-na-dom/', '/uslugi/klinika-blokady-boli/', '/uslugi/proczedurnyj-kabinet/', '/uslugi/ortopediya-/'];
+const rank = (u: string) => (ORDER.indexOf(u) === -1 ? 99 : ORDER.indexOf(u));
+const catalog = isCatalog
+  ? children
+      .sort((a, b) => rank(a.data.url) - rank(b.data.url))
+      .map((sec) => ({ sec, items: childrenOf(sec.data.url, allServices).sort((a, b) => shortName(a.data.url, a.data.h1).localeCompare(shortName(b.data.url, b.data.h1), 'ru')) }))
+  : [];
+
+const tabs = isCatalog ? [] : [
   children.length && { id: 'sub', label: 'Услуги раздела' },
   hasText && { id: 'about', label: 'Описание' },
   d.prices.length && { id: 'prices', label: 'Цены' },
@@ -27,9 +38,15 @@ const tabs = [
 ].filter(Boolean) as { id: string; label: string }[];
 ---
 
-<PageHead url={d.url} h1={d.h1} lead={d.lead}>
-  <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
-</PageHead>
+{isCatalog ? (
+  <PageHead url={d.url} h1={d.h1} lead="Диагностика, приём врачей и процедуры для взрослых и детей в трёх клиниках.">
+    <SearchBox id="q-catalog" large placeholder="Найти услугу или врача" />
+  </PageHead>
+) : (
+  <PageHead url={d.url} h1={d.h1} lead={d.lead ?? (d.teaser ? shortTeaser(d.teaser) : undefined)}>
+    <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
+  </PageHead>
+)}
 
 {tabs.length > 1 && (
   <nav class="tabs" aria-label="Разделы страницы">
@@ -38,12 +55,23 @@ const tabs = [
 )}
 
 <div class="wrap page-body">
-  {children.length > 0 && (
+  {isCatalog && (
+    <div class="catalog">
+      {catalog.map(({ sec, items }) => (
+        <section class="catalog-group">
+          <h2><a href={sec.data.url}>{shortName(sec.data.url, sec.data.h1)}</a></h2>
+          {items.length > 0 && <ul>{items.map((i) => <li><a href={i.data.url}>{shortName(i.data.url, i.data.h1)}</a></li>)}</ul>}
+        </section>
+      ))}
+    </div>
+  )}
+
+  {!isCatalog && children.length > 0 && (
     <section id="sub" class="block">
       <h2>Услуги раздела</h2>
       <ul class="tile-grid">
         {children.map((c) => (
-          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{tileLabel(c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
+          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{shortName(c.data.url, c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
         ))}
       </ul>
     </section>
@@ -54,7 +82,7 @@ const tabs = [
       <h2>Смотрите также</h2>
       <ul class="tile-grid">
         {related.map((c) => (
-          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{tileLabel(c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
+          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{shortName(c.data.url, c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
         ))}
       </ul>
     </section>

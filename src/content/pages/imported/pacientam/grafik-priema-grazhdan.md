@@ -18,5 +18,3 @@ Email: [omsbsmp@mail.ru](mailto:omsbsmp@mail.ru)\
 часы приема: понедельник, среда, пятница с 16.00 до 17.00\
 Email: [omsbsmp@mail.ru](mailto:omsbsmp@mail.ru)\
 Телефон: 298-33-76
-
-#### В Канске

@@ -170,6 +170,7 @@ const DROP_LINES = [
   /^Оформите заявку на сайте/i,
   /^Записаться( к врачу| онлайн| на при[её]м)?$/i,
   /^Загрузить еще$/i,
+  /^Нет отзывов$/i,
   /^На карте$/i,
   /^загрузка карты/i,
   /^\\?-\s*Выберите специализацию/i,
@@ -201,7 +202,8 @@ function splitBlocks(body) {
   for (let i = 0; i < lines.length; i++) {
     const s = lines[i].trim();
     // A label before any text is the page's category ("Новости"), not a block.
-    const started = lines.slice(0, i).some((l) => l.trim());
+    // (image-only lines, like a cover picture, don't count as text)
+    const started = lines.slice(0, i).some((l) => l.trim() && !/^\[?!\[[^\]]*\]\([^)]*\)\]?(\([^)]*\))?$/.test(l.trim()));
     if (BLOCK_LABELS.includes(s) && started) { label = s; blocks[s] = blocks[s] || ''; continue; }
     // Price items are over when no more price links follow before the next block: back to the text.
     // (A line between price items is an item's description and stays in the block.)
@@ -405,12 +407,58 @@ const pending = [];
 async function write(collection, url, data, body = '') {
   pending.push({ collection, url, data, body });
 }
+// Final clean-up of every page's text. The old site's editor produced
+// Markdown quirks that look broken on the new design.
+const ARTICLE_CATEGORIES = new Set();
+function tidy(md, { h1 = '' } = {}) {
+  const norm = (t) => t.replace(/[*#\s\\]/g, '').toLowerCase();
+  let s = md
+    // bold split inside a word: "моч****еиспусканием", or "****Позвоните"
+    .replace(/(\S)\*{4}(\S)/g, '$1$2')
+    .replace(/^(\s*)\*{4}/gm, '$1**')
+    // an image that links to itself: just the image
+    .replace(/\[(!\[[^\]]*\]\(([^)\s]+)[^)]*\))\]\(\2[^)]*\)/g, (_, img) => img.replace(/\s+"[^"]*"\)$/, ')'))
+    // "[Педиатрия —](/x/)" from lists that had a dash after each link
+    .replace(/\[([^\]]*?)\s+[—–-]\]\(/g, '[$1](')
+    // "·     ожирение" typed bullets: real list items
+    .replace(/^\s*[·•]\s+/gm, '- ');
+
+  let blocks = s.split(/\n\s*\n/).map((b) => b.replace(/\s+$/, '')).filter((b) => b.trim());
+
+  // The page title repeated as the first line
+  if (h1 && blocks.length) {
+    const first = blocks[0].split('\n');
+    if (norm(first[0]) === norm(h1)) { first.shift(); blocks[0] = first.join('\n').trim(); if (!blocks[0]) blocks.shift(); }
+  }
+  // Articles: the category name right under the cover image ("Педиатрия")
+  blocks = blocks.filter((b, i) => !(i < 3 && ARTICLE_CATEGORIES.has(norm(b))));
+
+  // Headings that are really sentences: make them normal (bold) paragraphs
+  blocks = blocks.map((b) => {
+    const m = b.match(/^(#{1,6})\s+(.+)$/s);
+    if (!m || b.includes('\n')) return b;
+    const text = m[2].replace(/\*\*/g, '').trim();
+    if (text.length > 90 || /[.!]$/.test(text) || /\+7|\d{3}-\d{2}-\d{2}/.test(text)) return text.length > 160 ? text : `**${text}**`;
+    return b;
+  });
+
+  // Headings with nothing under them, and the same block twice in a row
+  const level = (b) => (b.match(/^(#{1,6})\s/) || [])[1]?.length || 0;
+  blocks = blocks.filter((b, i) => {
+    if (i > 0 && norm(b) === norm(blocks[i - 1])) return false;
+    const l = level(b);
+    if (!l) return true;
+    const next = blocks[i + 1];
+    return next !== undefined && !(level(next) && level(next) <= l);
+  });
+  return blocks.join('\n\n').trim();
+}
+
 async function flush() {
+  ARTICLE_CATEGORIES.add('новости'); ARTICLE_CATEGORIES.add('акции');
+  for (const p of pending) if (p.collection === 'listings' && p.data.of === 'articles') ARTICLE_CATEGORIES.add(p.data.h1.replace(/[*#\s\\]/g, '').toLowerCase());
   for (const { collection, url, data, body: raw } of pending) {
-    // The page title repeated as the first line of text
-    const norm = (t) => t.replace(/[*#\s]/g, '').toLowerCase();
-    const lines = raw.trimStart().split('\n');
-    const body = data.h1 && norm(lines[0] || '') === norm(data.h1) ? lines.slice(1).join('\n').trim() : raw;
+    const body = tidy(raw, { h1: data.h1 || data.name });
     const rel = url.replace(/^\/|\/$/g, '') || 'index';
     const file = join(CONTENT, collection, 'imported', `${decodeURIComponent(rel)}.md`);
     await mkdir(dirname(file), { recursive: true });
@@ -729,12 +777,18 @@ async function main() {
         .filter((p) => !/^\[|^-|\]\(/.test(p.trim()) && plain(p).length > 40)
         .slice(0, 2)
         .join('\n\n');
+      // Doctor lists: the doctors the old page showed (they live under /vrachi/vrachi-medyunion/,
+      // not under the specialty's own address, so they are listed explicitly).
+      const members = of === 'doctors'
+        ? [...new Set(links(body, '/vrachi/').filter((u) => segs(u).length === 3).map((u) => doctorSlugs.get(segs(u).at(-1))).filter(Boolean))]
+        : undefined;
       await write('listings', url, {
         title: makeTitle({ title: fm.title, h1, url }),
-        description: makeDescription({ description: fm.description, url, h1, body: intro || h1 }),
+        description: makeDescription({ description: fm.description, url, h1, body: of === 'doctors' ? h1 : intro || h1 }),
         h1: h1 || decode(fm.title),
         of,
-      }, intro);
+        members: members?.length ? members : undefined,
+      }, of === 'doctors' ? '' : intro);
       live.add(url);
       bump('listings');
     } else if (kind === 'page') {

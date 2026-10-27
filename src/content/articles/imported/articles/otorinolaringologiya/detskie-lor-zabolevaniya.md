@@ -7,9 +7,7 @@ kind: "article"
 category: "otorinolaringologiya"
 ---
 
-[![Детские ЛОР‑заболевания](https://medunion.group/upload/iblock/94f/5lpkbb3pwk42i3iv5koadlvzi8c0742f.png "Детские ЛОР‑заболевания")](https://medunion.group/upload/iblock/94f/5lpkbb3pwk42i3iv5koadlvzi8c0742f.png "Детские ЛОР‑заболевания")
-
-Оториноларингология
+![Детские ЛОР‑заболевания](https://medunion.group/upload/iblock/94f/5lpkbb3pwk42i3iv5koadlvzi8c0742f.png)
 
 Детский ЛОР‑врач (оториноларинголог) занимается диагностикой и лечением заболеваний уха, горла и носа у детей. У ребёнка ЛОР‑проблемы могут развиваться быстрее, чем у взрослых, чаще давать осложнения и влиять на сон, аппетит, слух и развитие речи.
 

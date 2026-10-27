@@ -4,17 +4,11 @@ import Base from '../layouts/Base.astro';
 import SearchBox from '../components/SearchBox.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import { clinics, integrations, phones, bookingPage } from '../data/site';
-import { childrenOf } from '../lib/content';
+import { childrenOf, shortName } from '../lib/content';
 
 const services = await getCollection('services');
 const byUrl = new Map(services.map((s) => [s.data.url, s]));
 const short = (s: string) => s.replace(/\s*\(.*?\)/g, '').replace(/\s*в Красноярске$/, '');
-// Section names that read better shorter in a list
-const rename: Record<string, string> = {
-  '/uslugi/centr/nevrologiya/': 'Неврология',
-  '/uslugi/centr/terapiya/': 'Терапия',
-  '/uslugi/ortopediya-/': 'Ортопедия (подбор стелек)',
-};
 
 // Quick links under the search box
 const popular = [
@@ -32,7 +26,7 @@ const popular = [
 const specialties = childrenOf('/uslugi/centr/', services);
 const topSections = childrenOf('/uslugi/', services).filter((s) => s.data.url !== '/uslugi/centr/');
 const directions = [...specialties, ...topSections]
-  .map((s) => ({ url: s.data.url, label: rename[s.data.url] ?? short(s.data.h1) }))
+  .map((s) => ({ url: s.data.url, label: shortName(s.data.url, s.data.h1) }))
   .sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 const firstCount = 15;
 

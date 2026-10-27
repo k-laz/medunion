@@ -9,13 +9,17 @@ const d = entry.data;
 const { Content } = await render(entry);
 const intro = (entry.body ?? '').trim();
 const under = <T extends { data: { url: string } }>(list: T[]) => list.filter((e) => e.data.url !== d.url && e.data.url.startsWith(d.url));
-const clean = (s: string) => s.replace(/\s*в Красноярске$/, '').replace(/^"|"$/g, '');
+const clean = (s: string) => s.replace(/\s*в Красноярске$/, '').replace(/"([^"]+)"?/g, '«$1»');
 
 let doctors: CollectionEntry<'doctors'>[] = [];
 let groups: { url: string; label: string }[] = [];
 let links: { url: string; label: string }[] = [];
 if (d.of === 'doctors') {
-  doctors = under(await getCollection('doctors')).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
+  const all = await getCollection('doctors');
+  // Doctors the old page listed, plus any whose address is inside this section
+  const everyone = /^Все врачи/.test(d.h1);
+  const picked = all.filter((doc) => everyone || d.members?.includes(doc.data.url) || (doc.data.url !== d.url && doc.data.url.startsWith(d.url)));
+  doctors = picked.sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
   // Specialty filters: the doctor sections under /vrachi/
   groups = (await getCollection('listings'))
     .filter((l) => l.data.of === 'doctors' && l.data.url !== '/vrachi/' && l.data.url.split('/').length === 4)
@@ -38,10 +42,10 @@ if (d.of === 'doctors') {
 if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 ---
 
-<PageHead url={d.url} h1={d.h1} compact>
+<PageHead url={d.url} h1={clean(d.h1)} compact>
   {groups.length > 0 && (
     <nav class="chips" aria-label="Разделы">
-      {groups.map((g) => <a class="chip" href={g.url}>{g.label}</a>)}
+      {groups.map((g) => <a class="chip" href={g.url} aria-current={g.url === d.url ? 'page' : undefined}>{g.label}</a>)}
     </nav>
   )}
 </PageHead>
@@ -52,6 +56,10 @@ if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
   {doctors.length > 0 && <div class="doctor-grid block">{doctors.map((doc) => (
     <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
   ))}</div>}
+
+  {d.of === 'doctors' && doctors.length === 0 && (
+    <p class="block">Сейчас в этом разделе нет врачей на сайте. Уточните расписание по телефону <a href="tel:+73912200303">+7 (391) 220-03-03</a> или посмотрите <a href="/vrachi/">всех врачей</a>.</p>
+  )}
 
   {links.length > 0 && (
     <ul class:list={['tile-grid', 'block', { 'tile-grid-2': d.of !== 'prices' }]}>

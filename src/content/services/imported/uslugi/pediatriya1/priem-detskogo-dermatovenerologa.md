@@ -8,7 +8,7 @@ doctors:
 teaser: "Забота о чистой коже и здоровье наших детей"
 ---
 
-[![Прием детского дерматовенеролога](https://medunion.group/upload/iblock/a73/vrtz0f1456m7mtx6vzcadl8betegszk0.jpg "Прием детского дерматовенеролога")](https://medunion.group/upload/iblock/a73/vrtz0f1456m7mtx6vzcadl8betegszk0.jpg "Прием детского дерматовенеролога")
+![Прием детского дерматовенеролога](https://medunion.group/upload/iblock/a73/vrtz0f1456m7mtx6vzcadl8betegszk0.jpg)
 
 Забота о чистой коже и здоровье наших детей
 

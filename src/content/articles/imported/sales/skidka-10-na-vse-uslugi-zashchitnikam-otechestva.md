@@ -8,7 +8,7 @@ discount: "10%"
 period: "с 01.05.2025, бессрочно"
 ---
 
-[![Скидка 10%  участникам боевых действий](https://medunion.group/upload/iblock/4fc/s81kwvoc3t63rh4mag3hn3ca70c6r4hd.webp "Скидка 10%  участникам боевых действий")](https://medunion.group/upload/iblock/4fc/s81kwvoc3t63rh4mag3hn3ca70c6r4hd.webp "Скидка 10%  участникам боевых действий")
+![Скидка 10%  участникам боевых действий](https://medunion.group/upload/iblock/4fc/s81kwvoc3t63rh4mag3hn3ca70c6r4hd.webp)
 
 Это наш способ выразить благодарность за вашу службу и защиту.
 

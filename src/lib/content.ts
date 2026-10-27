@@ -57,3 +57,15 @@ export const shortTeaser = (t: string) => {
   const first = t.match(/^.{20,}?[.!?](\s|$)/)?.[0].trim() ?? t;
   return first.length <= 140 ? first : first.slice(0, 140).replace(/\s+\S*$/, '') + '…';
 };
+
+// Short names for menus, the catalog and the home page, where a page's full
+// heading (written for search engines) is too long.
+const SHORT_NAMES: Record<string, string> = {
+  '/uslugi/centr/nevrologiya/': 'Неврология',
+  '/uslugi/centr/terapiya/': 'Терапия',
+  '/uslugi/pediatriya1/priyem-detskogo-nevrologa/': 'Приём детского невролога',
+  '/uslugi/ortopediya-/': 'Ортопедия (подбор стелек)',
+};
+/** "МРТ открытого типа (магнитно-резонансная томография) в Красноярске" -> "МРТ открытого типа" */
+export const shortName = (url: string, h1: string) =>
+  SHORT_NAMES[url] ?? h1.replace(/\s*\((магнитно|компьютерная|Фиброгастроскопия)[^)]*\)/gi, '').replace(/\s+в Красноярске$/, '').trim();

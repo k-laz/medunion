@@ -4,4 +4,7 @@ title: "Врачи-гастроэнтерологи в Красноярске �
 description: "Врачи-гастроэнтерологи в Красноярске. Предлагаем жителям города записаться на приём и консультацию к гастроэнтерологу в клинику ”Медюнион”. Адреса клиник и цены на услуги врача-гастроэнтеролога вы"
 h1: "Врачи-гастроэнтерологи в Красноярске"
 of: "doctors"
+members:
+  - "/vrachi/vrachi-medyunion/kuzyakina-irina-gennadevna/"
+  - "/vrachi/vrachi-medyunion/mankovskaya-tatyana-vladimirovna/"
 ---

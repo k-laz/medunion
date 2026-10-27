@@ -92,6 +92,8 @@ const listings = defineCollection({
     ...seo,
     h1: z.string(),
     of: z.enum(['doctors', 'articles', 'news', 'sales', 'prices']),
+    // Doctor lists: addresses of the doctors shown (otherwise: doctors under this address)
+    members: z.array(z.string()).optional(),
   }),
 });
 

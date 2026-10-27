@@ -7,9 +7,7 @@ kind: "article"
 category: "pediatriya"
 ---
 
-[![Патронаж новорожденных](https://medunion.group/upload/iblock/e63/t19zc0mon8btjuuk1pkv5xluleuf9ws5.jpeg "Патронаж новорожденных")](https://medunion.group/upload/iblock/e63/t19zc0mon8btjuuk1pkv5xluleuf9ws5.jpeg "Патронаж новорожденных")
-
-Педиатрия
+![Патронаж новорожденных](https://medunion.group/upload/iblock/e63/t19zc0mon8btjuuk1pkv5xluleuf9ws5.jpeg)
 
 Проводится в первые сутки после выписки из роддома.
 

@@ -7,9 +7,7 @@ kind: "article"
 category: "poleznye-sovety"
 ---
 
-[![Режим черного неба](https://medunion.group/upload/iblock/164/qqd41396tx0nclfyehwks4s5yfqik5j7.jpeg "Режим черного неба")](https://medunion.group/upload/iblock/164/qqd41396tx0nclfyehwks4s5yfqik5j7.jpeg "Режим черного неба")
-
-Полезные советы
+![Режим черного неба](https://medunion.group/upload/iblock/164/qqd41396tx0nclfyehwks4s5yfqik5j7.jpeg)
 
 Уже несколько дней на территории г.Красноярска и за его пределами качество воздуха оставляет желать лучшего, что заметили не только приборы, но и сами жители.
 

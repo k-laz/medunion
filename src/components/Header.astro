@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { phones, clinics, bookingPage } from '../data/site';
 import SearchBox from './SearchBox.astro';
-import { childrenOf } from '../lib/content';
+import { childrenOf, shortName } from '../lib/content';
 const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
 const nav = [
   { href: '/uslugi/', label: 'Услуги' },
@@ -14,8 +14,7 @@ const nav = [
 ];
 const current = Astro.url.pathname;
 // Main service directions for the mobile menu
-const short = (t: string) => t.replace(/\s*\(.*?\)/g, '').replace(/\s*в Красноярске$/, '');
-const directions = childrenOf('/uslugi/', await getCollection('services')).map((d) => ({ href: d.data.url, label: short(d.data.h1) }));
+const directions = childrenOf('/uslugi/', await getCollection('services')).map((d) => ({ href: d.data.url, label: shortName(d.data.url, d.data.h1) }));
 const clinicPage: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',

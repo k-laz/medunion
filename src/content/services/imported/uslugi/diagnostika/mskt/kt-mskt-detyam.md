@@ -6,7 +6,7 @@ h1: "КТ, МСКТ детям"
 teaser: "Компьютерная томография для детей"
 ---
 
-[![КТ, МСКТ детям](https://medunion.group/upload/iblock/985/adgzrl8zhwb2y584trvkkxcnxkm3piol.JPG "КТ, МСКТ детям")](https://medunion.group/upload/iblock/985/adgzrl8zhwb2y584trvkkxcnxkm3piol.JPG "КТ, МСКТ детям")
+![КТ, МСКТ детям](https://medunion.group/upload/iblock/985/adgzrl8zhwb2y584trvkkxcnxkm3piol.JPG)
 
 Компьютерная томография для детей
 

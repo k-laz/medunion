@@ -7,9 +7,7 @@ kind: "article"
 category: "otorinolaringologiya"
 ---
 
-[![Рентген-диагностика в оториноларингологии](https://medunion.group/upload/iblock/df8/hc3ea3k2c01cjdrs6501nqpx7i32qlko.jpeg "Рентген-диагностика в оториноларингологии")](https://medunion.group/upload/iblock/df8/hc3ea3k2c01cjdrs6501nqpx7i32qlko.jpeg "Рентген-диагностика в оториноларингологии")
-
-Оториноларингология
+![Рентген-диагностика в оториноларингологии](https://medunion.group/upload/iblock/df8/hc3ea3k2c01cjdrs6501nqpx7i32qlko.jpeg)
 
 27 апреля 2026
 

@@ -8,9 +8,7 @@ discount: "5%"
 period: "с 30.05.2025, бессрочно"
 ---
 
-[![Скидка на КТ легких 5%](https://medunion.group/upload/iblock/752/fbvq41rd3f9ovyfn9xsd2bbw3l53pybx.png "Скидка на КТ легких 5%")](https://medunion.group/upload/iblock/752/fbvq41rd3f9ovyfn9xsd2bbw3l53pybx.png "Скидка на КТ легких 5%")
-
-##### **С заботой о свободном дыхании**
+![Скидка на КТ легких 5%](https://medunion.group/upload/iblock/752/fbvq41rd3f9ovyfn9xsd2bbw3l53pybx.png)
 
 ##### Стоимость на КТ легких 4180 рублей
 

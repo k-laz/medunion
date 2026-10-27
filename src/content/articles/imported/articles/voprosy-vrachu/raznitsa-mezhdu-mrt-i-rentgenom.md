@@ -7,9 +7,7 @@ kind: "article"
 category: "voprosy-vrachu"
 ---
 
-[![Разница между МРТ и рентгеном](https://medunion.group/upload/iblock/6a2/4i9jguth0uk3j2pc615zj9h55tv4b03b.jpeg "Разница между МРТ и рентгеном")](https://medunion.group/upload/iblock/6a2/4i9jguth0uk3j2pc615zj9h55tv4b03b.jpeg "Разница между МРТ и рентгеном")
-
-Вопросы врачу
+![Разница между МРТ и рентгеном](https://medunion.group/upload/iblock/6a2/4i9jguth0uk3j2pc615zj9h55tv4b03b.jpeg)
 
 Разница между МРТ и рентгеном существенна. Но при этом каждый метод имеет право на существование, они являются лишь дополнением к общему исследованию.
 

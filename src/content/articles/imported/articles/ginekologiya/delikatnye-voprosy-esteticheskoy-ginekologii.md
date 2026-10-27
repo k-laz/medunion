@@ -7,9 +7,7 @@ kind: "article"
 category: "ginekologiya"
 ---
 
-[![Деликатные вопросы эстетической гинекологии](https://medunion.group/upload/iblock/30a/7wwk3tgv9ii3k6a7c6u9kcj0mq899itb.jpeg "Деликатные вопросы эстетической гинекологии")](https://medunion.group/upload/iblock/30a/7wwk3tgv9ii3k6a7c6u9kcj0mq899itb.jpeg "Деликатные вопросы эстетической гинекологии")
-
-Гинекология
+![Деликатные вопросы эстетической гинекологии](https://medunion.group/upload/iblock/30a/7wwk3tgv9ii3k6a7c6u9kcj0mq899itb.jpeg)
 
 *Современные женщины стремятся к совершенству во всем, и это желание вполне оправдано. Ведь когда нам нравится наше тело, наш внешний вид, мы становимся увереннее, гармоничнее,счастливее.*
 

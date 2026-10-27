@@ -8,7 +8,7 @@ doctors:
 teaser: "Вместе справимся с аллергией"
 ---
 
-[![Прием детского аллерголога-иммунолога](https://medunion.group/upload/iblock/6ee/egcxmxsg7z5s7wp7kb7259c1t285370z.jpg "Прием детского аллерголога-иммунолога")](https://medunion.group/upload/iblock/6ee/egcxmxsg7z5s7wp7kb7259c1t285370z.jpg "Прием детского аллерголога-иммунолога")
+![Прием детского аллерголога-иммунолога](https://medunion.group/upload/iblock/6ee/egcxmxsg7z5s7wp7kb7259c1t285370z.jpg)
 
 Вместе справимся с аллергией
 

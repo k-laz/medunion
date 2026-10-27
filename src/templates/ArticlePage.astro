@@ -1,5 +1,5 @@
 ---
-import { render, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import CtaBand from '../components/CtaBand.astro';
 
@@ -8,6 +8,9 @@ const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
 const isArticle = 'kind' in d;
+// Section pages (e.g. /pacientam/): list the pages inside them
+import { childrenOf } from '../lib/content';
+const subpages = isArticle ? [] : childrenOf(d.url, await getCollection('pages')).sort((a, b) => a.data.h1.localeCompare(b.data.h1, 'ru'));
 ---
 
 <PageHead url={d.url} h1={d.h1} compact>
@@ -23,8 +26,15 @@ const isArticle = 'kind' in d;
 </PageHead>
 
 <div class="wrap page-body">
-  <article class="prose block">
-    <Content />
-  </article>
+  {subpages.length > 0 && (
+    <ul class="tile-grid tile-grid-2 subpages">
+      {subpages.map((p) => <li><a class="tile" href={p.data.url}><span>{p.data.h1}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>)}
+    </ul>
+  )}
+  {(entry.body ?? '').trim() && (
+    <article class="prose block">
+      <Content />
+    </article>
+  )}
   {isArticle && <CtaBand title="Есть вопросы по теме?" text="Запишитесь на приём к врачу онлайн или по телефону." />}
 </div>

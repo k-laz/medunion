@@ -8,7 +8,7 @@ discount: "4%"
 period: "с 30.12.25, бессрочно"
 ---
 
-[![Скидка 4% многодетным семьям](https://medunion.group/upload/iblock/bff/64uvhkax3qz7z47kxj835clv6y22wdfu.png "Скидка 4% многодетным семьям")](https://medunion.group/upload/iblock/bff/64uvhkax3qz7z47kxj835clv6y22wdfu.png "Скидка 4% многодетным семьям")
+![Скидка 4% многодетным семьям](https://medunion.group/upload/iblock/bff/64uvhkax3qz7z47kxj835clv6y22wdfu.png)
 
 Растет семья? да будут скидки!
 
