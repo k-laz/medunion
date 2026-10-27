@@ -25,8 +25,8 @@ for (const f of await walk(dir)) {
   if (!/\.(html|css|js|json|xml|txt)$/.test(f)) continue;
   const before = await readFile(f, 'utf8');
   let s = before;
-  if (f.endsWith('.html')) {
-    // href="/x", src="/x", action="/x", content="/x" (not "//cdn")
+  if (f.endsWith('.html') || f.endsWith('.js')) {
+    // href="/x", src="/x", action="/x" (not "//cdn"), also inside scripts
     s = s.replace(/\b(href|src|action|data-src)="\/(?!\/)/g, `$1="${base}/`);
   }
   if (f.endsWith('.css') || f.endsWith('.html')) s = s.replace(/url\(\s*(["']?)\/(?!\/)/g, `url($1${base}/`);

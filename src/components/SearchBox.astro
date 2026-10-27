@@ -1,14 +1,13 @@
 ---
-// Search field with instant suggestions from /search.json.
-// Without JavaScript it falls back to a Yandex site search.
+// Search field with instant suggestions from /search.json. Only searches
+// this site (no web search). Without JavaScript, Enter opens the catalog.
 interface Props { id: string; large?: boolean; placeholder?: string }
 const { id, large = false, placeholder = 'Врач, услуга или исследование' } = Astro.props;
 ---
 
-<form class:list={['search', { 'search-lg': large }]} action="https://yandex.ru/search/" method="get" role="search" data-search>
+<form class:list={['search', { 'search-lg': large }]} action="/uslugi/" method="get" role="search" data-search>
   <label class="sr-only" for={id}>Поиск по сайту</label>
-  <input id={id} name="text" type="search" autocomplete="off" placeholder={placeholder} />
-  <input type="hidden" name="site" value="medunion.group" />
+  <input id={id} name="q" type="search" autocomplete="off" placeholder={placeholder} />
   <button class="btn btn-primary" type="submit">
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4" /><path d="m20 20-4-4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
     <span>Найти</span>
@@ -17,10 +16,10 @@ const { id, large = false, placeholder = 'Врач, услуга или иссл
 </form>
 
 <script>
-  type Item = { t: string; u: string; k: string };
+  import { search } from '../lib/search.js';
+  type Item = { t: string; u: string; k: string; d?: string };
   let index: Promise<Item[]> | null = null;
   const load = () => (index ??= fetch('/search.json').then((r) => r.json()));
-  const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е');
 
   for (const form of document.querySelectorAll<HTMLFormElement>('[data-search]')) {
     if (form.dataset.ready) continue;
@@ -29,17 +28,12 @@ const { id, large = false, placeholder = 'Врач, услуга или иссл
     const list = form.querySelector<HTMLUListElement>('.search-results')!;
 
     const show = async () => {
-      const q = norm(input.value.trim());
+      const q = input.value.trim();
       if (q.length < 2) { list.hidden = true; return; }
-      const words = q.split(/\s+/);
-      const items = await load();
-      const hits = items
-        .map((i) => ({ i, t: norm(i.t), all: norm(i.t + ' ' + i.k) }))
-        .filter(({ all }) => words.every((w) => all.includes(w)))
-        .sort((a, b) => Number(!a.t.startsWith(words[0])) - Number(!b.t.startsWith(words[0])) || a.t.length - b.t.length)
-        .slice(0, 8);
+      const hits = search(await load(), q, 8);
+      if (input.value.trim() !== q) return; // typed on meanwhile
       list.innerHTML = '';
-      for (const { i } of hits) {
+      for (const i of hits) {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = i.u;
@@ -49,15 +43,19 @@ const { id, large = false, placeholder = 'Врач, услуга или иссл
         li.append(a);
         list.append(li);
       }
-      if (!hits.length) list.innerHTML = '<li class="search-empty">Ничего не нашлось. Позвоните нам, подскажем.</li>';
+      if (!hits.length) {
+        list.innerHTML = '<li class="search-empty">Ничего не нашлось. Посмотрите <a href="/uslugi/">все услуги</a> или позвоните <a href="tel:+73912200303">+7 (391) 220-03-03</a>, подскажем.</li>';
+      }
       list.hidden = false;
     };
 
-    input.addEventListener('focus', load, { once: true });
+    input.addEventListener('focus', () => { load(); }, { once: true });
     input.addEventListener('input', show);
-    form.addEventListener('submit', (e) => {
-      const first = list.querySelector<HTMLAnchorElement>('a');
-      if (first && !list.hidden) { e.preventDefault(); location.href = first.href; }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await show();
+      const first = list.querySelector<HTMLAnchorElement>('li:not(.search-empty) a');
+      if (first) location.href = first.href;
     });
     document.addEventListener('click', (e) => { if (!form.contains(e.target as Node)) list.hidden = true; });
     input.addEventListener('keydown', (e) => { if (e.key === 'Escape') list.hidden = true; });

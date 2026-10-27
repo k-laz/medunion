@@ -705,7 +705,9 @@ async function main() {
   for (const [url, { fm, body }] of pages) {
     const kind = classify(url);
     if (manual.has(url)) { live.add(url); continue; }
-    const h1 = decode(fm.h1);
+    // A few old pages have a whole paragraph as their heading: keep its first sentence
+    let h1 = decode(fm.h1);
+    if (h1.length > 150) h1 = h1.split(/(?<=[а-яё»)])[.!]\s/)[0].replace(/[.!]$/, '');
     if (kind === 'service') {
       const { main, blocks } = splitBlocks(body);
       const cards = stripCards(main, url);

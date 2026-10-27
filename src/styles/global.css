@@ -188,6 +188,7 @@ p { margin: 0 0 1rem; }
 .search-results a:hover, .search-results a:focus { background: var(--tint); }
 .search-results small { color: var(--muted); font-size: 0.8125rem; }
 .search-empty { padding: 10px 12px; color: var(--muted); }
+.search-empty a { display: inline; padding: 0; color: var(--brand); text-decoration: underline; }
 @media (max-width: 760px) { .search .btn span { display: none; } .search .btn { padding: 0 18px; } }
 
 /* Chips */
