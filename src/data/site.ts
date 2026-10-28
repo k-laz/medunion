@@ -58,9 +58,9 @@ export const integrations = {
   dailyGrowWidgetId: 'b4486417-63a6-4218-89b2-8db8a6f40779',
   // Top.Mail.Ru (VK) counter, used for VK ads. Same id as on the old site.
   topMailRuId: '3628693',
-  // Yandex Webmaster ownership check. If the old site was verified with a
-  // <meta name="yandex-verification"> tag, put its content here, e.g. 'a1b2c3d4e5f6'.
-  yandexVerification: '',
+  // Yandex Webmaster ownership checks, copied from the old site's <head>.
+  // Without them Webmaster loses access to the site after the switch.
+  yandexVerification: ['2de5787671f114c1', '53385810d7a8cf62'],
 };
 
 // Every "Записаться" button leads here. The page embeds the MedFlex booking.
