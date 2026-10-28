@@ -245,9 +245,24 @@ function stripCards(md, url) {
       const j = prevReal(i);
       if (j >= 0 && isLabel(trimmed[j])) drop.add(j);
       const next = trimmed[i + 1] || '';
-      if (next && !next.includes('](') && !/^[\[#*]/.test(next) && /[.!?»)]$|\s\S+\s\S+\s/.test(next)) {
+      if (next && !next.includes('](') && !/^[\[#*]/.test(next) && (/[.!?»):;]$|\s\S+\s\S+\s/.test(next) || next.replace(/\\$/, '').trim().toLowerCase() === m[1].trim().toLowerCase())) {
         drop.add(i + 1);
-        teasers.set(m[2], { text: decode(next.replace(/\s+/g, ' ')), fromParent: m[2].startsWith(url) });
+        // A card's text can run over a few short lines ("МРТ брюшной полости:" and a list).
+        // Take them too, up to the next card, a heading or a long paragraph (real page text).
+        const extra = [];
+        for (let k = i + 2; k < trimmed.length && extra.length < 4; k++) {
+          const t2 = trimmed[k];
+          if (!t2) continue;
+          if (fragment(t2) || cardLink.test(t2) || /^#/.test(t2) || t2.includes('](') || t2.length > 250) break;
+          if (isLabel(t2) && (fragment(trimmed[k + 1] || '') || cardLink.test(trimmed[k + 1] || ''))) break; // next card's label
+          extra.push(k);
+        }
+        // only when the card text is clearly cut short (ends with ":" or the lines are list items)
+        const head = next.replace(/\\$/, '').trim();
+        const cut = /:$/.test(head) || head.toLowerCase() === m[1].trim().toLowerCase();
+        if (cut) extra.forEach((k) => drop.add(k));
+        const full = [cut && !/:$/.test(head) ? head + ':' : next, ...(cut ? extra.map((k) => trimmed[k]) : [])].join(' ');
+        teasers.set(m[2], { text: decode(full.replace(/\\/g, '').replace(/\s+/g, ' ')), fromParent: m[2].startsWith(url) });
       }
     } else if ((m = t.match(doctorLink))) {
       drop.add(i);
@@ -745,6 +760,7 @@ async function main() {
       if (type === 'sale') {
         text = text.replace(/^\s*(\d{1,2}\s?%)\s*$/m, (_, d) => { discount = d.replace(/\s/g, ''); return ''; });
         text = text.replace(/^\s*(\d{2}\.\d{2}\.\d{2,4})\s*[-–]\s*(бессрочно|\d{2}\.\d{2}\.\d{2,4})\s*$/m, (_, a, b) => { period = b === 'бессрочно' ? `с ${a}, бессрочно` : `с ${a} по ${b}`; return ''; });
+        if (!period) text = text.replace(/^\s*бессрочно\s*$/im, () => { period = 'бессрочно'; return ''; });
         const plainH1 = h1.toLowerCase().replace(/[^а-яёa-z0-9]/g, '');
         text = text.split(/\n\n/).filter((p) => p.replace(/\*/g, '').toLowerCase().replace(/[^а-яёa-z0-9]/g, '') !== plainH1).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
       }

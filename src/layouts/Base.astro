@@ -57,5 +57,20 @@ const canonical = new URL(url, Astro.site).href;
     <Footer />
     <CookieNotice />
     <Integrations />
+    <script>
+      // Sticky header and page tabs: keep their real heights in CSS variables, so
+      // "#about" style links stop just below them instead of under them.
+      const root = document.documentElement;
+      const header = document.querySelector<HTMLElement>('.site-header');
+      const tabs = document.querySelector<HTMLElement>('.tabs');
+      const measure = () => {
+        if (header) root.style.setProperty('--header-h', `${header.offsetHeight}px`);
+        root.style.setProperty('--tabs-h', `${tabs ? tabs.offsetHeight : 0}px`);
+      };
+      measure();
+      const ro = new ResizeObserver(measure);
+      if (header) ro.observe(header);
+      if (tabs) ro.observe(tabs);
+    </script>
   </body>
 </html>
