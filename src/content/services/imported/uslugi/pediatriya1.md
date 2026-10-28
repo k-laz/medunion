@@ -6,5 +6,3 @@ h1: "Педиатрия"
 related:
   - "/uslugi/vyezd-vracha-na-dom/vyezd-pediatra-na-dom-/"
 ---
-
-Оформление детских справок

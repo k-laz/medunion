@@ -47,7 +47,3 @@ prices:
   - name: "МРТ (1,5 Т ) пояснично-крестцового отдела позвоночника и копчика"
     price: 8700
 ---
-
-E-mail
-
-[info-med@medunion.group](mailto:info-med@medunion.group)

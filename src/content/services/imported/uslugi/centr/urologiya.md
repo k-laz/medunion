@@ -13,7 +13,3 @@ prices:
   - name: "Консультация уролога (первичная)"
     price: 2500
 ---
-
-E-mail
-
-[info-med@medunion.group](mailto:info-med@medunion.group)

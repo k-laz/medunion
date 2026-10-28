@@ -9,7 +9,7 @@ doctors:
   - "imported/vrachi/otdelenie-diagnostiki-/shinkarenko-elena-vladimirovna"
   - "imported/vrachi/otdelenie-diagnostiki-/starikova-irina-vadimovna"
   - "imported/vrachi/otdelenie-diagnostiki-/timofeeva-darya-aleksandrovna"
-teaser: "Ультразвуковое исследование для самых маленьких и подростков"
+teaser: "Ультразвуковое исследование для самых маленьких и подростков:"
 ---
 
 ![УЗИ детям](https://medunion.group/upload/iblock/c9f/carolu142orz127wz4h334hp3ccqta72.jpg)

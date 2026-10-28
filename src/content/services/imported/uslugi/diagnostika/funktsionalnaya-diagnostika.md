@@ -1,7 +1,7 @@
 ---
 url: "/uslugi/diagnostika/funktsionalnaya-diagnostika/"
 title: "Функциональная диагностика в Красноярске | Медюнион"
-description: "Функциональная диагностика. Описание обследования (расшифровка результатов) в день проведения диагностики"
+description: "Функциональная диагностика в Медюнион, Красноярск. Цены, врачи, запись онлайн и по телефону +7 (391) 220-03-03."
 h1: "Функциональная диагностика"
 doctors:
   - "imported/vrachi/otdelenie-diagnostiki-/shinkarenko-elena-vladimirovna"
@@ -12,5 +12,3 @@ doctors:
 related:
   - "/uslugi/diagnostika/ultrazvukovaya-diagnostika/ekho-serdtsa/"
 ---
-
-Описание обследования (расшифровка результатов) в день проведения диагностики

@@ -52,7 +52,3 @@ prices:
   - name: "Паравертебральная блокада невролога (Без стоимости лекарственных препаратов)"
     price: 1800
 ---
-
-E-mail
-
-[info-med@medunion.group](mailto:info-med@medunion.group)

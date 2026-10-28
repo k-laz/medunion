@@ -21,7 +21,3 @@ prices:
   - name: "Консультация травматолога-ортопеда (первичная) + УЗИ суставов"
     price: 4200
 ---
-
-E-mail
-
-[info-med@medunion.group](mailto:info-med@medunion.group)

@@ -245,21 +245,24 @@ function stripCards(md, url) {
       const j = prevReal(i);
       if (j >= 0 && isLabel(trimmed[j])) drop.add(j);
       const next = trimmed[i + 1] || '';
-      if (next && !next.includes('](') && !/^[\[#*]/.test(next) && (/[.!?»):;]$|\s\S+\s\S+\s/.test(next) || next.replace(/\\$/, '').trim().toLowerCase() === m[1].trim().toLowerCase())) {
+      const after = trimmed.slice(i + 2).find((x) => x) || '';
+      const between = next.length < 250 && after && (fragment(after) || cardLink.test(after)); // squeezed between two cards
+      if (next && !next.includes('](') && !/^[\[#*]/.test(next) && (between || /[.!?»):;]$|\s\S+\s\S+\s/.test(next) || next.replace(/\\$/, '').trim().toLowerCase() === m[1].trim().toLowerCase())) {
         drop.add(i + 1);
         // A card's text can run over a few short lines ("МРТ брюшной полости:" and a list).
         // Take them too, up to the next card, a heading or a long paragraph (real page text).
         const extra = [];
+        let closed = false; // the run ends where the next card starts
         for (let k = i + 2; k < trimmed.length && extra.length < 4; k++) {
           const t2 = trimmed[k];
           if (!t2) continue;
-          if (fragment(t2) || cardLink.test(t2) || /^#/.test(t2) || t2.includes('](') || t2.length > 250) break;
-          if (isLabel(t2) && (fragment(trimmed[k + 1] || '') || cardLink.test(trimmed[k + 1] || ''))) break; // next card's label
+          if (fragment(t2) || cardLink.test(t2) || doctorLink.test(t2)) { closed = true; break; }
+          if (/^#/.test(t2) || t2.includes('](') || t2.length > 250) break;
           extra.push(k);
         }
         // only when the card text is clearly cut short (ends with ":" or the lines are list items)
         const head = next.replace(/\\$/, '').trim();
-        const cut = /:$/.test(head) || head.toLowerCase() === m[1].trim().toLowerCase();
+        const cut = /:$/.test(head) || head.toLowerCase() === m[1].trim().toLowerCase() || (closed && extra.every((k) => trimmed[k].length < 160));
         if (cut) extra.forEach((k) => drop.add(k));
         const full = [cut && !/:$/.test(head) ? head + ':' : next, ...(cut ? extra.map((k) => trimmed[k]) : [])].join(' ');
         teasers.set(m[2], { text: decode(full.replace(/\\/g, '').replace(/\s+/g, ' ')), fromParent: m[2].startsWith(url) });
@@ -269,8 +272,8 @@ function stripCards(md, url) {
       doctors.push(m[2]);
       const j = prevReal(i);
       if (j >= 0 && isLabel(trimmed[j])) drop.add(j);
-      for (let k = i + 1; k < Math.min(i + 5, trimmed.length); k++) {
-        if (fragment(trimmed[k]) || trimmed[k] === 'Телефон' || /^\[[^\]]*\]\(tel:/.test(trimmed[k])) drop.add(k);
+      for (let k = i + 1; k < Math.min(i + 7, trimmed.length); k++) {
+        if (fragment(trimmed[k]) || /^(Телефон|E-mail)$/.test(trimmed[k]) || /^\[[^\]]*\]\((tel|mailto):/.test(trimmed[k])) drop.add(k);
         else break;
       }
     } else if (/^\*{2}$/.test(t)) drop.add(i);

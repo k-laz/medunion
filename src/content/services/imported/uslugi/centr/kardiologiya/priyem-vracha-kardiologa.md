@@ -7,7 +7,7 @@ doctors:
   - "imported/vrachi/vrachi-medyunion/malakhaeva-zhanna-vyacheslavovna"
   - "imported/vrachi/vrachi-medyunion/shtegman-oleg-anatolevich"
   - "imported/vrachi/vrachi-medyunion/shurdesova-mariya-viktorovna"
-teaser: "Диагностика заболеваний сердца и сосудов на современном высококачественном оборудовании. Лечение и наблюдение у квалифицированного врача кардиолога."
+teaser: "Диагностика заболеваний сердца и сосудов на современном высококачественном оборудовании. Лечение и наблюдение у квалифицированного врача кардиолога.:"
 prices:
   - name: "Консультация кардиолога Штегман О.А., ДМН (повторная)"
     price: 3200
