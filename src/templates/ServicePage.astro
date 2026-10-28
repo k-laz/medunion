@@ -17,7 +17,7 @@ const doctors = d.doctors.length ? await getEntries(d.doctors) : [];
 const allServices = await getCollection('services');
 const children = childrenOf(d.url, allServices);
 const related = d.related.map((u) => allServices.find((x) => x.data.url === u)).filter((x) => x !== undefined);
-const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
+const bookingUrl = bookingPage; // our /appointment/ page
 
 // /uslugi/ is the catalog: every section with its services, plus search.
 const isCatalog = d.url === '/uslugi/';

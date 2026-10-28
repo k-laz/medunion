@@ -11,7 +11,7 @@ const d = entry.data;
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id);
-const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
+const bookingUrl = bookingPage; // our /appointment/ page
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',

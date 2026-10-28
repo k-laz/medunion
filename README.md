@@ -95,11 +95,10 @@ See [deploy/SERVER.md](deploy/SERVER.md): one-time server setup (nginx on a Russ
 
 ## Online booking
 
-Every "Записаться" button leads to `/appointment/` (the same address as on the old site). That page embeds the MedFlex booking, which writes appointments into the clinic's МИС.
+Every "Записаться" button leads to `/appointment/` (the same address as on the old site). For now that page books by phone. The old site's online form talks to the clinic's МИС through the Bitrix server (`/local/Conversite/ajax/api_mis.php`); connecting the new site needs the МИС API details, kept in server settings, never in this repository.
 
 ## Integrations kept from the old site
 
-- **MedFlex** online booking (connected to the clinic's medical system)
 - **Bitrix24** CRM: call tracking and the site button (callbacks, chat)
 - **Yandex Metrica** counter 108194831
 - **daily-grow** messenger widget

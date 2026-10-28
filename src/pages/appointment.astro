@@ -1,39 +1,39 @@
 ---
-// Online booking. Same address as on the old site (/appointment/), which
-// every old page, ad and bookmark links to.
-// The booking itself is MedFlex, connected to the clinic's medical
-// information system (МИС), so appointments land straight in the schedule.
+// Booking. Same address as on the old site (/appointment/), which every old
+// page, ad and bookmark links to.
+//
+// The old site books through its own form, which talks to the clinic's
+// medical information system (МИС) via /local/Conversite/ajax/api_mis.php on
+// the Bitrix server. That form can't be copied as is: it needs the МИС API
+// address and keys, which must live on the server, never in this repository.
+// Until that connection is set up, this page books by phone.
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
-import { clinics, medflexUrl as bookingUrl, phones } from '../data/site';
+import { clinics, phones } from '../data/site';
 ---
 
 <Base
-  title="Запись на приём онлайн | Медюнион"
-  description="Онлайн-запись к врачу и на диагностику в Медюнион: выберите специалиста, клинику и удобное время. Красноярск и Канск. Телефон +7 (391) 220-03-03."
+  title="Запись на приём | Медюнион"
+  description="Запись к врачу и на диагностику в Медюнион, Красноярск и Канск. Позвоните +7 (391) 220-03-03: администратор подберёт врача, клинику и удобное время."
   url="/appointment/"
 >
-  <PageHead url="/appointment/" h1="Запись на приём" lead="Выберите врача или услугу, клинику и удобное время. Запись сразу попадает в расписание клиники." compact />
+  <PageHead url="/appointment/" h1="Запись на приём" lead="Позвоните нам: администратор подберёт врача и удобное время, ответит на вопросы о подготовке и ценах." compact />
 
   <div class="wrap page-body booking-page">
-    <div class="booking-frame">
-      <iframe src={bookingUrl} title="Онлайн-запись Медюнион" loading="eager" allow="clipboard-write"></iframe>
-      <p class="booking-fallback">Окно записи не открылось? <a href={bookingUrl} target="_blank" rel="noopener">Открыть запись в новой вкладке</a></p>
-    </div>
+    <section class="booking-main info-card">
+      <p class="info-price"><span>Единый номер для записи</span><a href={`tel:${phones.main.tel}`}>{phones.main.display}</a></p>
+      <a class="btn btn-primary booking-call" href={`tel:${phones.main.tel}`}>Позвонить</a>
+      <p class="booking-note">Если не можете говорить, напишите нам в мессенджер через кнопку в углу экрана.</p>
+    </section>
 
-    <aside class="booking-side">
-      <section class="info-card">
-        <p class="info-price"><span>Запись по телефону</span><a href={`tel:${phones.main.tel}`}>{phones.main.display}</a></p>
-        <ul class="info-places">
-          {Object.values(clinics).map((c) => (
-            <li>
-              <strong>{c.city}, {c.address}</strong>
-              <span>{c.hours.join(' · ')}</span>
-              {c.phone.tel !== phones.main.tel && <a href={`tel:${c.phone.tel}`}>{c.phone.display}</a>}
-            </li>
-          ))}
-        </ul>
-      </section>
-    </aside>
+    <ul class="booking-clinics">
+      {Object.values(clinics).map((c) => (
+        <li class="info-card">
+          <h2>{c.city}, {c.address}</h2>
+          <ul class="booking-hours">{c.hours.map((h) => <li>{h}</li>)}</ul>
+          <a href={`tel:${c.phone.tel}`}>{c.phone.display}</a>
+        </li>
+      ))}
+    </ul>
   </div>
 </Base>

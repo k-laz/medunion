@@ -7,7 +7,7 @@ interface Props { prices?: { name: string; price: number }[]; clinicKeys?: Clini
 const { prices = [] } = Astro.props;
 const clinicKeys = Astro.props.clinicKeys?.length ? Astro.props.clinicKeys : (['kurchatova', 'instrumentalnaya'] as ClinicKey[]);
 const from = prices.length ? Math.min(...prices.map((p) => p.price)) : 0;
-const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
+const bookingUrl = bookingPage; // our /appointment/ page
 const phonesShown = [...new Map(clinicKeys.map((k) => [clinics[k].phone.tel, clinics[k].phone])).values()];
 ---
 

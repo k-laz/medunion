@@ -2,7 +2,7 @@
 import { integrations, phones, bookingPage } from '../data/site';
 interface Props { title?: string; text?: string }
 const { title = 'Запишитесь на приём', text = 'Онлайн или по телефону, в удобной для вас клинике.' } = Astro.props;
-const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
+const bookingUrl = bookingPage; // our /appointment/ page
 ---
 
 <section class="cta-band">

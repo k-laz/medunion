@@ -50,7 +50,6 @@ export const legal = {
 // the same accounts after the switch.
 export const integrations = {
   metrikaId: 108194831,
-  medflexUser: 'f003f028f3bd05d936b335f721f949aa',
   bitrix24: {
     callTracker: 'https://cdn-ru.bitrix24.ru/b37371128/crm/tag/call.tracker.js',
     siteButton: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js',
@@ -63,9 +62,8 @@ export const integrations = {
   yandexVerification: ['2de5787671f114c1', '53385810d7a8cf62'],
 };
 
-// Every "Записаться" button leads here. The page embeds the MedFlex booking.
+// Every "Записаться" button leads here.
 export const bookingPage = '/appointment/';
-export const medflexUrl = `https://booking.medflex.ru/?user=${integrations.medflexUser}`;
 
 // Analytics, call tracking and chat only load on the real site.
 // Preview builds stay silent so test visits don't pollute Metrica.

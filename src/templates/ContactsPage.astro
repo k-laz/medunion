@@ -12,7 +12,7 @@ const pageFor: Record<ClinicKey, string> = {
   kansk: '/contacts/klinika-v-kanske/',
 };
 const mapUrl = (k: ClinicKey) => `https://yandex.ru/maps/?text=${encodeURIComponent(`${clinics[k].city}, ${clinics[k].address}, Медюнион`)}`;
-const bookingUrl = bookingPage; // our /appointment/ page with the MedFlex booking
+const bookingUrl = bookingPage; // our /appointment/ page
 ---
 
 <PageHead url={d.url} h1={d.h1} compact />
