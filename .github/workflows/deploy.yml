@@ -35,7 +35,9 @@ jobs:
 
       - name: Check the nginx redirect list
         run: |
-          sudo apt-get install -y -q nginx-light >/dev/null
+          # refresh the package list first: without it the runner's mirror can 404
+          sudo apt-get update -q
+          sudo apt-get install -y -q nginx-light
           printf 'events {}\nhttp { server { listen 8080; include %s; } }\n' "$PWD/deploy/redirects.nginx.conf" > /tmp/test.conf
           sudo nginx -t -c /tmp/test.conf
 
