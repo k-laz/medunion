@@ -1,0 +1,116 @@
+---
+// Free appointment time of one doctor, live from the МИС through our server
+// (GET /api/schedule, see docs/server-api.md).
+//
+// Real site: if the server or the МИС doesn't answer, the block removes
+// itself and the page keeps the phone booking. Preview builds have no server,
+// so they show clearly marked sample times to show how the block looks.
+import { apiBase, bookingPage, clinics, isProduction, phones, type ClinicKey } from '../data/site';
+interface Props { doctorUrl: string; clinicKeys: ClinicKey[] }
+const { doctorUrl, clinicKeys } = Astro.props;
+const places = Object.fromEntries(Object.entries(clinics).map(([k, c]) => [k, `${c.city}, ${c.address}`]));
+---
+
+<section
+  class="block schedule"
+  id="schedule"
+  data-schedule
+  data-api={`${apiBase}/schedule?doctor=${encodeURIComponent(doctorUrl)}`}
+  data-demo={isProduction ? undefined : '1'}
+  data-clinics={JSON.stringify(clinicKeys)}
+  data-places={JSON.stringify(places)}
+  data-booking={bookingPage}
+  data-doctor={doctorUrl}
+>
+  <div class="block-head">
+    <h2>Расписание и запись</h2>
+  </div>
+  <p class="schedule-demo" hidden>Пример. Здесь будет настоящее свободное время врача из МИС после её подключения.</p>
+  <div class="schedule-body">
+    <p class="muted schedule-loading">Загружаем свободное время…</p>
+  </div>
+  <p class="muted schedule-phone">Не нашли удобное время? Позвоните <a href={`tel:${phones.main.tel}`}>{phones.main.display}</a>, подберём.</p>
+</section>
+
+<script>
+  type Day = { date: string; clinic: string; slots: { id: string; time: string }[] };
+
+  // Sample times for preview builds: next 6 working days, a fixed pattern per doctor.
+  const demoDays = (doctor: string, clinicKeys: string[]): Day[] => {
+    let seed = [...doctor].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) % 1000) / 1000;
+    const days: Day[] = [];
+    const d = new Date();
+    while (days.length < 6) {
+      d.setDate(d.getDate() + 1);
+      if (d.getDay() === 0) continue;
+      const slots = [];
+      for (let m = 9 * 60; m < 18 * 60; m += 30) if (rnd() > 0.55) slots.push({ id: `demo-${days.length}-${m}`, time: `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}` });
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      days.push({ date: iso, clinic: clinicKeys[days.length % clinicKeys.length] || 'kurchatova', slots });
+    }
+    return days;
+  };
+
+  const places_ = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'место' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'места' : 'мест');
+  const weekday = (iso: string) => new Date(iso + 'T12:00').toLocaleDateString('ru-RU', { weekday: 'short' });
+  const dayMonth = (iso: string) => new Date(iso + 'T12:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+
+  for (const box of document.querySelectorAll<HTMLElement>('[data-schedule]')) {
+    const body = box.querySelector<HTMLElement>('.schedule-body')!;
+    const demo = box.dataset.demo === '1';
+    const places: Record<string, string> = JSON.parse(box.dataset.places!);
+
+    const render = (days: Day[]) => {
+      const open = days.filter((d) => d.slots.length);
+      if (!open.length) {
+        body.innerHTML = '<p>Свободного времени на ближайшие две недели нет.</p>';
+        return;
+      }
+      body.innerHTML = `
+        <div class="schedule-days" role="tablist"></div>
+        <p class="schedule-place muted"></p>
+        <div class="schedule-slots"></div>`;
+      const tabs = body.querySelector<HTMLElement>('.schedule-days')!;
+      const slots = body.querySelector<HTMLElement>('.schedule-slots')!;
+      const place = body.querySelector<HTMLElement>('.schedule-place')!;
+      const show = (i: number) => {
+        tabs.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-selected', String(i === j)));
+        place.textContent = places[open[i].clinic] || '';
+        slots.innerHTML = '';
+        for (const s of open[i].slots) {
+          const a = document.createElement('a');
+          a.className = 'slot';
+          a.textContent = s.time;
+          const q = new URLSearchParams({ doctor: box.dataset.doctor!, slot: s.id, date: open[i].date, time: s.time });
+          a.href = `${box.dataset.booking}?${q}`;
+          if (demo) a.addEventListener('click', (e) => { e.preventDefault(); a.classList.toggle('is-picked'); });
+          slots.append(a);
+        }
+      };
+      open.forEach((d, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.innerHTML = `<span>${weekday(d.date)}</span><strong>${dayMonth(d.date)}</strong><small>${d.slots.length} ${places_(d.slots.length)}</small>`;
+        b.addEventListener('click', () => show(i));
+        tabs.append(b);
+      });
+      show(0);
+    };
+
+    if (demo) {
+      box.querySelector<HTMLElement>('.schedule-demo')!.hidden = false;
+      render(demoDays(box.dataset.doctor!, JSON.parse(box.dataset.clinics!)));
+      continue;
+    }
+    fetch(box.dataset.api!)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data: { days: Day[] }) => render(data.days))
+      .catch(() => {
+        // No server, or the doctor isn't in the МИС: drop the block, "Записаться" goes to the booking page
+        document.querySelectorAll<HTMLAnchorElement>('a[href="#schedule"]').forEach((a) => (a.href = box.dataset.booking!));
+        box.remove();
+      });
+  }
+</script>

@@ -1,0 +1,91 @@
+---
+// "Оставить отзыв". Sends to our server (POST /api/reviews, see
+// docs/server-api.md); the clinic checks the review before it goes live.
+import { apiBase, social } from '../data/site';
+interface Props { doctorUrl?: string; doctorName?: string; id?: string }
+const { doctorUrl = '', doctorName, id = 'review-form' } = Astro.props;
+const telegram = social.find((s) => s.key === 'telegram')!.url;
+---
+
+<form class="review-form info-card" id={id} data-review-form data-api={`${apiBase}/reviews`} data-telegram={telegram} novalidate>
+  <h3>{doctorName ? `Оставить отзыв о враче` : 'Оставить отзыв'}</h3>
+  {doctorName && <p class="muted review-form-for">{doctorName}</p>}
+  <input type="hidden" name="doctor" value={doctorUrl} />
+
+  <fieldset class="stars-field">
+    <legend>Ваша оценка</legend>
+    <div class="stars-input">
+      {[5, 4, 3, 2, 1].map((n) => (
+        <>
+          <input type="radio" id={`${id}-r${n}`} name="rating" value={n} required />
+          <label for={`${id}-r${n}`} title={`${n} из 5`} aria-label={`${n} из 5`}>★</label>
+        </>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="form-row">
+    <label>
+      <span>Ваше имя</span>
+      <input name="author" autocomplete="given-name" maxlength="60" required />
+    </label>
+    <label>
+      <span>Телефон <small class="muted">не публикуем, нужен, чтобы уточнить детали</small></span>
+      <input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" />
+    </label>
+  </div>
+  <label>
+    <span>Отзыв</span>
+    <textarea name="text" rows="5" minlength="20" maxlength="3000" required placeholder="Расскажите, как прошёл приём"></textarea>
+  </label>
+  <!-- Bots fill every field; people never see this one -->
+  <label class="hp" aria-hidden="true">Сайт<input name="website" tabindex="-1" autocomplete="off" /></label>
+  <label class="check">
+    <input type="checkbox" name="consent" required />
+    <span>Согласен на обработку персональных данных по <a href="/politika-konfidencialnosti/" target="_blank">политике конфиденциальности</a></span>
+  </label>
+
+  <button class="btn btn-primary" type="submit">Отправить отзыв</button>
+  <p class="form-status" role="status" hidden></p>
+  <p class="muted form-note">Отзыв появится на сайте после проверки администратором.</p>
+</form>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-review-form]')) {
+    if (form.dataset.ready) continue;
+    form.dataset.ready = '1';
+    const status = form.querySelector<HTMLElement>('.form-status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const say = (text: string, ok = false) => {
+      status.hidden = false;
+      status.className = `form-status ${ok ? 'is-ok' : 'is-error'}`;
+      status.innerHTML = text;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = new FormData(form);
+      if (!f.get('rating')) return say('Поставьте оценку от 1 до 5.');
+      if (!String(f.get('author') || '').trim()) return say('Напишите, как к вам обращаться.');
+      if (String(f.get('text') || '').trim().length < 20) return say('Отзыв слишком короткий, напишите хотя бы пару предложений.');
+      if (!f.get('consent')) return say('Нужно согласие на обработку персональных данных.');
+
+      button.disabled = true;
+      try {
+        const res = await fetch(form.dataset.api!, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...Object.fromEntries(f), rating: Number(f.get('rating')), consent: true }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        say('Спасибо! Отзыв отправлен, он появится на сайте после проверки.', true);
+      } catch {
+        const tg = form.dataset.telegram;
+        say(`Не получилось отправить отзыв. Пожалуйста, напишите его нам в <a href="${tg}" target="_blank" rel="noopener">Telegram</a> или позвоните <a href="tel:+73912200303">+7 (391) 220-03-03</a>.`);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>

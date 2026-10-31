@@ -97,6 +97,12 @@ See [deploy/SERVER.md](deploy/SERVER.md): one-time server setup (nginx on a Russ
 
 Every "Записаться" button leads to `/appointment/` (the same address as on the old site). For now that page books by phone. The old site's online form talks to the clinic's МИС through the Bitrix server (`/local/Conversite/ajax/api_mis.php`); connecting the new site needs the МИС API details, kept in server settings, never in this repository.
 
+## Reviews and doctor schedule
+
+- Reviews live in `src/content/reviews/reviews.json` (the old site's reviews were moved there). A review with `doctor` also shows on that doctor's page. The form sends new reviews to `/api/reviews` for the clinic to check.
+- Each doctor page has a "Расписание и запись" block fed by `/api/schedule` from the МИС «Ариадна». Preview builds show marked sample times; the real site hides the block until the server answers.
+- The server side is described in `docs/server-api.md`. It runs on the VPS; the МИС login stays in its settings there.
+
 ## Integrations kept from the old site
 
 - **Bitrix24** CRM: call tracking and the site button (callbacks, chat)

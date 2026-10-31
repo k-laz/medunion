@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { phones, clinics, bookingPage } from '../data/site';
 import SearchBox from './SearchBox.astro';
+import Social from './Social.astro';
 import { childrenOf, shortName } from '../lib/content';
 const bookingUrl = bookingPage; // our /appointment/ page
 const nav = [
@@ -32,6 +33,7 @@ const clinicPage: Record<string, string> = {
       <svg width="20" height="12" viewBox="0 0 30 16" aria-hidden="true"><circle cx="7" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="23" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="2" /><path d="M12.5 8.5c1.5-1.4 3.5-1.4 5 0" fill="none" stroke="currentColor" stroke-width="2" /></svg>
       <span>Версия для слабовидящих</span>
     </button>
+    <Social class="topbar-social" />
     <a class="topbar-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
   </div>
 </div>
@@ -47,6 +49,7 @@ const clinicPage: Record<string, string> = {
     </nav>
 
     <div class="header-tools">
+      <Social class="header-social" size={22} />
       <button class="icon-btn" type="button" data-search-toggle aria-expanded="false" aria-controls="header-search" aria-label="Поиск">
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" /><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
       </button>
@@ -88,9 +91,12 @@ const clinicPage: Record<string, string> = {
       ))}
     </section>
 
+    <div class="menu-social"><span class="muted">Мы в соцсетях</span><Social size={28} /></div>
+
     <div class="menu-small">
       <a href="/company/">О компании</a>
       <a href="/pacientam/obsluzhivanie-oms-dms/">ОМС и ДМС</a>
+      <a href="/ostavit-otzyv-o-nashej-rabote/">Отзывы</a>
       <button class="topbar-link" type="button" data-a11y-toggle aria-pressed="false">Версия для слабовидящих</button>
     </div>
   </div>

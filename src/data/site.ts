@@ -36,6 +36,12 @@ export const clinics = {
 
 export type ClinicKey = keyof typeof clinics;
 
+// The clinic's social pages, linked in the header, menu and footer.
+export const social = [
+  { key: 'vk', label: 'ВКонтакте', url: 'https://vk.com/medunion' },
+  { key: 'telegram', label: 'Telegram', url: 'https://t.me/medunion24' },
+] as const;
+
 // Legal details shown in the footer. Copied from the "Сведения о медицинской
 // организации" page of the old site; check against the current license.
 export const legal = {
@@ -61,6 +67,11 @@ export const integrations = {
   // Without them Webmaster loses access to the site after the switch.
   yandexVerification: ['2de5787671f114c1', '53385810d7a8cf62'],
 };
+
+// Our own small server on the VPS, next to the site (nginx sends /api/ to it).
+// It talks to the МИС «Ариадна» and receives reviews; the МИС login lives
+// only in its settings on the server. Contract: docs/server-api.md
+export const apiBase = '/api';
 
 // Every "Записаться" button leads here.
 export const bookingPage = '/appointment/';

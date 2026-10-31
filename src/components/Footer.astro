@@ -1,5 +1,6 @@
 ---
 import { clinics, phones, integrations, legal, bookingPage } from '../data/site';
+import Social from './Social.astro';
 const year = new Date().getFullYear();
 const bookingUrl = bookingPage; // our /appointment/ page
 const pages: Record<string, string> = {
@@ -20,6 +21,7 @@ const pages: Record<string, string> = {
         <a href="/sales/">Акции</a>
         <a href="/articles/">Статьи врачей</a>
         <a href="/news/">Новости</a>
+        <a href="/ostavit-otzyv-o-nashej-rabote/">Отзывы</a>
       </div>
       <div class="footer-col">
         <p class="footer-head">Направления</p>
@@ -42,6 +44,7 @@ const pages: Record<string, string> = {
     <div class="footer-cta">
       <span class="footer-cta-label">Запись и вопросы</span>
       <a class="footer-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+      <Social size={26} class="footer-social" />
     </div>
 
     <div class="footer-legal">

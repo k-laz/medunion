@@ -1,7 +1,10 @@
 ---
-import { render, type CollectionEntry } from 'astro:content';
+import { render, getCollection, type CollectionEntry } from 'astro:content';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PriceList from '../components/PriceList.astro';
+import DoctorSchedule from '../components/DoctorSchedule.astro';
+import ReviewList from '../components/ReviewList.astro';
+import ReviewForm from '../components/ReviewForm.astro';
 import { servicesOfDoctor, initials, years, tileLabel } from '../lib/content';
 import { clinics, integrations, phones, bookingPage } from '../data/site';
 
@@ -12,6 +15,7 @@ const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id);
 const bookingUrl = bookingPage; // our /appointment/ page
+const reviews = await getCollection('reviews', (r) => r.data.doctor?.id === entry.id);
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
@@ -31,8 +35,9 @@ const pages: Record<string, string> = {
       {d.photo ? <img src={d.photo} alt={d.name} /> : <span aria-hidden="true">{initials(d.name)}</span>}
     </div>
     <div class="doctor-side-actions">
-      <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться на приём</a>
-      <a class="btn btn-quiet btn-wide" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+      <a class="btn btn-primary btn-wide" href="#schedule">Записаться на приём</a>
+      <a class="btn btn-quiet btn-wide" href="#review-form">Оставить отзыв</a>
+      <a class="doctor-side-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
     </div>
   </aside>
 
@@ -51,6 +56,8 @@ const pages: Record<string, string> = {
       )}
       {d.specialization && (<div><dt>Специализация</dt><dd>{d.specialization}</dd></div>)}
     </dl>
+
+    <DoctorSchedule doctorUrl={d.url} clinicKeys={d.clinics} />
 
     {hasText && <div class="prose block"><Content /></div>}
 
@@ -76,6 +83,12 @@ const pages: Record<string, string> = {
         </ul>
       </section>
     )}
+
+    <section class="block" id="reviews">
+      <h2>Отзывы{reviews.length > 0 && <span class="count"> {reviews.length}</span>}</h2>
+      {reviews.length > 0 ? <ReviewList reviews={reviews} /> : <p class="muted">Об этом враче пока нет отзывов на сайте. Будем рады, если вы поделитесь впечатлениями.</p>}
+      <ReviewForm doctorUrl={d.url} doctorName={d.name} />
+    </section>
   </div>
 </div>
 

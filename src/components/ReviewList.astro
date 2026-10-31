@@ -1,0 +1,31 @@
+---
+// Patient reviews, newest first.
+import { getEntry, type CollectionEntry } from 'astro:content';
+interface Props { reviews: CollectionEntry<'reviews'>[]; showDoctor?: boolean }
+const { reviews, showDoctor = false } = Astro.props;
+const list = await Promise.all(
+  [...reviews]
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    .map(async (r) => ({ r: r.data, doc: showDoctor && r.data.doctor ? await getEntry(r.data.doctor) : undefined })),
+);
+const date = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).replace(/\s?г\.$/, '');
+---
+
+<ul class="reviews">
+  {list.map(({ r, doc }) => (
+    <li class="review">
+      <div class="review-head">
+        <span class="review-avatar" aria-hidden="true">{r.author.trim()[0]}</span>
+        <div>
+          <strong>{r.author}</strong>
+          <span class="muted">{date(r.date)}</span>
+        </div>
+        {r.rating && <span class="review-stars" aria-label={`Оценка ${r.rating} из 5`}>{'★'.repeat(r.rating)}<span>{'★'.repeat(5 - r.rating)}</span></span>}
+      </div>
+      {doc && <p class="review-doctor">Врач: <a href={doc.data.url}>{doc.data.name}</a></p>}
+      <div class="review-text">{r.text.split('\n\n').map((p) => <p>{p}</p>)}</div>
+      {r.reply && <p class="review-reply"><strong>Ответ клиники</strong> {r.reply}</p>}
+      {r.source && <p class="review-source muted">Отзыв с сайта <a href={r.source.url} target="_blank" rel="noopener nofollow">{r.source.name}</a></p>}
+    </li>
+  ))}
+</ul>

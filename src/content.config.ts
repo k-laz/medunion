@@ -1,5 +1,5 @@
 import { defineCollection, reference } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 // Every page is a Markdown file. The fields at the top of the file
@@ -107,4 +107,23 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { services, doctors, articles, prices, listings, pages };
+// Patient reviews. One list in reviews.json, newest first. A review that
+// names a doctor gets `doctor` (the doctor's entry id) and also shows on
+// that doctor's page. New reviews arrive through the form, the clinic checks
+// them, then they are added here.
+const reviews = defineCollection({
+  loader: file('./src/content/reviews/reviews.json'),
+  schema: z.object({
+    date: z.coerce.date(),
+    author: z.string(),
+    text: z.string(),
+    rating: z.number().int().min(1).max(5).optional(),
+    doctor: reference('doctors').optional(),
+    // Where the review was first posted (2ГИС, ПроДокторов)
+    source: z.object({ name: z.string(), url: z.string().url() }).optional(),
+    // The clinic's answer
+    reply: z.string().optional(),
+  }),
+});
+
+export const collections = { services, doctors, articles, prices, listings, pages, reviews };

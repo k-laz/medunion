@@ -379,13 +379,18 @@ function parseDoctor(body) {
       if (/^-\s+/.test(s)) { education.push(decode(s.replace(/^-\s+/, ''))); continue; }
       label = null; // the list ended, what follows is the bio
     }
+    if (label === 'Специализация' && fields[label].length && /^(#|-\s|\*\*$|Направление деятельности$)/.test(s)) {
+      label = null; // a structured list after the short specialization: it belongs in the description
+    }
+    if (!label && (/^\*\*$/.test(s) || s === 'Направление деятельности')) continue;
     if (label) { fields[label].push(decode(s.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1'))); continue; }
     if (/^[\d  ]+\s*₽$/.test(s)) continue; // stray price from a price widget
     bio.push(s);
   }
   const years = Number((fields['Стаж работы по специальности'] || []).join(' ').match(/\d+/)?.[0] || 0);
   return {
-    specialty: (fields['Должность'] || [])[0] || '',
+    // "Травматолог-ортопед, травматолог-ортопед" on the old site: keep each title once
+    specialty: [...new Map(((fields['Должность'] || [])[0] || '').split(/,\s*/).filter(Boolean).map((t) => [t.toLowerCase(), t])).values()].join(', '),
     qualification: (fields['Квалификационная категория'] || [])[0] || '',
     specialization: (fields['Специализация'] || []).join(', '),
     clinics: clinicsFrom((fields['Ведет прием'] || []).join(' ')),
@@ -677,12 +682,12 @@ async function main() {
     const title = cutAtWord(`${name}, ${(d.specialty || 'врач').toLowerCase()} в ${city}`, 80);
     const description = makeDescription({
       description: fm.description, url, h1: name, mustMention: name.split(/\s+/)[0],
-      body: `${name}, ${(d.specialty || 'врач').toLowerCase()}${d.qualification ? ', ' + d.qualification.toLowerCase() : ''}${d.experienceYears ? ', стаж ' + d.experienceYears + ' лет' : ''}. ${d.bio}`,
+      body: `${name}, ${(d.specialty || 'врач').toLowerCase()}${d.qualification && !d.specialty.toLowerCase().includes(d.qualification.toLowerCase()) ? ', ' + d.qualification.toLowerCase() : ''}${d.experienceYears ? ', стаж ' + d.experienceYears + ' лет' : ''}. ${d.clinics.length === 1 && d.clinics[0] === 'kansk' ? 'Приём в Медюнион, Канск. Запись по телефону +7 (39161) 4-10-04.' : 'Приём в Медюнион, Красноярск. Запись онлайн и по телефону +7 (391) 220-03-03.'}`,
     });
     await write('doctors', url, {
       title, description, name,
       specialty: d.specialty || 'Врач',
-      qualification: d.qualification, specialization: d.specialization,
+      qualification: d.qualification && !d.specialty.toLowerCase().includes(d.qualification.toLowerCase()) ? d.qualification : undefined, specialization: d.specialization,
       experienceYears: d.experienceYears,
       clinics: d.clinics,
       education: d.education,
