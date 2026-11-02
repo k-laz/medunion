@@ -5,6 +5,16 @@ Ubuntu 22.04 or 24.04 works; the smallest plan (1 CPU, 1 GB RAM) is enough.
 Hosting in Russia keeps us in line with 152-FZ if the site later handles
 patient data (for example the native booking form connected to the МИС).
 
+**Quick way:** steps 1 to 3 below are done by one script. Log in to the
+fresh server and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/k-laz/medunion/main/deploy/setup-server.sh | sudo bash
+```
+
+It prints the three GitHub secrets at the end. The manual steps are kept
+below for reference.
+
 Everything below is done once. After that, every push to `main` on GitHub
 rebuilds the site and uploads it automatically (`.github/workflows/deploy.yml`).
 
