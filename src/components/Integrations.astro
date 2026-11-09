@@ -1,47 +1,39 @@
 ---
 // Metrica, Top.Mail.Ru, Bitrix24 CRM and the messenger widget. They only
-// load on the production build.
+// load on the production build, and only when the site is opened on the real
+// domain: the same build on the server's bare IP (for testing) must not count
+// visits or send chats to the clinic's operators.
 import { integrations, isProduction } from '../data/site';
 const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
 ---
 
 {isProduction && (
   <>
-    <script is:inline define:vars={{ metrikaId }}>
-      (function (m, e, t, r, i, k, a) {
-        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
-        m[i].l = 1 * new Date();
-        k = e.createElement(t); a = e.getElementsByTagName(t)[0];
-        k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
-      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=' + metrikaId, 'ym');
-      ym(metrikaId, 'init', { webvisor: true, clickmap: true, accurateTrackBounce: true, trackLinks: true });
-    </script>
-    <noscript><div><img src={`https://mc.yandex.ru/watch/${metrikaId}`} style="position:absolute;left:-9999px" alt="" /></div></noscript>
+    <script is:inline define:vars={{ metrikaId, b24: [bitrix24.callTracker, bitrix24.siteButton], dailyGrowWidgetId, topMailRuId }}>
+      if (/(^|\.)medunion\.group$/.test(location.hostname)) {
+        // Yandex Metrica
+        (function (m, e, t, r, i, k, a) {
+          m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+          m[i].l = 1 * new Date();
+          k = e.createElement(t); a = e.getElementsByTagName(t)[0];
+          k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=' + metrikaId, 'ym');
+        ym(metrikaId, 'init', { webvisor: true, clickmap: true, accurateTrackBounce: true, trackLinks: true });
 
-    <script is:inline define:vars={{ src: bitrix24.callTracker }}>
-      (function (d, u) { var s = d.createElement('script'); s.async = true; s.src = u + '?' + (Date.now() / 60000 | 0); d.head.appendChild(s); })(document, src);
-    </script>
-    <script is:inline define:vars={{ src: bitrix24.siteButton }}>
-      (function (d, u) { var s = d.createElement('script'); s.async = true; s.src = u + '?' + (Date.now() / 60000 | 0); d.head.appendChild(s); })(document, src);
-    </script>
+        var add = function (src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); };
+        // Bitrix24: call tracking and the chat / callback button
+        b24.forEach(function (u) { add(u + '?' + (Date.now() / 60000 | 0)); });
 
-    <script is:inline define:vars={{ dailyGrowWidgetId }}>
-      window.dgSocialWidgetData = window.dgSocialWidgetData || [];
-      window.dgSocialWidgetData.push({ widgetId: dailyGrowWidgetId, apiUrl: 'https://app.daily-grow.com/sw/api/v1' });
-    </script>
-    <script is:inline async src="https://app.daily-grow.com/social-widget/init.js"></script>
+        // daily-grow messenger widget
+        window.dgSocialWidgetData = window.dgSocialWidgetData || [];
+        window.dgSocialWidgetData.push({ widgetId: dailyGrowWidgetId, apiUrl: 'https://app.daily-grow.com/sw/api/v1' });
+        add('https://app.daily-grow.com/social-widget/init.js');
 
-    <!-- Top.Mail.Ru counter (VK ads) -->
-    <script is:inline define:vars={{ topMailRuId }}>
-      var _tmr = window._tmr || (window._tmr = []);
-      _tmr.push({ id: topMailRuId, type: 'pageView', start: new Date().getTime() });
-      (function (d, id) {
-        if (d.getElementById(id)) return;
-        var ts = d.createElement('script'); ts.async = true; ts.id = id;
-        ts.src = 'https://top-fwz1.mail.ru/js/code.js';
-        d.head.appendChild(ts);
-      })(document, 'tmr-code');
+        // Top.Mail.Ru counter (VK ads)
+        var _tmr = window._tmr || (window._tmr = []);
+        _tmr.push({ id: topMailRuId, type: 'pageView', start: new Date().getTime() });
+        if (!document.getElementById('tmr-code')) { var ts = document.createElement('script'); ts.async = true; ts.id = 'tmr-code'; ts.src = 'https://top-fwz1.mail.ru/js/code.js'; document.head.appendChild(ts); }
+      }
     </script>
-    <noscript><div><img src={`https://top-fwz1.mail.ru/counter?id=${topMailRuId};js=na`} style="position:absolute;left:-9999px" alt="" /></div></noscript>
   </>
 )}
