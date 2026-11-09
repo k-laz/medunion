@@ -53,6 +53,13 @@ export type Doctor = CollectionEntry<'doctors'>;
 export const tileLabel = (h1: string) => h1.replace(/\s+в Красноярске$/, '');
 
 /** First sentence of a teaser, cut to about 140 characters at a word. */
+/** Text under a page's heading: the whole first sentence, or nothing. Never cut mid-sentence. */
+export const leadText = (t: string) => {
+  const first = t.match(/^.{20,}?[.!?](\s|$)/)?.[0].trim() ?? t.trim();
+  if (first.length > 260 || /^Показания/i.test(first) || !/[.!?]$/.test(first)) return undefined;
+  return first;
+};
+
 export const shortTeaser = (t: string) => {
   const first = t.match(/^.{20,}?[.!?](\s|$)/)?.[0].trim() ?? t;
   return first.length <= 140 ? first : first.slice(0, 140).replace(/\s+\S*$/, '') + '…';

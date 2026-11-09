@@ -21,10 +21,18 @@ if (d.of === 'doctors') {
   const picked = all.filter((doc) => everyone || d.members?.includes(doc.data.url) || (doc.data.url !== d.url && doc.data.url.startsWith(d.url)));
   doctors = picked.sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
   // Specialty filters: the doctor sections under /vrachi/
-  groups = (await getCollection('listings'))
-    .filter((l) => l.data.of === 'doctors' && l.data.url !== '/vrachi/' && l.data.url.split('/').length === 4)
-    .map((l) => ({ url: l.data.url, label: clean(l.data.h1) }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+  // Short filter labels: "Врачи-гинекологи" becomes "Гинекологи". Page titles keep the full name.
+  const short = (h1: string) => {
+    const t = clean(h1).replace(/\s*«Медюнион»$/, '').replace(/^Врачи[\s:-]+/, '').replace(/^отделение диагностики$/i, 'Диагностика');
+    return t[0].toUpperCase() + t.slice(1);
+  };
+  groups = [
+    { url: '/vrachi/', label: 'Все врачи' },
+    ...(await getCollection('listings'))
+      .filter((l) => l.data.of === 'doctors' && l.data.url !== '/vrachi/' && l.data.url.split('/').length === 4 && !/^Все врачи/.test(l.data.h1))
+      .map((l) => ({ url: l.data.url, label: short(l.data.h1) }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'ru')),
+  ];
 } else if (d.of === 'prices') {
   links = under(await getCollection('prices')).map((p) => ({ url: p.data.url, label: p.data.h1 }));
 } else {

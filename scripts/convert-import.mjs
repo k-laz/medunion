@@ -427,7 +427,12 @@ function frontmatter(obj) {
 
 // Pages are collected first and written at the end, after duplicates are removed.
 const pending = [];
+// Typos in the old site's titles, fixed in every title, heading and description
+const TITLE_FIXES = [[/Подготовки к анализам/g, 'Подготовка к анализам']];
 async function write(collection, url, data, body = '') {
+  for (const k of ['title', 'h1', 'description']) {
+    if (typeof data[k] === 'string') for (const [re, to] of TITLE_FIXES) data[k] = data[k].replace(re, to);
+  }
   pending.push({ collection, url, data, body });
 }
 // Final clean-up of every page's text. The old site's editor produced

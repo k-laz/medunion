@@ -5,7 +5,7 @@ import InfoCard from '../components/InfoCard.astro';
 import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import SearchBox from '../components/SearchBox.astro';
-import { childrenOf, tileLabel, shortTeaser, shortName } from '../lib/content';
+import { childrenOf, tileLabel, shortTeaser, leadText, shortName } from '../lib/content';
 import { integrations, phones, bookingPage } from '../data/site';
 
 interface Props { entry: CollectionEntry<'services'> }
@@ -43,7 +43,7 @@ const tabs = isCatalog ? [] : [
     <SearchBox id="q-catalog" large placeholder="Найти услугу или врача" />
   </PageHead>
 ) : (
-  <PageHead url={d.url} h1={d.h1} lead={d.lead ?? (d.teaser ? shortTeaser(d.teaser) : undefined)}>
+  <PageHead url={d.url} h1={d.h1} lead={d.lead ?? (d.teaser ? leadText(d.teaser) : undefined)}>
     <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
   </PageHead>
 )}

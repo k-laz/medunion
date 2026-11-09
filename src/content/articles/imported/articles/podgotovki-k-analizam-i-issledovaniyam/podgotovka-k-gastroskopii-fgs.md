@@ -9,6 +9,8 @@ category: "podgotovki-k-analizam-i-issledovaniyam"
 
 [![Подготовка к гастроскопии (ФГС)](https://medunion.group/upload/iblock/656/td521ib7pimr2uvvkrbf5rdzsbg436so.jpeg "Подготовка к гастроскопии (ФГС)")](https://medunion.group/upload/iblock/656/td521ib7pimr2uvvkrbf5rdzsbg436so.jpeg "Подготовка к гастроскопии (ФГС)")
 
+Подготовки к анализам и исследованиям
+
 1 января 2025
 
 Следуйте всем рекомендациям врача и уточняйте любые вопросы, связанные с подготовкой к ФГС. Это поможет сделать процедуру более комфортной и эффективной.
