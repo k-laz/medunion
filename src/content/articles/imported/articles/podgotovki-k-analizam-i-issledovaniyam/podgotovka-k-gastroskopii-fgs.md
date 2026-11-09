@@ -5,11 +5,10 @@ description: "Какие продукты можно есть, чтобы не �
 h1: "Подготовка к гастроскопии (ФГС)"
 kind: "article"
 category: "podgotovki-k-analizam-i-issledovaniyam"
+date: "2025-01-01"
 ---
 
 [![Подготовка к гастроскопии (ФГС)](https://medunion.group/upload/iblock/656/td521ib7pimr2uvvkrbf5rdzsbg436so.jpeg "Подготовка к гастроскопии (ФГС)")](https://medunion.group/upload/iblock/656/td521ib7pimr2uvvkrbf5rdzsbg436so.jpeg "Подготовка к гастроскопии (ФГС)")
-
-1 января 2025
 
 Следуйте всем рекомендациям врача и уточняйте любые вопросы, связанные с подготовкой к ФГС. Это поможет сделать процедуру более комфортной и эффективной.
 

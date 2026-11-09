@@ -65,7 +65,7 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
     <div class="wrap hero-inner">
       <div class="hero-main">
         <h1>Медицинские центры Медюнион в&nbsp;Красноярске и&nbsp;Канске</h1>
-        <p class="lead">Диагностика и приём врачей для взрослых и детей. Три клиники, запись онлайн.</p>
+        <p class="lead">Диагностика и приём врачей для взрослых и детей. Три клиники в Красноярске и Канске.</p>
         <SearchBox id="q-home" large placeholder="Гинеколог, невролог, МРТ, УЗИ, анализы" />
         <nav class="chips" aria-label="Популярное">
           {popular.map(([u, label]) => <a class="chip" href={u}>{label}</a>)}
@@ -73,7 +73,7 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
       </div>
       <aside class="hero-card">
         <p class="hero-card-title">Запись на приём</p>
-        <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться онлайн</a>
+        <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться</a>
         <a class="hero-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
         <p class="muted">Красноярск, обе клиники</p>
         <a class="hero-phone hero-phone-sm" href={`tel:${phones.kansk.tel}`}>{phones.kansk.display}</a>

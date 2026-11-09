@@ -819,6 +819,29 @@ async function main() {
       if (type === 'news') {
         text = text.replace(/^\s*(\d{2})\.(\d{2})\.(\d{4})\s*$/m, (_, d, m, y) => { date = `${y}-${m}-${d}`; return ''; }).trim();
       }
+      if (type === 'article') {
+        // "1 января 2025" on its own line is the publication date
+        const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        text = text.replace(new RegExp(`^\\s*(\\d{1,2}) (${MONTHS.join('|')}) (20\\d\\d)\\s*$`, 'm'), (_, dd, mm, yy) => {
+          date = `${yy}-${String(MONTHS.indexOf(mm) + 1).padStart(2, '0')}-${dd.padStart(2, '0')}`;
+          return '';
+        });
+        // Questions and bold-only lines written as paragraphs are really subheadings
+        const level = /^## /m.test(text) ? '###' : '##';
+        text = text
+          .split(/\n\n/)
+          .map((para) => {
+            const t = para.trim();
+            if (t.includes('\n')) return para;
+            if (/^[^#\-*!\[|>\d].{8,140}\?$/.test(t)) return `${level} ${t}`;
+            const bold = t.match(/^\*\*([^*]{4,120}?)\*\*$/);
+            if (bold && !/[:.,;]$/.test(bold[1].trim())) return `${level} ${bold[1].trim()}`;
+            return para;
+          })
+          .join('\n\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+      }
       if (type === 'sale') {
         text = text.replace(/^\s*(\d{1,2}\s?%)\s*$/m, (_, d) => { discount = d.replace(/\s/g, ''); return ''; });
         const day = (d) => d.replace(/^(\d)\./, '0$1.');

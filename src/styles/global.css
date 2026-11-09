@@ -333,6 +333,23 @@ p { margin: 0 0 1rem; }
 
 /* Info card in the page head */
 .info-card { background: #fff; border-radius: var(--radius); padding: 24px; box-shadow: 0 8px 28px rgba(31,63,174,.08); }
+.info-heading { margin: 0 0 4px; font-size: var(--step--1); color: var(--muted); }
+.info-service { display: block; margin: 0 0 14px; font-family: var(--font-head); font-size: 1.15rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+.info-service:hover { color: var(--brand); }
+.info-note { margin: 0 0 16px; font-size: var(--step--1); color: var(--text); }
+
+/* Content with the booking card in a right-hand column */
+.with-aside { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; }
+.page-main { min-width: 0; }
+.page-main > .block:first-child, .page-main > .prose:first-child { margin-top: 40px; }
+.page-aside { position: sticky; top: calc(var(--header-h, 77px) + var(--tabs-h, 0px) + 24px); margin-top: 40px; }
+.with-aside .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.with-aside .doctor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 900px) {
+  .with-aside { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .page-aside { position: static; margin-top: 40px; }
+}
+@media (max-width: 640px) { .with-aside .tile-grid, .with-aside .doctor-grid { grid-template-columns: 1fr; } }
 .info-price { margin: 0 0 16px; font-size: 1.5rem; font-weight: 600; }
 .info-price span { display: block; font-size: var(--step--1); font-weight: 400; color: var(--muted); }
 .info-places { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 12px; font-size: var(--step--1); }

@@ -43,9 +43,7 @@ const tabs = isCatalog ? [] : [
     <SearchBox id="q-catalog" large placeholder="Найти услугу или врача" />
   </PageHead>
 ) : (
-  <PageHead url={d.url} h1={d.h1} lead={d.lead ?? (d.teaser ? leadText(d.teaser) : undefined)}>
-    <InfoCard slot="aside" prices={d.prices} clinicKeys={d.clinics} />
-  </PageHead>
+  <PageHead url={d.url} h1={d.h1} lead={d.lead ?? (d.teaser ? leadText(d.teaser) : undefined)} />
 )}
 
 {tabs.length > 1 && (
@@ -54,7 +52,8 @@ const tabs = isCatalog ? [] : [
   </nav>
 )}
 
-<div class="wrap page-body">
+<div class:list={['wrap', 'page-body', { 'with-aside': !isCatalog }]}>
+  <div class="page-main">
   {isCatalog && (
     <div class="catalog">
       {catalog.map(({ sec, items }) => (
@@ -127,7 +126,13 @@ const tabs = isCatalog ? [] : [
       ))}
     </section>
   )}
+  </div>
 
+  {!isCatalog && (
+    <div class="page-aside">
+      <InfoCard prices={d.prices} clinicKeys={d.clinics} />
+    </div>
+  )}
 </div>
 
 <script>
