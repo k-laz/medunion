@@ -9,6 +9,7 @@ export const phones = {
 export const clinics = {
   kurchatova: {
     name: 'Медюнион на Курчатова',
+    short: 'Курчатова',
     city: 'Красноярск',
     address: 'ул. Курчатова, 17, стр. 15',
     district: 'Октябрьский район',
@@ -18,6 +19,7 @@ export const clinics = {
   },
   instrumentalnaya: {
     name: 'Медюнион на Инструментальной',
+    short: 'Инструментальная',
     city: 'Красноярск',
     address: 'ул. Инструментальная, 12/35',
     district: '',
@@ -26,6 +28,7 @@ export const clinics = {
   },
   kansk: {
     name: 'Медюнион в Канске',
+    short: 'Канск',
     city: 'Канск',
     address: 'ул. Урицкого, 8',
     district: '',

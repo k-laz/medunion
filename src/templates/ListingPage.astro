@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import DoctorCard from '../components/DoctorCard.astro';
+import PricesOverview from '../components/PricesOverview.astro';
 import { sales as saleInfo, saleGroups, validity } from '../data/sales';
 
 interface Props { entry: CollectionEntry<'listings'> }
@@ -39,7 +40,7 @@ if (d.of === 'doctors') {
       .sort((a, b) => a.label.localeCompare(b.label, 'ru')),
   ];
 } else if (d.of === 'prices') {
-  links = under(await getCollection('prices')).map((p) => ({ url: p.data.url, label: p.data.h1 }));
+  // /ceny/ shows every list on one page (PricesOverview), no tiles
 } else {
   const kind = d.of === 'news' ? 'news' : d.of === 'sales' ? 'sale' : 'article';
   const items = (await getCollection('articles')).filter((a) => a.data.kind === kind);
@@ -67,7 +68,7 @@ if (d.of === 'doctors') {
 if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 ---
 
-<PageHead url={d.url} h1={clean(d.h1)} lead={d.of === 'sales' ? 'Скидки и спецпредложения клиник Медюнион. Скидки и акции между собой не суммируются.' : undefined} compact>
+<PageHead url={d.url} h1={d.of === 'prices' ? 'Цены на услуги' : clean(d.h1)} lead={d.of === 'sales' ? 'Скидки и спецпредложения клиник Медюнион. Скидки и акции между собой не суммируются.' : d.of === 'prices' ? 'Цены клиник Медюнион в Красноярске и Канске.' : undefined} compact>
   {groups.length > 0 && (
     <nav class="chips" aria-label="Разделы">
       {groups.map((g) => <a class="chip" href={g.url} aria-current={g.url === d.url ? 'page' : undefined}>{g.label}</a>)}
@@ -76,7 +77,9 @@ if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 </PageHead>
 
 <div class="wrap page-body">
-  {intro && intro.length > 120 && d.of !== 'sales' && <div class="prose block"><Content /></div>}
+  {intro && intro.length > 120 && d.of !== 'sales' && d.of !== 'prices' && <div class="prose block"><Content /></div>}
+
+  {d.of === 'prices' && <PricesOverview />}
 
   {saleGroups.map((g) => {
     const list = offers.filter((o) => o.group === g.key).sort((a, b) => pct(b) - pct(a) || a.title.localeCompare(b.title, 'ru'));

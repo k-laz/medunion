@@ -472,7 +472,7 @@ function frontmatter(obj) {
 // Pages are collected first and written at the end, after duplicates are removed.
 const pending = [];
 // Typos in the old site's titles, fixed in every title, heading and description
-const TITLE_FIXES = [[/Подготовки к анализам/g, 'Подготовка к анализам']];
+const TITLE_FIXES = [[/Подготовки к анализам/g, 'Подготовка к анализам'], [/кабинета Красноярске/g, 'кабинета в Красноярске']];
 async function write(collection, url, data, body = '') {
   const rawH1 = data.h1;
   for (const k of ['title', 'h1', 'description']) {
@@ -679,9 +679,21 @@ async function manualUrls() {
 const segs = (u) => u.split('/').filter(Boolean);
 
 // Addresses served by hand-made pages in src/pages/ (e.g. appointment.astro -> /appointment/).
+// Pages can also live in folders: reviews/index.astro -> /reviews/, reviews/new.astro -> /reviews/new/.
 async function handmadeUrls() {
-  const names = (await readdir('src/pages')).filter((n) => n.endsWith('.astro') && !n.startsWith('[') && !['index.astro', '404.astro'].includes(n));
-  return new Set(names.map((n) => `/${n.replace(/\.astro$/, '')}/`));
+  const urls = new Set();
+  async function scan(dir, prefix) {
+    for (const e of await readdir(dir, { withFileTypes: true })) {
+      if (e.name.startsWith('[') || e.name.startsWith('_')) continue;
+      if (e.isDirectory()) { await scan(`${dir}/${e.name}`, `${prefix}${e.name}/`); continue; }
+      if (!e.name.endsWith('.astro') || e.name === '404.astro') continue;
+      const name = e.name.replace(/\.astro$/, '');
+      if (name === 'index') { if (prefix) urls.add(`/${prefix}`); }
+      else urls.add(`/${prefix}${name}/`);
+    }
+  }
+  await scan('src/pages', '');
+  return urls;
 }
 
 function classify(url) {

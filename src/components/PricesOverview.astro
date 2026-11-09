@@ -1,0 +1,123 @@
+---
+// /ceny/: every price list on one page. A search box finds a service in all
+// lists at once; each list opens and closes, with how many services it has.
+// Each list also keeps its own page (/ceny/rentgen/ and so on) from the old site.
+import { getCollection } from 'astro:content';
+import { rub } from '../lib/content';
+import { phones } from '../data/site';
+import { sales, saleGroups } from '../data/sales';
+
+const lists = (await getCollection('prices')).filter((p) => p.data.url !== '/ceny/' && p.data.items.length > 0);
+
+// Which group each list belongs to, by address. Anything new lands in "Другое".
+const GROUPS: { title: string; urls: string[] }[] = [
+  {
+    title: 'Диагностика',
+    urls: ['/ceny/mrt-magnitno-rezonansnaya-tomografiya/', '/ceny/mrt-magnitno-rezonansnaya-tomografiya-1,5tesla/', '/ceny/mskt/', '/ceny/rentgen/', '/ceny/ultrazvukovye-metody-diagnostiki/', '/ceny/fgs/', '/ceny/funktsionalnye-metody-diagnostiki-i-issledovaniya/'],
+  },
+  {
+    title: 'Приём врачей',
+    urls: ['/ceny/konsultatsii-spetsialistov/', '/ceny/ginekologiya/', '/ceny/%D1%81ardiologiya/', '/ceny/nevrologiya/', '/ceny/otolaringologiya/', '/ceny/proktologiya/', '/ceny/travmatologiya-ortopediya/', '/ceny/urologiya/', '/ceny/khirurgiya/'],
+  },
+  {
+    title: 'Процедуры и лечение',
+    urls: ['/ceny/klinika-blokady-boli/', '/ceny/massazh/', '/ceny/uslugi-protsedurnogo-kabineta/', '/ceny/dopolnitelnye-uslugi/'],
+  },
+];
+const placed = new Set(GROUPS.flatMap((g) => g.urls));
+const groups = [
+  ...GROUPS.map((g) => ({ title: g.title, lists: g.urls.map((u) => lists.find((l) => l.data.url === u)).filter((l) => l !== undefined) })),
+  { title: 'Другое', lists: lists.filter((l) => !placed.has(l.data.url)) },
+].filter((g) => g.lists.length > 0);
+
+const total = lists.reduce((n, l) => n + l.data.items.length, 0);
+const offers = await getCollection('articles', (a) => a.data.kind === 'sale');
+const social = Object.entries(sales)
+  .filter(([, s]) => s.group === 'social')
+  .map(([url, s]) => ({ url, label: s.title ?? offers.find((o) => o.data.url === url)?.data.h1 ?? url }));
+const socialTitle = saleGroups.find((g) => g.key === 'social')!.title;
+const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услуга' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'услуги' : 'услуг'}`;
+---
+
+<div class="with-aside price-page" data-price-page>
+  <div class="page-main">
+    <div class="price-search block">
+      <label class="sr-only" for="price-search">Найти услугу</label>
+      <input id="price-search" type="search" placeholder="Найти услугу: МРТ колена, приём уролога, рентген…" autocomplete="off" />
+      <p class="muted price-search-note">{count(total)} в {lists.length} разделах</p>
+    </div>
+    <p class="price-search-empty" hidden>Ничего не нашлось. Цену любой услуги подскажет администратор: <a href={`tel:${phones.main.tel}`}>{phones.main.display}</a>.</p>
+
+    {groups.map((g) => (
+      <section class="block price-group">
+        <h2>{g.title}</h2>
+        {g.lists.map((l) => (
+          <details class="price-acc">
+            <summary>
+              <span>{l.data.h1}</span>
+              <span class="price-acc-count">{l.data.items.length}</span>
+            </summary>
+            <dl class="price-list">
+              {l.data.items.map((p) => (
+                <div class="price-row">
+                  <dt class="price-name">{p.name}</dt>
+                  <span class="price-dots" aria-hidden="true"></span>
+                  <dd class="price-value">{rub(p.price)}</dd>
+                </div>
+              ))}
+            </dl>
+            <a class="link-more price-acc-link" href={l.data.url}>Отдельная страница раздела</a>
+          </details>
+        ))}
+      </section>
+    ))}
+    <p class="prices-note block">Не является публичной офертой. Точную стоимость уточняйте при записи.</p>
+  </div>
+
+  <div class="page-aside">
+    <aside class="info-card price-side">
+      <p class="info-service">Скидки и оплата</p>
+      <p class="info-heading">{socialTitle}</p>
+      <ul class="price-side-list">
+        {social.map((o) => <li><a href={o.url}>{o.label}</a></li>)}
+      </ul>
+      <p class="info-note">Скидки и акции между собой не суммируются. <a href="/sales/">Все акции</a></p>
+      <p class="info-note"><a href="/pacientam/obsluzhivanie-oms-dms/">Обслуживание по ОМС и ДМС</a><br /><a href="/pacientam/pravila-predostavleniya-platnyh-medicinskih-uslug/">Правила платных услуг</a></p>
+      <p class="info-note">Цену любой услуги, которой нет в списке, подскажет администратор.</p>
+      <div class="info-actions">
+        <a class="btn btn-quiet btn-wide" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  // Search across all lists: open the lists with matches, hide the rest.
+  const page = document.querySelector<HTMLElement>('[data-price-page]');
+  const input = page?.querySelector<HTMLInputElement>('#price-search');
+  if (page && input) {
+    const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е');
+    const lists = [...page.querySelectorAll<HTMLDetailsElement>('.price-acc')];
+    const groups = [...page.querySelectorAll<HTMLElement>('.price-group')];
+    const empty = page.querySelector<HTMLElement>('.price-search-empty')!;
+    input.addEventListener('input', () => {
+      const words = norm(input.value).split(/\s+/).filter((w) => w.length > 1);
+      let any = 0;
+      for (const list of lists) {
+        const title = norm(list.querySelector('summary')!.textContent!);
+        let hits = 0;
+        for (const row of list.querySelectorAll<HTMLElement>('.price-row')) {
+          const text = norm(row.textContent!) + ' ' + title;
+          const hit = !words.length || words.every((w) => text.includes(w.slice(0, Math.max(3, w.length - 2))));
+          row.hidden = !hit;
+          if (hit) hits++;
+        }
+        list.hidden = words.length > 0 && hits === 0;
+        list.open = words.length > 0 && hits > 0;
+        any += hits;
+      }
+      for (const g of groups) g.hidden = [...g.querySelectorAll('.price-acc')].every((l) => (l as HTMLElement).hidden);
+      empty.hidden = !words.length || any > 0;
+    });
+  }
+</script>

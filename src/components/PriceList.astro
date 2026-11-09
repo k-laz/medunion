@@ -1,12 +1,16 @@
 ---
-// Price list with dotted leaders. Long lists get a filter box.
+// Price list with dotted leaders. Long lists get a filter box and show the
+// first `fold` rows, with "Ещё N услуг" to open the rest.
 import { rub } from '../lib/content';
-interface Props { items: { name: string; price: number }[]; checkedOn?: Date; id?: string }
-const { items, checkedOn, id = 'prices-filter' } = Astro.props;
+interface Props { items: { name: string; price: number }[]; checkedOn?: Date; id?: string; fold?: number; note?: boolean }
+const { items, checkedOn, id = 'prices-filter', fold = 6, note = true } = Astro.props;
+const folding = items.length > fold + 2;
+const hiddenCount = items.length - fold;
+const more = (n: number) => `Ещё ${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услуга' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'услуги' : 'услуг'}`;
 const checkedText = checkedOn?.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
-<div class="prices" data-prices>
+<div class:list={['prices', { 'is-folded': folding }]} data-prices>
   {items.length > 8 && (
     <div class="prices-filter">
       <label class="sr-only" for={id}>Найти в прайсе</label>
@@ -14,20 +18,26 @@ const checkedText = checkedOn?.toLocaleDateString('ru-RU', { day: 'numeric', mon
     </div>
   )}
   <dl class="price-list">
-    {items.map((p) => (
-      <div class="price-row">
+    {items.map((p, i) => (
+      <div class:list={['price-row', { 'price-more': folding && i >= fold }]}>
         <dt class="price-name">{p.name}</dt>
         <span class="price-dots" aria-hidden="true"></span>
         <dd class="price-value">{rub(p.price)}</dd>
       </div>
     ))}
   </dl>
+  {folding && <button class="more-btn prices-toggle" type="button" data-more={more(hiddenCount)}>{more(hiddenCount)}</button>}
   <p class="prices-empty" hidden>Ничего не нашлось. Уточните по телефону.</p>
-  <p class="prices-note">{checkedText ? `Цены на ${checkedText.replace(/\.$/, '')}. ` : ''}Не является публичной офертой. Точную стоимость уточняйте при записи.</p>
+  {note && <p class="prices-note">{checkedText ? `Цены на ${checkedText.replace(/\.$/, '')}. ` : ''}Не является публичной офертой. Точную стоимость уточняйте при записи.</p>}
 </div>
 
 <script>
   for (const box of document.querySelectorAll<HTMLElement>('[data-prices]')) {
+    const toggle = box.querySelector<HTMLButtonElement>('.prices-toggle');
+    toggle?.addEventListener('click', () => {
+      const open = box.classList.toggle('is-folded') === false;
+      toggle.textContent = open ? 'Свернуть' : toggle.dataset.more!;
+    });
     const input = box.querySelector<HTMLInputElement>('input');
     if (!input) continue;
     const rows = [...box.querySelectorAll<HTMLElement>('.price-row')];
@@ -41,6 +51,7 @@ const checkedText = checkedOn?.toLocaleDateString('ru-RU', { day: 'numeric', mon
         if (hit) shown++;
       }
       empty.hidden = shown > 0;
+      box.classList.toggle('is-searching', !!q); // a search shows every match, folded or not
     });
   }
 </script>

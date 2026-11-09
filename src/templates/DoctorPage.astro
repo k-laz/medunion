@@ -1,11 +1,15 @@
 ---
+// Doctor page. Left: photo, booking and review buttons, links to the page's
+// sections. Right: name and key facts, schedule, about, education, prices,
+// reviews and other doctors of the same department.
 import { render, getCollection, type CollectionEntry } from 'astro:content';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PriceList from '../components/PriceList.astro';
 import DoctorSchedule from '../components/DoctorSchedule.astro';
 import ReviewList from '../components/ReviewList.astro';
-import { servicesOfDoctor, initials, years, tileLabel } from '../lib/content';
-import { clinics, integrations, phones, bookingPage, reviewsPage, reviewFormPage } from '../data/site';
+import DoctorCard from '../components/DoctorCard.astro';
+import { servicesOfDoctor, initials, years, rub, shortName } from '../lib/content';
+import { clinics, phones, reviewsPage, reviewFormPage } from '../data/site';
 
 interface Props { entry: CollectionEntry<'doctors'> }
 const { entry } = Astro.props;
@@ -13,13 +17,48 @@ const d = entry.data;
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id);
-const bookingUrl = bookingPage; // our /appointment/ page
 const reviews = await getCollection('reviews', (r) => r.data.doctor?.id === entry.id);
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
   instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
   kansk: '/contacts/klinika-v-kanske/',
 };
+
+// Prices: the doctor's own list, otherwise the consultations ("приём",
+// "консультация") of the services this doctor is listed on.
+const visit = /при[её]м|консультац/i;
+// Rows naming another doctor ("... Мыльников И.И.") were copied onto the
+// wrong page on the old site, so they are left out.
+const surname = d.name.split(/\s+/)[0];
+const ownRows = d.prices.filter((p) => {
+  const m = p.name.match(/([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+[А-ЯЁ]\.\s?[А-ЯЁ]\.?\s*\)?$/);
+  return !m || m[1] === surname;
+});
+const prices = ownRows.length
+  ? ownRows
+  : [...new Map(services.flatMap((s) => s.data.prices).filter((p) => visit.test(p.name)).map((p) => [p.name, p])).values()];
+const from = prices.length ? Math.min(...prices.map((p) => p.price)) : 0;
+
+// Education: "2005 г. - Университет, специальность" -> year + text, for a timeline
+const education = d.education.map((e) => {
+  const m = e.match(/^\s*((?:19|20)\d\d)\s*(?:г\.?)?\s*[-–—:]?\s*(.+)$/);
+  return m ? { year: m[1], text: m[2].replace(/\.$/, '') } : { year: '', text: e };
+});
+
+// Other doctors of the same department: the section this doctor's page sits in
+const section = d.url.split('/').slice(0, 3).join('/') + '/';
+const sectionList = (await getCollection('listings')).find((l) => l.data.url === section);
+const colleagues = (await getCollection('doctors'))
+  .filter((x) => x.id !== entry.id && (x.data.url.startsWith(section) || sectionList?.data.members?.includes(x.data.url)))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'))
+  .slice(0, 3);
+
+const anchors = [
+  hasText && { id: 'about', label: 'О враче' },
+  education.length && { id: 'education', label: 'Образование' },
+  prices.length && { id: 'prices', label: 'Цены' },
+  reviews.length && { id: 'reviews', label: 'Отзывы' },
+].filter(Boolean) as { id: string; label: string }[];
 ---
 
 <section class="page-head page-head-crumbs">
@@ -30,7 +69,7 @@ const pages: Record<string, string> = {
 
 <div class="wrap doctor-page">
   <aside class="doctor-side">
-    <div class="doctor-portrait">
+    <div class:list={['doctor-portrait', { 'no-photo': !d.photo }]}>
       {d.photo ? <img src={d.photo} alt={d.name} /> : <span aria-hidden="true">{initials(d.name)}</span>}
     </div>
     <div class="doctor-side-actions">
@@ -38,48 +77,67 @@ const pages: Record<string, string> = {
       <a class="btn btn-quiet btn-wide" href={`${reviewFormPage}?doctor=${encodeURIComponent(d.url)}`}>Оставить отзыв</a>
       <a class="doctor-side-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
     </div>
+    {anchors.length > 1 && (
+      <nav class="chips doctor-anchors" aria-label="Разделы страницы">
+        {anchors.map((a) => <a class="chip" href={`#${a.id}`}>{a.label}</a>)}
+      </nav>
+    )}
   </aside>
 
   <div class="doctor-main">
-    <h1>{d.name}</h1>
-    <p class="lead">{d.specialty}</p>
-
-    <dl class="doctor-facts">
-      {d.experienceYears && (<div><dt>Стаж работы</dt><dd>{years(d.experienceYears)}</dd></div>)}
-      {d.qualification && (<div><dt>Категория</dt><dd>{d.qualification}</dd></div>)}
+    <div class="doctor-card-head">
+      <h1>{d.name}</h1>
+      <p class="lead">{d.specialty}</p>
+      <dl class="doctor-stats">
+        {d.experienceYears && <div><dt>Врачебный стаж</dt><dd>{years(d.experienceYears)}</dd></div>}
+        {from > 0 && <div><dt>Приём врача</dt><dd>от {rub(from)}</dd></div>}
+        {d.qualification && <div><dt>Категория</dt><dd>{d.qualification}</dd></div>}
+      </dl>
       {d.clinics.length > 0 && (
-        <div>
-          <dt>Ведёт приём</dt>
-          <dd>{d.clinics.map((k, i) => <>{i > 0 && ', '}<a href={pages[k]}>{clinics[k].city}, {clinics[k].address}</a></>)}</dd>
+        <p class="doctor-where">
+          <span class="muted">Ведёт приём:</span>
+          {d.clinics.map((k, i) => <>{i > 0 && ', '}<a href={pages[k]}>{clinics[k].city}, {clinics[k].address}</a></>)}
+        </p>
+      )}
+      {d.specialization && <p class="doctor-where"><span class="muted">Специализация:</span> {d.specialization}</p>}
+      {services.length > 0 && (
+        <div class="doctor-depts">
+          <span class="muted">Направления</span>
+          <div class="chips">{services.map((s) => <a class="chip" href={s.data.url}>{shortName(s.data.url, s.data.h1)}</a>)}</div>
         </div>
       )}
-      {d.specialization && (<div><dt>Специализация</dt><dd>{d.specialization}</dd></div>)}
-    </dl>
+    </div>
 
     <DoctorSchedule doctorUrl={d.url} clinicKeys={d.clinics} />
 
-    {hasText && <div class="prose block"><Content /></div>}
+    {hasText && (
+      <section class="block" id="about">
+        <h2>О враче</h2>
+        <div class="prose"><Content /></div>
+      </section>
+    )}
 
-    {d.education.length > 0 && (
-      <section class="block">
+    {education.length > 0 && (
+      <section class="block" id="education">
         <h2>Образование</h2>
-        <ul class="prose-list">{d.education.map((e) => <li>{e}</li>)}</ul>
+        <ol class="timeline">
+          {education.map((e) => (
+            <li>
+              {e.year && <span class="timeline-year">{e.year}</span>}
+              <span>{e.text}</span>
+            </li>
+          ))}
+        </ol>
       </section>
     )}
 
-    {d.prices.length > 0 && (
-      <section class="block">
-        <h2>Стоимость приёма</h2>
-        <PriceList items={d.prices} />
-      </section>
-    )}
-
-    {services.length > 0 && (
-      <section class="block">
-        <h2>Услуги</h2>
-        <ul class="tile-grid tile-grid-2">
-          {services.map((s) => <li><a class="tile" href={s.data.url}><span>{tileLabel(s.data.h1)}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>)}
-        </ul>
+    {prices.length > 0 && (
+      <section class="block" id="prices">
+        <div class="block-head">
+          <h2>Стоимость приёма</h2>
+          <a class="link-more" href="/ceny/">Все цены</a>
+        </div>
+        <PriceList items={prices} id="doctor-prices" />
       </section>
     )}
 
@@ -90,6 +148,20 @@ const pages: Record<string, string> = {
           <a class="link-more" href={reviewsPage}>Все отзывы</a>
         </div>
         <ReviewList reviews={reviews} />
+      </section>
+    )}
+
+    {colleagues.length > 0 && (
+      <section class="block">
+        <div class="block-head">
+          <h2>Другие врачи отделения</h2>
+          <a class="link-more" href={section}>Все</a>
+        </div>
+        <div class="doctor-grid">
+          {colleagues.map((c) => (
+            <DoctorCard name={c.data.name} specialty={c.data.specialty} url={c.data.url} photo={c.data.photo} experienceYears={c.data.experienceYears} clinicKeys={c.data.clinics} />
+          ))}
+        </div>
       </section>
     )}
   </div>
