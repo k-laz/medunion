@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import DoctorCard from '../components/DoctorCard.astro';
+import { sales as saleInfo, saleGroups, validity } from '../data/sales';
 
 interface Props { entry: CollectionEntry<'listings'> }
 const { entry } = Astro.props;
@@ -14,6 +15,10 @@ const clean = (s: string) => s.replace(/\s*в Красноярске$/, '').repl
 let doctors: CollectionEntry<'doctors'>[] = [];
 let groups: { url: string; label: string }[] = [];
 let links: { url: string; label: string }[] = [];
+type Offer = { url: string; title: string; summary?: string; badge?: string; until?: string; group: string };
+let offers: Offer[] = [];
+// Sort offers: biggest discount first, then by title
+const pct = (o: Offer) => Number(o.badge?.match(/(\d+)%/)?.[1] ?? 0);
 if (d.of === 'doctors') {
   const all = await getCollection('doctors');
   // Doctors the old page listed, plus any whose address is inside this section
@@ -41,7 +46,19 @@ if (d.of === 'doctors') {
   const listed = d.of === 'articles' ? under(items) : items;
   // News: newest first. Everything else alphabetical.
   if (d.of === 'news') listed.sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0));
-  links = listed.map((a) => ({ url: a.data.url, label: a.data.h1 }));
+  if (d.of === 'sales') {
+    offers = listed.map((a) => {
+      const info = saleInfo[a.data.url];
+      return {
+        url: a.data.url,
+        title: info?.title ?? a.data.h1,
+        summary: info?.summary,
+        badge: info?.badge ?? (a.data.discount ? `−${a.data.discount}` : undefined),
+        until: validity(a.data.period),
+        group: info?.group ?? 'special',
+      };
+    });
+  } else links = listed.map((a) => ({ url: a.data.url, label: a.data.h1 }));
   if (d.of === 'articles') {
     const cats = under(await getCollection('listings')).filter((l) => l.data.of === 'articles');
     groups = cats.map((c) => ({ url: c.data.url, label: c.data.h1 })).sort((a, b) => a.label.localeCompare(b.label, 'ru'));
@@ -50,7 +67,7 @@ if (d.of === 'doctors') {
 if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 ---
 
-<PageHead url={d.url} h1={clean(d.h1)} compact>
+<PageHead url={d.url} h1={clean(d.h1)} lead={d.of === 'sales' ? 'Скидки и спецпредложения клиник Медюнион. Скидки и акции между собой не суммируются.' : undefined} compact>
   {groups.length > 0 && (
     <nav class="chips" aria-label="Разделы">
       {groups.map((g) => <a class="chip" href={g.url} aria-current={g.url === d.url ? 'page' : undefined}>{g.label}</a>)}
@@ -59,7 +76,32 @@ if (d.of !== 'news') links.sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 </PageHead>
 
 <div class="wrap page-body">
-  {intro && intro.length > 120 && <div class="prose block"><Content /></div>}
+  {intro && intro.length > 120 && d.of !== 'sales' && <div class="prose block"><Content /></div>}
+
+  {saleGroups.map((g) => {
+    const list = offers.filter((o) => o.group === g.key).sort((a, b) => pct(b) - pct(a) || a.title.localeCompare(b.title, 'ru'));
+    return list.length > 0 && (
+      <section class="block">
+        <div class="block-head"><h2>{g.title}</h2></div>
+        <p class="muted offer-group-text">{g.text}</p>
+        <ul class="offer-grid">
+          {list.map((o) => (
+            <li>
+              <a class="offer-card" href={o.url}>
+                {o.badge && <span class="offer-card-badge">{o.badge}</span>}
+                <strong>{o.title}</strong>
+                {o.summary && <span class="offer-card-text">{o.summary}</span>}
+                <span class="offer-card-foot">
+                  {o.until && <span class="muted">{o.until}</span>}
+                  <span class="offer-card-more">Подробнее<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  })}
 
   {doctors.length > 0 && <div class="doctor-grid block">{doctors.map((doc) => (
     <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />

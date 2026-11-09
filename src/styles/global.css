@@ -487,6 +487,17 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 /* Offers */
 .offer-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 4px 0 0; color: var(--muted); }
 .offer-badge { padding: 4px 12px; border-radius: 999px; background: var(--gradient); color: #fff; font-weight: 600; }
+.offer-group-text { margin: 6px 0 20px; }
+.offer-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.offer-card { height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); text-decoration: none; transition: box-shadow .15s, border-color .15s; }
+.offer-card:hover { border-color: transparent; box-shadow: 0 10px 30px rgba(27,35,51,.08); }
+.offer-card-badge { padding: 6px 14px; border-radius: 999px; background: var(--gradient); color: #fff; font-family: var(--font-head); font-size: 1.25rem; font-weight: 600; line-height: 1.2; }
+.offer-card strong { font-family: var(--font-head); font-weight: 500; font-size: 1.1rem; line-height: 1.35; }
+.offer-card-text { color: var(--text); font-size: var(--step--1); }
+.offer-card-foot { margin-top: auto; padding-top: 6px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: var(--step--1); }
+.offer-card-more { display: inline-flex; align-items: center; gap: 4px; color: var(--brand); font-weight: 500; }
+@media (max-width: 1000px) { .offer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .offer-grid { grid-template-columns: 1fr; } }
 
 /* Booking page */
 .booking-page { display: grid; gap: 24px; padding-top: 32px; }

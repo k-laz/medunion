@@ -402,6 +402,50 @@ function parseDoctor(body) {
 
 // ---------------------------------------------------------------- writing
 
+// Offers (/sales/) were typed in the old editor with hard line breaks
+// instead of lists: "Скидка предоставляется на:\ КТ\ МРТ". Turn those into
+// real lists and fix a few typing slips.
+function cleanOffer(md) {
+  const out = md
+    // "...)**Акция действует" and "**A** **Условия:**": separate paragraphs
+    .replace(/([).])\*\*([А-ЯЁ])/g, '$1\n\n**$2')
+    .replace(/\*\* \*\*/g, '**\n\n**')
+    .split(/\n\n/)
+    .map((block) => {
+      const lines = block.split('\n').map((l) => l.replace(/\\$/, '').trim()).filter(Boolean);
+      if (!lines.length || (lines.length === 1 && /^\*{2,3}$/.test(lines[0]))) return ''; // stray bold markers
+      // "\- г. Красноярск:\ Медюнион на Курчатова...": one list item per clinic
+      const city = lines[0].match(/^(?:\\-|-|•)?\s*г\.\s*([А-ЯЁ][а-яё]+):?$/);
+      if (city && lines.length > 1) return lines.slice(1).map((l) => `- ${city[1]}: ${l}`).join('\n');
+      // "г. Красноярск улица Курчатова, 17с15" lines: one list item each
+      if (lines.length > 1 && lines.every((l) => /^г\.\s*[А-ЯЁ]/.test(l))) return lines.map((l) => `- ${l.replace(/^г\.\s*/, '')}`).join('\n');
+      // "•КТ" bullets, "\- текст" escaped dashes
+      const items = lines.map((l) => l.replace(/^(?:•|\\-)\s*/, '- '));
+      // a line ending with ":" followed by short lines: a list
+      if (/:\**$/.test(items[0]) && items.length >= 3 && items.slice(1).every((l) => l.length < 90 && !/^#/.test(l))) {
+        return `${items[0]}\n\n${items.slice(1).map((l) => (l.startsWith('- ') ? l : `- ${l}`)).join('\n')}`;
+      }
+      if (items.slice(1).some((l) => l.startsWith('- '))) return items.join('\n');
+      return lines.join('\\\n');
+    })
+    .filter(Boolean)
+    .join('\n\n');
+  return out
+    // lists split by an empty line (one clinic block per city): join them
+    .replace(/(\n- [^\n]+)\n\n(?=- [А-ЯЁ][а-яё]+: )/g, '$1\n')
+    // "семей.Для" / "семей.**Для": missing space after a full stop
+    .replace(/([а-яё)])\.(\*\*)?([А-ЯЁ])/g, '$1. $2$3')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+const cleanOfferDescription = (d) =>
+  d && decode(d)
+    .replace(/^\s*Действует до отмены акции\s*/i, '')
+    .replace(/^\s*\d{1,2}\.\d{2}\.\d{2,4}\s*[-–]\s*(бессрочно|\d{1,2}\.\d{2}\.\d{2,4})\s*/i, '')
+    .replace(/\\+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
 function yamlValue(v, indent = '') {
   if (typeof v === 'number' || typeof v === 'boolean') return String(v);
   return JSON.stringify(v);
@@ -777,14 +821,17 @@ async function main() {
       }
       if (type === 'sale') {
         text = text.replace(/^\s*(\d{1,2}\s?%)\s*$/m, (_, d) => { discount = d.replace(/\s/g, ''); return ''; });
-        text = text.replace(/^\s*(\d{2}\.\d{2}\.\d{2,4})\s*[-–]\s*(бессрочно|\d{2}\.\d{2}\.\d{2,4})\s*$/m, (_, a, b) => { period = b === 'бессрочно' ? `с ${a}, бессрочно` : `с ${a} по ${b}`; return ''; });
+        const day = (d) => d.replace(/^(\d)\./, '0$1.');
+        text = text.replace(/^\s*(\d{1,2}\.\d{2}\.\d{2,4})\s*[-–]\s*(бессрочно|\d{1,2}\.\d{2}\.\d{2,4})\s*$/m, (_, a, b) => { period = b === 'бессрочно' ? `с ${day(a)}, бессрочно` : `с ${day(a)} по ${day(b)}`; return ''; });
         if (!period) text = text.replace(/^\s*бессрочно\s*$/im, () => { period = 'бессрочно'; return ''; });
+        if (!period) text = text.replace(/^\s*Действует до отмены акции\s*$/im, () => { period = 'до отмены акции'; return ''; });
+        text = cleanOffer(text);
         const plainH1 = h1.toLowerCase().replace(/[^а-яёa-z0-9]/g, '');
         text = text.split(/\n\n/).filter((p) => p.replace(/\*/g, '').toLowerCase().replace(/[^а-яёa-z0-9]/g, '') !== plainH1).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
       }
       await write('articles', url, {
         title: makeTitle({ title: fm.title, h1, url }),
-        description: makeDescription({ description: fm.description, url, h1, body: text }),
+        description: makeDescription({ description: type === 'sale' ? cleanOfferDescription(fm.description) : fm.description, url, h1, body: text }),
         h1: h1 || decode(fm.title),
         kind: type,
         category: type === 'article' ? s[1] : undefined,
