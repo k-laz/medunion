@@ -430,10 +430,11 @@ const pending = [];
 // Typos in the old site's titles, fixed in every title, heading and description
 const TITLE_FIXES = [[/Подготовки к анализам/g, 'Подготовка к анализам']];
 async function write(collection, url, data, body = '') {
+  const rawH1 = data.h1;
   for (const k of ['title', 'h1', 'description']) {
     if (typeof data[k] === 'string') for (const [re, to] of TITLE_FIXES) data[k] = data[k].replace(re, to);
   }
-  pending.push({ collection, url, data, body });
+  pending.push({ collection, url, data, body, rawH1 });
 }
 // Final clean-up of every page's text. The old site's editor produced
 // Markdown quirks that look broken on the new design.
@@ -484,7 +485,11 @@ function tidy(md, { h1 = '' } = {}) {
 
 async function flush() {
   ARTICLE_CATEGORIES.add('новости'); ARTICLE_CATEGORIES.add('акции');
-  for (const p of pending) if (p.collection === 'listings' && p.data.of === 'articles') ARTICLE_CATEGORIES.add(p.data.h1.replace(/[*#\s\\]/g, '').toLowerCase());
+  for (const p of pending) if (p.collection === 'listings' && p.data.of === 'articles') {
+    ARTICLE_CATEGORIES.add(p.data.h1.replace(/[*#\s\\]/g, '').toLowerCase());
+    // also the old spelling, as articles still carry it before TITLE_FIXES
+    if (p.rawH1) ARTICLE_CATEGORIES.add(p.rawH1.replace(/[*#\s\\]/g, '').toLowerCase());
+  }
   for (const { collection, url, data, body: raw } of pending) {
     const body = tidy(raw, { h1: data.h1 || data.name });
     const rel = url.replace(/^\/|\/$/g, '') || 'index';
