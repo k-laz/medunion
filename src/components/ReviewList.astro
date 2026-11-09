@@ -1,8 +1,9 @@
 ---
 // Patient reviews, newest first.
 import { getEntry, type CollectionEntry } from 'astro:content';
-interface Props { reviews: CollectionEntry<'reviews'>[]; showDoctor?: boolean }
-const { reviews, showDoctor = false } = Astro.props;
+// grid: cards in columns with long texts folded (the reviews page)
+interface Props { reviews: CollectionEntry<'reviews'>[]; showDoctor?: boolean; grid?: boolean }
+const { reviews, showDoctor = false, grid = false } = Astro.props;
 const list = await Promise.all(
   [...reviews]
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -11,7 +12,7 @@ const list = await Promise.all(
 const date = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).replace(/\s?г\.$/, '');
 ---
 
-<ul class="reviews">
+<ul class:list={['reviews', { 'reviews-grid': grid }]}>
   {list.map(({ r, doc }) => (
     <li class="review">
       <div class="review-head">
@@ -22,10 +23,21 @@ const date = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month:
         </div>
         {r.rating && <span class="review-stars" aria-label={`Оценка ${r.rating} из 5`}>{'★'.repeat(r.rating)}<span>{'★'.repeat(5 - r.rating)}</span></span>}
       </div>
-      {doc && <p class="review-doctor">Врач: <a href={doc.data.url}>{doc.data.name}</a></p>}
-      <div class="review-text">{r.text.split('\n\n').map((p) => <p>{p}</p>)}</div>
+      <div class="review-text" data-fold>{r.text.split('\n\n').map((p) => <p>{p}</p>)}</div>
+      {grid && <button class="more-btn review-more" type="button" hidden>Читать полностью</button>}
       {r.reply && <p class="review-reply"><strong>Ответ клиники</strong> {r.reply}</p>}
+      {doc && <p class="review-doctor">Отзыв о враче: <a href={doc.data.url}>{doc.data.name}</a></p>}
       {r.source && <p class="review-source muted">Отзыв с сайта <a href={r.source.url} target="_blank" rel="noopener nofollow">{r.source.name}</a></p>}
     </li>
   ))}
 </ul>
+
+<script>
+  // Reviews page: long reviews start folded, "Читать полностью" opens them.
+  for (const text of document.querySelectorAll<HTMLElement>('.reviews-grid [data-fold]')) {
+    const btn = text.parentElement!.querySelector<HTMLButtonElement>('.review-more');
+    if (!btn || text.scrollHeight <= text.clientHeight + 4) continue;
+    btn.hidden = false;
+    btn.addEventListener('click', () => { text.classList.add('is-open'); btn.remove(); });
+  }
+</script>

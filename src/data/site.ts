@@ -42,6 +42,17 @@ export const social = [
   { key: 'telegram', label: 'Telegram', url: 'https://t.me/medunion24' },
 ] as const;
 
+// Reviews: the list of reviews, and the separate page with the form.
+export const reviewsPage = '/ostavit-otzyv-o-nashej-rabote/';
+export const reviewFormPage = '/ostavit-otzyv-o-nashej-rabote/napisat/';
+// The clinic's own pages on review sites, shown next to the review form
+// ("Оставьте отзыв на площадке"). Empty until the clinic confirms the links.
+export const reviewPlatforms: { name: string; url: string }[] = [
+  // { name: '2ГИС', url: 'https://2gis.ru/krasnoyarsk/firm/...' },
+  // { name: 'ПроДокторов', url: 'https://prodoctorov.ru/krasnoyarsk/lpu/...' },
+  // { name: 'Яндекс Карты', url: 'https://yandex.ru/maps/org/...' },
+];
+
 // Legal details shown in the footer. Copied from the "Сведения о медицинской
 // организации" page of the old site; check against the current license.
 export const legal = {

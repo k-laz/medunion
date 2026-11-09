@@ -1,0 +1,32 @@
+---
+// The review form, on its own page. Doctor pages link here with ?doctor=...
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import ReviewForm from '../../components/ReviewForm.astro';
+import { reviewPlatforms } from '../../data/site';
+---
+
+<Base
+  title="Оставить отзыв | Медюнион"
+  description="Расскажите, как прошёл приём в Медюнион: что понравилось и что нам стоит улучшить."
+  url="/ostavit-otzyv-o-nashej-rabote/napisat/"
+  noindex
+>
+  <PageHead url="/ostavit-otzyv-o-nashej-rabote/napisat/" h1="Оставить отзыв" lead="Расскажите, как прошёл приём: что понравилось и что нам стоит улучшить." compact />
+  <div class="wrap page-body with-aside review-new">
+    <div class="page-main">
+      <ReviewForm />
+    </div>
+    {reviewPlatforms.length > 0 && (
+      <div class="page-aside">
+        <aside class="info-card">
+          <p class="info-service">Отзыв на площадке</p>
+          <p class="info-note">Там его увидят те, кто выбирает клинику, и он войдёт в наш рейтинг.</p>
+          <div class="info-actions">
+            {reviewPlatforms.map((p) => <a class="btn btn-quiet btn-wide" href={p.url} target="_blank" rel="noopener">{p.name}</a>)}
+          </div>
+        </aside>
+      </div>
+    )}
+  </div>
+</Base>

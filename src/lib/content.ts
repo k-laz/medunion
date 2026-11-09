@@ -19,6 +19,7 @@ export async function breadcrumbs(url: string) {
     ...(await getCollection('pages')),
   ] as { data: { url: string; h1: string } }[];
   const byUrl = new Map(all.map((e) => [e.data.url, e.data.h1]));
+  byUrl.set('/ostavit-otzyv-o-nashej-rabote/', 'Отзывы'); // hand-made page, not in a collection
   const s = segments(url);
   const trail: { url: string; label: string }[] = [];
   for (let i = 1; i < s.length; i++) {

@@ -1,16 +1,16 @@
 ---
-// "Оставить отзыв". Sends to our server (POST /api/reviews, see
-// docs/server-api.md); the clinic checks the review before it goes live.
+// "Оставить отзыв" form, on its own page. Sends to our server (POST /api/reviews,
+// see docs/server-api.md); the clinic checks the review before it goes live.
+// The doctor can be preselected with ?doctor=/vrachi/.../ in the address.
+import { getCollection } from 'astro:content';
 import { apiBase, social } from '../data/site';
-interface Props { doctorUrl?: string; doctorName?: string; id?: string }
-const { doctorUrl = '', doctorName, id = 'review-form' } = Astro.props;
+interface Props { id?: string }
+const { id = 'review-form' } = Astro.props;
 const telegram = social.find((s) => s.key === 'telegram')!.url;
+const doctors = (await getCollection('doctors')).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
 ---
 
 <form class="review-form info-card" id={id} data-review-form data-api={`${apiBase}/reviews`} data-telegram={telegram} novalidate>
-  <h3>{doctorName ? `Оставить отзыв о враче` : 'Оставить отзыв'}</h3>
-  {doctorName && <p class="muted review-form-for">{doctorName}</p>}
-  <input type="hidden" name="doctor" value={doctorUrl} />
 
   <fieldset class="stars-field">
     <legend>Ваша оценка</legend>
@@ -23,6 +23,14 @@ const telegram = social.find((s) => s.key === 'telegram')!.url;
       ))}
     </div>
   </fieldset>
+
+  <label>
+    <span>О ком отзыв</span>
+    <select name="doctor">
+      <option value="">О клинике в целом</option>
+      {doctors.map((doc) => <option value={doc.data.url}>{doc.data.name}</option>)}
+    </select>
+  </label>
 
   <div class="form-row">
     <label>
@@ -55,6 +63,10 @@ const telegram = social.find((s) => s.key === 'telegram')!.url;
     if (form.dataset.ready) continue;
     form.dataset.ready = '1';
     const status = form.querySelector<HTMLElement>('.form-status')!;
+    // Coming from a doctor's page: that doctor is already chosen
+    const wanted = new URLSearchParams(location.search).get('doctor');
+    const select = form.querySelector<HTMLSelectElement>('select[name=doctor]')!;
+    if (wanted && [...select.options].some((o) => o.value === wanted)) select.value = wanted;
     const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
     const say = (text: string, ok = false) => {
       status.hidden = false;

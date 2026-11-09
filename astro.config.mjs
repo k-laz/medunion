@@ -13,5 +13,5 @@ export default defineConfig({
   build: { format: 'directory' },
   // The floating Astro toolbar in `npm run dev` covers the mobile booking bar.
   devToolbar: { enabled: false },
-  integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') })],
+  integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') && !page.endsWith('/napisat/') })],
 });

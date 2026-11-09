@@ -1,0 +1,22 @@
+---
+// Reviews, at the same address as on the old site. The form has its own page.
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import ReviewList from '../../components/ReviewList.astro';
+import { reviewFormPage } from '../../data/site';
+const reviews = await getCollection('reviews');
+---
+
+<Base
+  title="Отзывы пациентов о Медюнион, Красноярск и Канск"
+  description="Отзывы пациентов о врачах и клиниках Медюнион в Красноярске и Канске. Оставьте свой отзыв о приёме: он поможет нам стать лучше."
+  url="/ostavit-otzyv-o-nashej-rabote/"
+>
+  <PageHead url="/ostavit-otzyv-o-nashej-rabote/" h1="Отзывы пациентов" lead="Что пишут о клинике и врачах. Каждый отзыв читает руководство клиники." compact>
+    <div class="cta-row"><a class="btn btn-primary" href={reviewFormPage}>Оставить отзыв</a></div>
+  </PageHead>
+  <div class="wrap page-body">
+    <div class="block"><ReviewList reviews={reviews} showDoctor grid /></div>
+  </div>
+</Base>

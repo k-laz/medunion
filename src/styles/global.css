@@ -567,12 +567,14 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 .review-reply { margin: 12px 0 0; padding: 10px 14px; border-left: 3px solid var(--brand); background: var(--surface); font-size: var(--step--1); }
 .review-reply strong { display: block; }
 .review-source { margin: 10px 0 0; font-size: var(--step--1); }
-.reviews-page { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 32px; align-items: start; padding-top: 32px; }
-.reviews-aside { position: sticky; top: 96px; }
-@media (max-width: 900px) {
-  .reviews-page { grid-template-columns: 1fr; padding-top: 16px; }
-  .reviews-aside { position: static; order: -1; }
-}
+.reviews-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+.reviews-grid .review-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 8; overflow: hidden; }
+.reviews-grid .review-text.is-open { display: block; }
+.review-more { margin-top: 8px; }
+@media (max-width: 1000px) { .reviews-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .reviews-grid { grid-template-columns: 1fr; } }
+.review-new .review-form { margin-top: 40px; max-width: 640px; }
+.review-form select { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: var(--radius-btn); font: inherit; font-size: 1rem; color: var(--ink); background: #fff; }
 
 /* Forms */
 .review-form { display: grid; gap: 14px; margin-top: 24px; }
@@ -586,7 +588,6 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 .review-form input:focus, .review-form textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(81,74,193,.15); }
 .review-form textarea { resize: vertical; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.reviews-aside .form-row { grid-template-columns: 1fr; }
 @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 .review-form .check { grid-template-columns: auto 1fr; align-items: start; gap: 10px; }
 .review-form .check input { margin-top: 3px; accent-color: var(--brand); }
