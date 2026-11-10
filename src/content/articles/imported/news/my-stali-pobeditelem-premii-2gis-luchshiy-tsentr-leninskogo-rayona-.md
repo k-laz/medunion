@@ -7,4 +7,4 @@ kind: "news"
 date: "2026-07-07"
 ---
 
-![Мы стали победителем премии 2ГИС «Лучший центр Ленинского района»! ](https://medunion.group/upload/iblock/d14/ulxe6s9exelf8dd2rlsss2dnvzqpsenb.png)
+![Мы стали победителем премии 2ГИС «Лучший центр Ленинского района»! ](/upload/iblock/d14/ulxe6s9exelf8dd2rlsss2dnvzqpsenb.jpg)

@@ -11,7 +11,7 @@ prices:
     price: 15200
 ---
 
-[![МРТ всего тела (онкоскрининг) ](https://medunion.group/upload/iblock/564/7whptiojixc3oiwvpj4ho89n4oy50nsj.jpg "МРТ всего тела (онкоскрининг) ")](https://medunion.group/upload/iblock/564/7whptiojixc3oiwvpj4ho89n4oy50nsj.jpg "МРТ всего тела (онкоскрининг) ")
+[![МРТ всего тела (онкоскрининг) ](/upload/iblock/564/7whptiojixc3oiwvpj4ho89n4oy50nsj.jpg "МРТ всего тела (онкоскрининг) ")](/upload/iblock/564/7whptiojixc3oiwvpj4ho89n4oy50nsj.jpg "МРТ всего тела (онкоскрининг) ")
 
 МРТ всего тела (онкоскрининг) входят зоны:
 

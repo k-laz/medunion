@@ -7,7 +7,7 @@ kind: "article"
 category: "onkologiya-i-mammologiya"
 ---
 
-![Рак не болит. О том, как важно проходить обследование, даже если симптомов нет](https://medunion.group/upload/iblock/5f7/dl734g8g5lpm2etfs1ccv3r13sraoar6.jpg)
+![Рак не болит. О том, как важно проходить обследование, даже если симптомов нет](/upload/iblock/5f7/dl734g8g5lpm2etfs1ccv3r13sraoar6.jpg)
 
 **Рак – это одна из самых распространённых болезней в Красноярском крае.**
 

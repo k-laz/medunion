@@ -6,7 +6,7 @@ h1: "Детский врач-гинеколог"
 teaser: "Забота о здоровье юных пациенток:"
 ---
 
-![Детский врач-гинеколог](https://medunion.group/upload/iblock/ae0/02mkjgziatd8rv6zwe7ztd6wa1dj9kiu.jpg)
+![Детский врач-гинеколог](/upload/iblock/ae0/02mkjgziatd8rv6zwe7ztd6wa1dj9kiu.jpg)
 
 Забота о здоровье юных пациенток
 

@@ -8,7 +8,7 @@ category: "otorinolaringologiya"
 date: "2026-04-27"
 ---
 
-![Лечение тонзиллита ](https://medunion.group/upload/iblock/57e/3cqq9sfgqv9560tapxqeel496ur47v43.png)
+![Лечение тонзиллита ](/upload/iblock/57e/3cqq9sfgqv9560tapxqeel496ur47v43.jpg)
 
 Лечение тонзиллита: эффективные методы и профессиональная помощь
 

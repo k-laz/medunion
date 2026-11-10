@@ -24,6 +24,16 @@ import { join, dirname } from 'node:path';
 const IMPORT = 'import';
 const CONTENT = 'src/content';
 const OLD_SITE = 'https://medunion.group';
+// A file from the old site, if we have it in public/upload: the same name, or
+// the same name with another extension (big PNG photos were saved as .jpg).
+function localUpload(path) {
+  if (existsSync(join('public', safeDecode(path)))) return path;
+  for (const ext of ['.jpg', '.webp', '.png']) {
+    const alt = path.replace(/\.(png|jpe?g|webp)$/i, ext);
+    if (alt !== path && existsSync(join('public', safeDecode(alt)))) return alt;
+  }
+  return null;
+}
 
 // ---------------------------------------------------------------- reading
 
@@ -319,7 +329,10 @@ function cleanBody(md) {
     .replace(/\\\n(\s*\n|\s*$)/g, '\n$1') // no line break before a blank line or at the end
     // Files: use the local copy in public/upload once `npm run files` has fetched it,
     // otherwise keep loading it from the old server.
-    .replace(/\]\((\/upload\/[^)\s]+)/g, (all, path) => (existsSync(join('public', safeDecode(path))) ? all : `](${OLD_SITE}${path}`))
+    .replace(/\]\((\/upload\/[^)\s]+)/g, (all, path) => {
+      const local = localUpload(path);
+      return local ? `](${local}` : `](${OLD_SITE}${path}`;
+    })
     .replace(/\n{3,}/g, '\n\n')
     .trim()
     // The same paragraph twice (a teaser above the full text): keep the first.

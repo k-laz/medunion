@@ -7,7 +7,7 @@ kind: "article"
 category: "ginekologiya"
 ---
 
-![Гинекологическая помощь девочкам](https://medunion.group/upload/iblock/891/dy037l8xxu3gjsha4xkgaw0jv5kcp1j2.jpg)
+![Гинекологическая помощь девочкам](/upload/iblock/891/dy037l8xxu3gjsha4xkgaw0jv5kcp1j2.jpg)
 
 Часть женских болезней и патологических состояний родом из детства: здоровье девочки во многом определяет будущую жизнь и репродуктивную способность женщины.
 
