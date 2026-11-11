@@ -1004,7 +1004,9 @@ async function main() {
   await writeFile(
     'deploy/redirects.nginx.conf',
     '# Permanent (301) redirects from old Bitrix addresses. Include inside the server { } block.\n# nginx matches the decoded path, so non-Latin characters are written as-is.\n' +
-      sorted.map(([f, t]) => `location = "${safeDecode(f)}" { return 301 ${encodeURI(safeDecode(t))}; }`).join('\n') + '\n',
+      sorted.map(([f, t]) => `location = "${safeDecode(f)}" { return 301 ${encodeURI(safeDecode(t))}; }`).join('\n') + '\n' +
+      // The old site's sitemap files (Bitrix: sitemap-files.xml, sitemap-iblock-13.xml ...) -> the new sitemap
+      'location ~ "^/sitemap-(files|iblock-[0-9]+)\\.xml$" { return 301 /sitemap.xml; }\n',
   );
 
   console.log('Written:', counts);
