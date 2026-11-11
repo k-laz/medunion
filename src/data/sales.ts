@@ -65,7 +65,8 @@ export const sales: Record<string, SaleInfo> = {
     group: 'special',
     summary: 'Если вы сделали МРТ в Медюнион.',
     links: [
-      { label: 'МРТ', url: '/uslugi/diagnostika/mrt/' },
+      { label: 'МРТ открытого типа', url: '/uslugi/diagnostika/mrt/' },
+      { label: 'МРТ 1,5 Тесла', url: '/uslugi/diagnostika/mrt-1-5-tesla/' },
       { label: 'Неврология', url: '/uslugi/centr/nevrologiya/' },
     ],
   },

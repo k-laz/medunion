@@ -4,8 +4,10 @@ import PageHead from '../components/PageHead.astro';
 import PriceList from '../components/PriceList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import SearchBox from '../components/SearchBox.astro';
-import { childrenOf, tileLabel, shortTeaser, leadText, shortName, rub } from '../lib/content';
-import { integrations, phones, bookingPage, clinics } from '../data/site';
+import { childrenOf, tileLabel, shortTeaser, leadText, shortName } from '../lib/content';
+import { integrations, phones, bookingPage } from '../data/site';
+import { sales as saleInfo } from '../data/sales';
+import { serviceArticles } from '../data/service-extras';
 
 interface Props { entry: CollectionEntry<'services'> }
 const { entry } = Astro.props;
@@ -36,20 +38,28 @@ const tabs = isCatalog ? [] : [
   d.faq.length && { id: 'faq', label: 'Вопросы' },
 ].filter(Boolean) as { id: string; label: string }[];
 
-// Key facts under the title, all taken from the page's own data:
-// the lowest price, how many doctors, where it is done.
-const subtree = allServices.filter((x) => x.data.url.startsWith(d.url));
-const ownFrom = d.prices.length ? Math.min(...d.prices.map((p) => p.price)) : 0;
-const subPrices = subtree.flatMap((x) => x.data.prices);
-const subFrom = !ownFrom && subPrices.length ? Math.min(...subPrices.map((p) => p.price)) : 0;
-const doctorCount = new Set(subtree.flatMap((x) => x.data.doctors.map((r) => r.id))).size;
-const plural = (n: number, one: string, few: string, many: string) => (n % 10 === 1 && n % 100 !== 11 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many);
-const facts = isCatalog ? [] : ([
-  ownFrom && { label: 'Стоимость', value: `от ${rub(ownFrom)}`, href: '#prices' },
-  subFrom && { label: 'Услуги раздела', value: `от ${rub(subFrom)}`, href: '#sub' },
-  doctorCount && { label: 'Врачи', value: `${doctorCount} ${plural(doctorCount, 'врач', 'врача', 'врачей')}`, href: doctors.length ? '#doctors' : undefined },
-  d.clinics.length && { label: d.clinics.length > 1 ? 'Клиники' : 'Клиника', value: d.clinics.map((k) => clinics[k].short).join(', ') },
-].filter(Boolean) as { label: string; value: string; href?: string }[]);
+// Context links under the title, only where they apply: an offer for this
+// service (from the offers' own links) and an article on how to prepare or
+// what the test is. Pages without either show nothing extra.
+const covers = (key: string) => d.url === key || d.url.startsWith(key);
+const offerEntries = await getCollection('articles', (a) => a.data.kind === 'sale');
+// most specific first: an offer for this exact page beats one for the whole section
+const fit = (info: (typeof saleInfo)[string]) => Math.max(0, ...(info.links ?? []).filter((l) => covers(l.url)).map((l) => l.url.length));
+const offers = Object.entries(saleInfo)
+  .filter(([, info]) => fit(info) > 0)
+  .sort(([, a], [, b]) => fit(b) - fit(a))
+  .map(([url, info]) => {
+    const o = offerEntries.find((e) => e.data.url === url);
+    const badge = info.badge ?? (o && 'discount' in o.data && o.data.discount ? `−${o.data.discount}` : undefined);
+    return { url, badge, title: info.title ?? o?.data.h1 ?? '' };
+  })
+  .slice(0, 2);
+const articleKeys = Object.keys(serviceArticles).filter(covers).sort((x, y) => y.length - x.length);
+const readUrls = articleKeys.length ? serviceArticles[articleKeys[0]] : [];
+const allArticles = readUrls.length ? await getCollection('articles') : [];
+const reads = readUrls
+  .map((r) => ({ ...r, title: allArticles.find((a) => a.data.url === r.url)?.data.h1 }))
+  .filter((r) => r.title);
 ---
 
 {isCatalog ? (
@@ -58,15 +68,21 @@ const facts = isCatalog ? [] : ([
   </PageHead>
 ) : (
   <PageHead url={d.url} h1={d.h1} lead={d.lead ?? (d.teaser ? leadText(d.teaser) : undefined)}>
-    {facts.length > 0 && (
-      <dl class="facts">
-        {facts.map((f) => (
-          <div class="fact">
-            <dt>{f.label}</dt>
-            <dd>{f.href ? <a href={f.href}>{f.value}</a> : f.value}</dd>
-          </div>
+    {(offers.length > 0 || reads.length > 0) && (
+      <div class="context-links">
+        {offers.map((o) => (
+          <a class="context-link context-offer" href={o.url}>
+            {o.badge && <span class="context-badge">{o.badge}</span>}
+            <span>{o.title}</span>
+          </a>
         ))}
-      </dl>
+        {reads.map((r) => (
+          <a class="context-link" href={r.url}>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg>
+            <span>{r.prep ? 'Как подготовиться' : 'Статья'}: {r.title}</span>
+          </a>
+        ))}
+      </div>
     )}
     <div class="cta-row cta-booking">
       <a class="btn btn-primary" href={bookingUrl}>Записаться</a>
