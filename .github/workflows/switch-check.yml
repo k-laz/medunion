@@ -1,0 +1,29 @@
+# Checks medunion.group the way search engines will see it (scripts/check-switch.sh).
+# Actions > Switch check > Run workflow:
+#   "new server"  before the DNS change: medunion.group is pointed at the Yandex server for this check only
+#   "live domain" after the DNS change: checks whatever the domain points to now
+name: Switch check
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: What to check
+        type: choice
+        options: ['new server', 'live domain']
+        default: 'new server'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          if [ "${{ inputs.target }}" = "new server" ]; then IP="$DEPLOY_HOST"; else IP=""; fi
+          set -o pipefail
+          bash scripts/check-switch.sh $IP | tee result.txt
+      - name: Summary
+        if: always()
+        run: |
+          { echo '```'; grep -v '^OK\|^MOVED' result.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
