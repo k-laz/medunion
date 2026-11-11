@@ -312,21 +312,24 @@ p { margin: 0 0 1rem; }
 @media (max-width: 900px) { .tile-grid, .tile-grid-2 { grid-template-columns: 1fr; } }
 
 /* Page head band */
-.page-head { background: var(--tint); }
-.page-head-inner { padding-top: 28px; padding-bottom: 44px; }
+/* White, like gooddoctor: breadcrumbs, a modest title, facts, buttons, then
+   straight into the content. No coloured band. */
+.page-head { background: none; }
+.page-head-inner { padding-top: 20px; padding-bottom: 8px; }
 .page-head-inner.has-aside { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: start; }
-.page-head-compact .page-head-inner { padding-top: 24px; padding-bottom: 32px; }
+.page-head-compact .page-head-inner { padding-top: 20px; padding-bottom: 4px; }
 .page-head-crumbs > .wrap { padding-top: 18px; padding-bottom: 2px; }
-.page-head h1 { max-width: 24ch; }
-.page-head .lead { margin-bottom: 24px; }
-.page-head-main > .cta-row { margin-top: 24px; }
-.facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 0; }
-.fact { padding: 12px 16px; min-width: 150px; border-radius: var(--radius); background: #fff; }
+.page-head h1 { max-width: 34ch; font-size: clamp(1.75rem, 1.25rem + 1.5vw, 2.4rem); margin-bottom: 8px; }
+.page-head .lead { margin: 4px 0 12px; font-size: 1.05rem; }
+.page-head-main > .cta-row { margin-top: 20px; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
+.fact { padding: 12px 18px; min-width: 150px; border-radius: var(--radius); background: var(--tint); }
 .fact dt { font-size: var(--step--1); color: var(--muted); }
 .fact dd { margin: 2px 0 0; font-weight: 600; color: var(--ink); }
 .fact dd a { color: inherit; text-decoration: none; }
 .fact dd a:hover { color: var(--brand); }
-.btn-phone { background: #fff; }
+.btn-phone { background: #fff; gap: 8px; }
+.btn-phone svg { color: var(--brand); }
 .prices.is-folded:not(.is-searching) .price-more { display: none; }
 .prices.is-searching .prices-toggle { display: none; }
 .price-page .page-main > .block:first-child { margin-top: 40px; }
@@ -348,9 +351,11 @@ p { margin: 0 0 1rem; }
 .price-side .info-note a { font-weight: 500; }
 .prices-toggle { margin: 12px 0 4px; }
 @media (max-width: 640px) { .fact { min-width: 0; flex: 1 1 40%; } }
+/* Phones have the bottom bar (Позвонить / Записаться), so no second pair in the header */
+@media (max-width: 760px) { .page-head-main > .cta-booking { display: none; } }
 @media (max-width: 900px) {
   .page-head-inner.has-aside { grid-template-columns: 1fr; gap: 24px; }
-  .page-head-inner { padding-bottom: 32px; }
+  .page-head-inner { padding-bottom: 4px; }
   .page-head-inner.has-aside .page-head-main > .cta-row { display: none; }
 }
 
