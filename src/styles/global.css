@@ -758,3 +758,15 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 .review-places-links { margin: 0; }
 @media (max-width: 900px) { .clinic-top { grid-template-columns: 1fr; } .clinic-map, .clinic-map iframe { min-height: 300px; } }
 @media (max-width: 640px) { .block-head:has(.block-head-links), .trust-head { flex-wrap: wrap; row-gap: 4px; } .block-head-links { gap: 16px; } }
+
+/* Contacts: shared contacts under the clinic cards */
+.contact-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; margin: 16px 0 0; }
+.contact-facts > div { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); }
+.contact-facts dt { font-size: var(--step--1); color: var(--muted); margin-bottom: 6px; }
+.contact-facts dd { margin: 0; display: grid; gap: 2px; }
+.contact-facts .muted { font-size: var(--step--1); }
+.contact-strong { font-weight: 600; font-size: 1.0625rem; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.contact-strong:hover { color: var(--brand); }
+.contact-social { display: flex; gap: 12px; }
+.contact-social a { color: var(--brand); }
+.clinic-phone a, .clinic-phones a, .contact-strong[href^="tel:"] { white-space: nowrap; }

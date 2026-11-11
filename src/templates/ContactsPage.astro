@@ -3,7 +3,8 @@
 import type { CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import Ratings from '../components/Ratings.astro';
-import { clinics, clinicPage, type ClinicKey } from '../data/site';
+import Social from '../components/Social.astro';
+import { clinics, clinicPage, phones, type ClinicKey } from '../data/site';
 
 interface Props { entry: CollectionEntry<'pages'> }
 const d = Astro.props.entry.data;
@@ -32,5 +33,25 @@ const route = (k: ClinicKey) => `https://yandex.ru/maps/?rtext=~${clinics[k].coo
       );
     })}
   </div>
-  <p class="muted">E-mail: <a href="mailto:info-med@medunion.group">info-med@medunion.group</a></p>
+  <section class="block">
+    <h2>Общие контакты</h2>
+    <dl class="contact-facts">
+      <div>
+        <dt>Запись и вопросы</dt>
+        <dd><a class="contact-strong" href={`tel:${phones.main.tel}`}>{phones.main.display}</a><span class="muted">единый номер, все клиники</span></dd>
+      </div>
+      <div>
+        <dt>Электронная почта</dt>
+        <dd><a class="contact-strong" href="mailto:info-med@medunion.group">info-med@medunion.group</a></dd>
+      </div>
+      <div>
+        <dt>Оплата</dt>
+        <dd><span class="contact-strong">Наличными и картой</span><span class="muted">во всех клиниках</span></dd>
+      </div>
+      <div>
+        <dt>Мы в соцсетях</dt>
+        <dd><Social size={28} class="contact-social" /></dd>
+      </div>
+    </dl>
+  </section>
 </div>
