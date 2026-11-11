@@ -76,10 +76,10 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
       <aside class="hero-card">
         <p class="hero-card-title">Запись на приём</p>
         <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться</a>
-        <a class="hero-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
-        <p class="muted">Красноярск, обе клиники</p>
-        <a class="hero-phone hero-phone-sm" href={`tel:${phones.kansk.tel}`}>{phones.kansk.display}</a>
-        <p class="muted">Канск</p>
+        <dl class="hero-phones">
+          <div><dt>Красноярск, обе клиники</dt><dd><a class="hero-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a></dd></div>
+          <div><dt>Канск</dt><dd><a class="hero-phone" href={`tel:${phones.kansk.tel}`}>{phones.kansk.display}</a></dd></div>
+        </dl>
       </aside>
     </div>
   </section>
