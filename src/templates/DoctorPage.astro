@@ -39,11 +39,23 @@ const prices = ownRows.length
   : [...new Map(services.flatMap((s) => s.data.prices).filter((p) => visit.test(p.name)).map((p) => [p.name, p])).values()];
 const from = prices.length ? Math.min(...prices.map((p) => p.price)) : 0;
 
-// Education: "2005 г. - Университет, специальность" -> year + text, for a timeline
-const education = d.education.map((e) => {
-  const m = e.match(/^\s*((?:19|20)\d\d)\s*(?:г\.?)?\s*[-–—:]?\s*(.+)$/);
-  return m ? { year: m[1], text: m[2].replace(/\.$/, '') } : { year: '', text: e };
+// Education, in two lists: degrees (university, residency, retraining) as a
+// timeline from oldest, and short courses (повышение квалификации, циклы,
+// конференции) newest first, the first few shown and the rest folded.
+// "2005 г. - Текст", "в 1994 году окончил…", "2023г. - «Курс»" -> year + text
+const DEGREE = /ординатур|интернатур|аспирантур|базов|диплом|окончил|переподготов|лечебн\S* (дело|факультет)|медицинск\S* (университет|институт|академи)[^,.]*\s*\(([а-яё\s,-]+)\)\s*\.?$/i;
+const COURSE = /повышени\S* квалификац|сертификат|семинар|конференц|\bцикл|\bкурс|^«|^"/i;
+const parsed = d.education.map((e, i) => {
+  const m = e.match(/^\s*(?:в\s+)?((?:19|20)\d\d)\s*(?:г(?:г|од[ау]?)?\.?)?\s*[-–—:]?\s*(.+)$/i);
+  const text = (m ? m[2] : e).trim().replace(/\.$/, '');
+  return { year: m ? m[1] : '', text, i };
 });
+const isCourse = (e: { year: string; text: string }) => !!e.year && !DEGREE.test(e.text) && COURSE.test(e.text);
+const byYear = (a: { year: string; i: number }, b: { year: string; i: number }) =>
+  (a.year ? 0 : 1) - (b.year ? 0 : 1) || (a.year || '').localeCompare(b.year || '') || a.i - b.i;
+const education = parsed.filter((e) => !isCourse(e)).sort(byYear);
+const courses = parsed.filter(isCourse).sort((a, b) => b.year.localeCompare(a.year) || a.i - b.i);
+const COURSES_SHOWN = 5;
 
 // Other doctors of the same department: the section this doctor's page sits in
 const section = d.url.split('/').slice(0, 3).join('/') + '/';
@@ -55,7 +67,7 @@ const colleagues = (await getCollection('doctors'))
 
 const anchors = [
   hasText && { id: 'about', label: 'О враче' },
-  education.length && { id: 'education', label: 'Образование' },
+  (education.length || courses.length) && { id: 'education', label: 'Образование' },
   prices.length && { id: 'prices', label: 'Цены' },
   reviews.length && { id: 'reviews', label: 'Отзывы' },
 ].filter(Boolean) as { id: string; label: string }[];
@@ -117,17 +129,35 @@ const anchors = [
       </section>
     )}
 
-    {education.length > 0 && (
+    {(education.length > 0 || courses.length > 0) && (
       <section class="block" id="education">
         <h2>Образование</h2>
-        <ol class="timeline">
-          {education.map((e) => (
-            <li>
-              {e.year && <span class="timeline-year">{e.year}</span>}
-              <span>{e.text}</span>
-            </li>
-          ))}
-        </ol>
+        {education.length > 0 && (
+          <ol class="timeline">
+            {education.map((e) => (
+              <li>
+                {e.year && <span class="timeline-year">{e.year}</span>}
+                <span>{e.text}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+        {courses.length > 0 && (
+          <div class="courses" data-courses>
+            <h3>Повышение квалификации</h3>
+            <ul class="course-list">
+              {courses.map((c, i) => (
+                <li class:list={{ 'course-more': i >= COURSES_SHOWN }}>
+                  <span class="course-year">{c.year}</span>
+                  <span>{c.text}</span>
+                </li>
+              ))}
+            </ul>
+            {courses.length > COURSES_SHOWN + 1 && (
+              <button class="more-btn courses-toggle" type="button">Показать все ({courses.length})</button>
+            )}
+          </div>
+        )}
       </section>
     )}
 
@@ -168,3 +198,11 @@ const anchors = [
 </div>
 
 <div class="page-body"></div>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-courses]')) {
+    const btn = box.querySelector<HTMLButtonElement>('.courses-toggle');
+    if (!btn) { box.classList.add('is-open'); continue; }
+    btn.addEventListener('click', () => { box.classList.add('is-open'); btn.remove(); });
+  }
+</script>
