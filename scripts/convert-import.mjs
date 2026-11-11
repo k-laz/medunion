@@ -485,12 +485,15 @@ function frontmatter(obj) {
 // Pages are collected first and written at the end, after duplicates are removed.
 const pending = [];
 // Typos in the old site's titles, fixed in every title, heading and description
+// Typos in the old site's doctor data
+const TEXT_FIXES = [[/помощь бедренным/g, 'помощь беременным']];
 const TITLE_FIXES = [[/Подготовки к анализам/g, 'Подготовка к анализам'], [/кабинета Красноярске/g, 'кабинета в Красноярске']];
 async function write(collection, url, data, body = '') {
   const rawH1 = data.h1;
   for (const k of ['title', 'h1', 'description']) {
     if (typeof data[k] === 'string') for (const [re, to] of TITLE_FIXES) data[k] = data[k].replace(re, to);
   }
+  if (Array.isArray(data.education)) data.education = data.education.map((e) => TEXT_FIXES.reduce((t, [re, to]) => t.replace(re, to), e));
   pending.push({ collection, url, data, body, rawH1 });
 }
 // Final clean-up of every page's text. The old site's editor produced
