@@ -87,6 +87,8 @@ pages should all work (Metrica and chat only run on the real domain).
 
 ## 4. Switch the domain
 
+Step by step, with the certificate taken in advance and a dress rehearsal: the "switch-day runbook" doc. The check itself: `scripts/check-switch.sh` (GitHub Actions > Switch check).
+
 1. Lower the TTL of the `medunion.group` DNS records to 300 a day before.
 2. Change the `A` records of `medunion.group` and `www.medunion.group` to the new server IP.
 3. When the domain opens the new server, get the certificate and enable the real config:
@@ -103,7 +105,7 @@ certbot renews the certificate by itself.
 
 ## 5. After the switch
 
-- Yandex Webmaster: check the site is still verified, submit `https://medunion.group/sitemap-index.xml`, and watch "Страницы в поиске" for a few weeks.
+- Yandex Webmaster: check the site is still verified, submit `https://medunion.group/sitemap.xml`, and watch "Страницы в поиске" for a few weeks.
 - Metrica: confirm visits and goals keep coming in.
 - Bitrix24: confirm calls and the chat button still create leads.
 - Keep the old server running (on another address) for a month in case something was missed.
