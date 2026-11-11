@@ -1,0 +1,65 @@
+title: Гинекология
+page: /ceny/ginekologiya/
+order: 9
+items:
+  - id: argonoplazmennaya-ablatsiya-ektopii-erozii-sheyki-matki
+    name: Аргоноплазменная аблация эктопии (эрозии) шейки матки
+    price: 3700
+  - id: biopsiya-patologicheskikh-obrazovaniy-vlagalishcha-s-gistologicheskim-issledovaniem
+    name: Биопсия патологических образований влагалища с гистологическим исследованием
+    price: 8500
+  - id: biopsiya-sheyki-matki-s-gistologicheskim-issledovaniem
+    name: Биопсия шейки матки с гистологическим исследованием
+    price: 8500
+  - id: vvedenie-vms
+    name: Введение ВМС
+    price: 2500
+  - id: vskrytie-abstsessa-bartolinovoy-zhelezy
+    name: Вскрытие абсцесса бартолиновой железы
+    price: 5000
+  - id: vulvoskopiya
+    name: Вульвоскопия
+    price: 1800
+  - id: destruktsiya-mnozhestvennykh-nabotovykh-kist-sheyki-matki-radiovolnovym-metodom
+    name: Деструкция множественных наботовых кист шейки матки радиоволновым методом
+    price: 9000
+  - id: diatermokoagulyatsiya-sheyki-matki-radiovolnovym-metodom-apparat-fotek
+    name: Диатермокоагуляция шейки матки радиоволновым методом), аппарат Фотек
+    price: 5500
+  - id: individualnyy-podbor-vlagalishchnykh-pessariev-bez-stoimosti-pessariya
+    name: Индивидуальный подбор влагалищных пессариев (без стоимости пессария)
+    price: 2500
+  - id: intimnaya-konturnaya-plastika-fillerom-gialuronovoy-kisloty-bez-stoimosti-preparata
+    name: Интимная контурная пластика филлером гиалуроновой кислоты (Без стоимости препарата)
+    price: 12000
+  - id: intimnaya-konturnaya-plastika-fillerom-gialuronovoy-kisloty-1-ml
+    name: Интимная контурная пластика филлером гиалуроновой кислоты 1 мл.
+    price: 20000
+  - id: intimnaya-konturnaya-plastika-fillerom-gialuronovoy-kisloty-2-ml-koreya
+    name: Интимная контурная пластика филлером гиалуроновой кислоты 2 мл.(Корея)
+    price: 25000
+  - id: intimnaya-plazmoterapiya
+    name: Интимная плазмотерапия
+    price: 14000
+  - id: intimnaya-plastika-martinex-mestnaya-anasteziya
+    name: Интимная пластика (MARTINEX)+ местная анастезия
+    price: 35000
+  - id: kolposkopiya
+    name: Кольпоскопия
+    price: 2700
+  - id: kolposkopiya-vulvoskopiya
+    name: Кольпоскопия + Вульвоскопия
+    price: 3500
+  - id: konizatsiya-sheyki-matki-1-stepeni-slozhnosti
+    name: Конизация шейки матки 1 степени сложности
+    price: 16500
+  - id: detskiy-ginekolog-pervichnyy-priem
+    name: Детский гинеколог, первичный приём
+    price: 2500
+  - id: detskiy-ginekolog-povtornyy-priem-v-techenie-mesyatsa
+    name: Детский гинеколог, повторный приём в течение месяца
+    price: 2400
+also:
+  - konsultatsiya-ginekologa-endokrinologa
+  - konsultatsiya-detskogo-ginekologa-pervichnaya-s-0-let
+  - konsultatsiya-detskogo-ginekologa-povtornaya-v-techenii-1-mesyatsa-s-0-let

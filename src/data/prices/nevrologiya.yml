@@ -1,0 +1,17 @@
+title: Неврология
+page: /ceny/nevrologiya/
+order: 11
+items:
+  - id: paravertebralnaya-blokada-nevrologa-bez-stoimosti-lekarstvennykh-preparatov
+    name: Паравертебральная блокада невролога (Без стоимости лекарственных препаратов)
+    price: 1800
+  - id: paravertebralnaya-blokada-nevrologa-s-diprospanom-diprometoy
+    name: Паравертебральная блокада невролога с дипроспаном, дипрометой
+    price: 3080
+also:
+  - konsultatsiya-detskogo-nevrologa-pervichnaya
+  - konsultatsiya-detskogo-nevrologa-povtornaya
+  - konsultatsiya-nevrologa-pervichnaya
+  - konsultatsiya-neyrokhirurga
+  - elektroentsefalografiya-eeg-30-min
+  - elektroentsefalografiya-eeg-60-min

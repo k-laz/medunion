@@ -1,0 +1,49 @@
+# Price editor (/admin/). Staff change prices here; each save is a commit to
+# the repository, and the site rebuilds itself in about a minute.
+# Only the price list is editable. Instructions: docs/admin.md
+backend:
+  name: github
+  repo: k-laz/medunion
+  branch: main
+  # Sign-in with an access token only (no OAuth server needed). See docs/admin.md.
+  auth_methods: [token]
+  commit_messages:
+    update: 'Цены: изменён раздел «{{slug}}» ({{author-name}})'
+
+app_title: 'Медюнион: цены'
+media_folder: public/upload/cms
+public_folder: /upload/cms
+editor:
+  preview: false
+
+collections:
+  - name: prices
+    label: Цены
+    label_singular: Раздел цен
+    description: >-
+      Цены на сайте. Откройте раздел, найдите услугу, поменяйте цену и нажмите «Сохранить».
+      Через минуту-две новая цена появится на всех страницах сайта, где есть эта услуга.
+    folder: src/data/prices
+    extension: yml
+    format: yml
+    create: false
+    delete: false
+    identifier_field: title
+    summary: '{{title}}'
+    sortable_fields: [order, title]
+    fields:
+      - { name: title, label: Раздел, widget: string, readonly: true }
+      - { name: page, widget: hidden }
+      - { name: order, widget: hidden }
+      - name: items
+        label: Услуги и цены
+        label_singular: услугу
+        widget: list
+        collapsed: true
+        summary: '{{fields.name}}: {{fields.price}} ₽'
+        hint: Чтобы убрать услугу с сайта, удалите строку. Новая строка появится в конце раздела.
+        fields:
+          - { name: id, widget: hidden }
+          - { name: name, label: Название, widget: string, hint: 'Как в прайсе клиники' }
+          - { name: price, label: 'Цена, ₽', widget: number, value_type: int, min: 1 }
+      - { name: also, widget: hidden }

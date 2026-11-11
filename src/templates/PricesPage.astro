@@ -2,15 +2,18 @@
 import type { CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import PriceList from '../components/PriceList.astro';
+import { sectionFor, sectionItems } from '../lib/prices';
 
 interface Props { entry: CollectionEntry<'prices'> }
 const d = Astro.props.entry.data;
+const section = sectionFor(d.url);
+const items = section ? sectionItems(section) : [];
 ---
 
 <PageHead url={d.url} h1={d.h1} compact />
 
 <div class="wrap page-body">
   <section class="block narrow">
-    {d.items.length > 0 ? <PriceList items={d.items} /> : <p>Цены уточняйте по телефону.</p>}
+    {items.length > 0 ? <PriceList items={items} /> : <p>Цены уточняйте по телефону.</p>}
   </section>
 </div>

@@ -2,6 +2,7 @@
 import { getCollection, getEntries, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import PriceList from '../components/PriceList.astro';
+import { currentPrices } from '../lib/prices';
 import DoctorCard from '../components/DoctorCard.astro';
 import SearchBox from '../components/SearchBox.astro';
 import { childrenOf, tileLabel, shortTeaser, leadText, shortName } from '../lib/content';
@@ -12,6 +13,7 @@ import { serviceArticles } from '../data/service-extras';
 interface Props { entry: CollectionEntry<'services'> }
 const { entry } = Astro.props;
 const d = entry.data;
+const prices = currentPrices(d.prices);
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const doctors = d.doctors.length ? await getEntries(d.doctors) : [];
@@ -32,7 +34,7 @@ const catalog = isCatalog
 
 const tabs = isCatalog ? [] : [
   children.length && { id: 'sub', label: 'Услуги раздела' },
-  d.prices.length && { id: 'prices', label: 'Цены' },
+  prices.length && { id: 'prices', label: 'Цены' },
   doctors.length && { id: 'doctors', label: 'Врачи' },
   hasText && { id: 'about', label: 'Описание' },
   d.faq.length && { id: 'faq', label: 'Вопросы' },
@@ -121,10 +123,10 @@ const reads = readUrls
     </section>
   )}
 
-  {d.prices.length > 0 && (
+  {prices.length > 0 && (
     <section id="prices" class="block">
       <h2>Цены</h2>
-      <PriceList items={d.prices} checkedOn={d.pricesCheckedOn} />
+      <PriceList items={prices} checkedOn={d.pricesCheckedOn} />
     </section>
   )}
 

@@ -1,0 +1,49 @@
+title: МРТ (магнитно-резонансная томография) открытого типа
+page: /ceny/mrt-magnitno-rezonansnaya-tomografiya/
+order: 1
+items:
+  - id: vnutrivennoe-vvedenie-kontrastnogo-veshchestva-omniskan-do-50-kg
+    name: Внутривенное введение контрастного вещества Омнискан до 50 кг
+    price: 4650
+  - id: vnutrivennoe-vvedenie-kontrastnogo-veshchestva-omniskan-svyshe-50kg
+    name: Внутривенное введение контрастного вещества Омнискан свыше 50кг
+    price: 7650
+  - id: dopolnitelno-zapis-mrt-na-nositel-cd-disk
+    name: Дополнительно запись МРТ на носитель (CD диск)
+    price: 700
+  - id: dopolnitelno-zapis-mrt-na-nositel-r-plenka-1-list
+    name: Дополнительно запись МРТ на носитель (R-пленка) (1 ЛИСТ)
+    price: 700
+  - id: mrt-gipofiza-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min-vnutrivennoe-vvedenie-kontrastnogo-veshchestva-omniskan-kontrast-vklyuchen-v-stoimost
+    name: МРТ гипофиза (вес до 110 кг, обхват без ограничений, 20 мин) + внутривенное введение контрастного вещества Омнискан (контраст включен в стоимость)
+    price: 8750
+  - id: mrt-golovnogo-mozga-i-sosudov-golovnogo-mozga-ves-do-110-kg-obkhvat-bez-ogranicheniy-40-min
+    name: МРТ головного мозга и сосудов головного мозга (вес до 110 кг, обхват без ограничений, 40 мин)
+    price: 6100
+  - id: mrt-golovnogo-mozga-obzornaya-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ головного мозга обзорная (вес до 110 кг, обхват без ограничений, 20 мин)
+    price: 5200
+  - id: mrt-grudnogo-otdela-pozvonochnika-ves-do-95-kg-obkhvat-do-126-sm-30-min
+    name: МРТ грудного отдела позвоночника (вес до 95 кг, обхват до 126 см, 30 мин)
+    price: 4700
+  - id: mrt-kraniovertebralnogo-perekhoda-ves-do-95-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ краниовертебрального перехода (вес до 95 кг, обхват без ограничений, 20 мин)
+    price: 4700
+  - id: mrt-poyasnichno-kresttsovogo-otdela-pozvonochnika-ves-do-95-kg-obkhvat-do-126-sm-30-min
+    name: МРТ пояснично-крестцового отдела позвоночника (вес до 95 кг, обхват до 126 см, 30 мин)
+    price: 5000
+  - id: mrt-poyasnichno-kresttsovogo-otdela-pozvonochnika-i-kopchika-ves-do95-kg-obkhvat-do126-sm-rost-ne-b-175-sm-30-min
+    name: МРТ пояснично-крестцового отдела позвоночника и копчика (вес до95 кг, обхват до126 см, рост не б.175 см, 30 мин)
+    price: 6700
+  - id: mrt-pridatochnykh-pazukh-nosa-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ придаточных пазух носа (вес до 110 кг, обхват без ограничений, 20 мин)
+    price: 5000
+  - id: mrt-sosudov-shei-ves-do-95-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ сосудов шеи (вес до 95 кг, обхват без ограничений, 20 мин)
+    price: 4900
+  - id: mrt-sosudov-golovnogo-mozga-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ сосудов головного мозга (вес до 110 кг, обхват без ограничений, 20 мин)
+    price: 5200
+  - id: mrt-sheynogo-otdela-pozvonochnika-ves-do-95-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ шейного отдела позвоночника (вес до 95 кг, обхват без ограничений, 20 мин)
+    price: 5050

@@ -2,6 +2,7 @@
 // Built once at build time; the browser loads it the first time someone
 // clicks into a search field.
 import { getCollection } from 'astro:content';
+import { sectionFor, sectionItems } from '../lib/prices';
 
 export async function GET() {
   const services = await getCollection('services');
@@ -13,7 +14,7 @@ export async function GET() {
   const items = [
     ...services.filter((s) => s.data.url !== '/uslugi/').map((s) => ({ t: s.data.h1, u: s.data.url, k: 'Услуга', d: desc(s.data.description) })),
     ...doctors.map((d) => ({ t: d.data.name, u: d.data.url, k: d.data.specialty, d: d.data.specialization || '' })),
-    ...prices.map((p) => ({ t: p.data.h1, u: p.data.url, k: 'Цены', d: p.data.items.map((i) => i.name).join(' ').slice(0, 800) })),
+    ...prices.map((p) => ({ t: p.data.h1, u: p.data.url, k: 'Цены', d: (sectionFor(p.data.url) ? sectionItems(sectionFor(p.data.url)!) : []).map((i) => i.name).join(' ').slice(0, 800) })),
   ];
   return new Response(JSON.stringify(items), { headers: { 'Content-Type': 'application/json' } });
 }

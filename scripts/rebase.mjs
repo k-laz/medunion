@@ -23,6 +23,7 @@ async function walk(d) {
 let changed = 0;
 for (const f of await walk(dir)) {
   if (!/\.(html|css|js|json|xml|txt)$/.test(f)) continue;
+  if (f.includes('/admin/')) continue; // the price editor uses relative paths and is minified code
   const before = await readFile(f, 'utf8');
   let s = before;
   if (f.endsWith('.html') || f.endsWith('.js')) {

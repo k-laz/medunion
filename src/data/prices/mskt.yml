@@ -1,0 +1,103 @@
+title: МСКТ (компьютерная томография)
+page: /ceny/mskt/
+order: 3
+items:
+  - id: kt-mskt-bedrennoy-kosti
+    name: КТ, МСКТ бедренной кости
+    price: 4700
+  - id: kt-mskt-bryushnoy-polosti-kontrast-ne-vklyuchen
+    name: КТ, МСКТ брюшной полости (контраст не включен)
+    price: 4700
+  - id: kt-mskt-bryushnoy-polosti-i-zabryushinnogo-prostranstva-kontrast-ne-vklyuchen
+    name: КТ, МСКТ брюшной полости и забрюшинного пространства (контраст не включен)
+    price: 5900
+  - id: kt-mskt-visochnykh-kostey
+    name: КТ, МСКТ височных костей
+    price: 4700
+  - id: kt-mskt-vnutrivennoe-vvedenie-kontrastnogo-veshchestva-100-ml-ultravist
+    name: КТ, МСКТ Внутривенное введение контрастного вещества (100 мл), Ультравист
+    price: 6000
+  - id: kt-mskt-vnutrivennoe-vvedenie-kontrastnogo-veshchestva-150-ml-ultravist
+    name: КТ, МСКТ Внутривенное введение контрастного вещества (150 мл), Ультравист
+    price: 7500
+  - id: kt-mskt-golenostopnogo-sustava
+    name: КТ, МСКТ голеностопного сустава
+    price: 4700
+  - id: kt-mskt-golovnogo-mozga
+    name: КТ, МСКТ головного мозга
+    price: 4300
+  - id: kt-mskt-gortani-s-funktsionalnoy-proboy
+    name: КТ, МСКТ гортани с функциональной пробой
+    price: 4400
+  - id: kt-mskt-grudnogo-otdela-pozvonochnika
+    name: КТ, МСКТ грудного отдела позвоночника
+    price: 4700
+  - id: kt-mskt-grudnoy-polosti
+    name: КТ, МСКТ грудной полости
+    price: 4400
+  - id: kt-mskt-dopolnitelnaya-zapis-na-plenku
+    name: КТ, МСКТ Дополнительная запись на пленку
+    price: 700
+  - id: kt-mskt-zabryushinnogo-prostranstva-kontrast-ne-vklyuchen
+    name: КТ, МСКТ забрюшинного пространства (КОНТРАСТ НЕ ВКЛЮЧЕН)
+    price: 4700
+  - id: kt-mskt-kolennogo-sustava
+    name: КТ, МСКТ коленного сустава
+    price: 4700
+  - id: kt-mskt-kontrastnaya-angiografiya-arteriy-golovnogo-mozga-s-fiksirovannym-obemom-kontrastnogo-veshchestva-kontrast-ne-vklyuchen
+    name: КТ, МСКТ Контрастная ангиография артерий головного мозга с фиксированным объемом контрастного вещества (контраст не включен)
+    price: 5200
+  - id: kt-mskt-kontrastnaya-angiografiya-arteriy-golovy-i-shei-s-fiksirovannym-obemom-kontrastnogo-veshchestva-kontrast-ne-vklyuchen
+    name: КТ, МСКТ Контрастная ангиография артерий головы и шеи с фиксированным объемом контрастного вещества (контраст не включен)
+    price: 5200
+  - id: kt-mskt-kontrastnaya-angiografiya-legochnykh-ven-i-levogo-predserdiya-s-fiksirovannym-obemom-kontrastnogo-veshchestva-kontrast-ne-vklyuchen
+    name: КТ, МСКТ Контрастная ангиография легочных вен и левого предсердия с фиксированным объемом контрастного вещества (контраст не включен)
+    price: 5200
+  - id: kt-mskt-kostey-goleni
+    name: КТ, МСКТ костей голени
+    price: 4700
+  - id: kt-mskt-kostey-litsevogo-cherepa
+    name: КТ, МСКТ костей лицевого черепа
+    price: 4400
+  - id: kt-mskt-kostey-taza
+    name: КТ, МСКТ костей таза
+    price: 4700
+  - id: kt-mskt-pary-kolennykh-sustavov
+    name: КТ, МСКТ пары коленных суставов
+    price: 8400
+  - id: kt-mskt-plechevoy-kosti-odna-oblast
+    name: КТ, МСКТ плечевой кости (одна область)
+    price: 4700
+  - id: kt-mskt-kosti-predplechya-odna-oblast
+    name: КТ, МСКТ кости предплечья (одна область)
+    price: 4700
+  - id: kt-mskt-pary-loktevykh-sustavov
+    name: КТ, МСКТ пары локтевых суставов
+    price: 8300
+  - id: kt-mskt-loktevogo-sustava
+    name: КТ, МСКТ локтевого сустава
+    price: 4700
+  - id: kt-mskt-luchezapyastnogo-sustava
+    name: КТ, МСКТ лучезапястного сустава
+    price: 4700
+  - id: kt-mskt-plechevogo-sustava
+    name: КТ, МСКТ плечевого сустава
+    price: 4700
+  - id: kt-mskt-sheynogo-otdela-pozvonochnika
+    name: КТ, МСКТ шейного отдела позвоночника
+    price: 4700
+  - id: kt-mskt-poyasnichno-kresttsovogo-otdela-pozvonochnika
+    name: КТ, МСКТ пояснично-крестцового отдела позвоночника
+    price: 4700
+  - id: kt-mskt-myagkikh-tkaney-shei
+    name: КТ, МСКТ мягких тканей шеи
+    price: 4400
+  - id: kt-mskt-tazobedrennogo-sustava
+    name: КТ, МСКТ тазобедренного сустава
+    price: 4700
+  - id: kt-mskt-pridatochnykh-pazukh-nosa
+    name: КТ, МСКТ придаточных пазух носа
+    price: 4300
+  - id: kt-mskt-pochek-i-mochetochnikov
+    name: КТ, МСКТ почек и мочеточников
+    price: 6000

@@ -1,0 +1,31 @@
+title: Функциональные методы диагностики и исследования
+page: /ceny/funktsionalnye-metody-diagnostiki-i-issledovaniya/
+order: 7
+items:
+  - id: sutochnoe-monitorirovanie-ad-smad
+    name: Суточное мониторирование АД (СМАД)
+    price: 1950
+  - id: kholterovskoe-monitorirovanie
+    name: Холтеровское мониторирование
+    price: 3100
+  - id: elektrokardiogramma-ekg
+    name: Электрокардиограмма (ЭКГ)
+    price: 650
+  - id: elektrokardiogramma-ekg-s-nagruzkoy
+    name: Электрокардиограмма (ЭКГ) с нагрузкой
+    price: 900
+  - id: ekhokardiografiya-s-dopplerovskim-analizom-uzi-serdtsa
+    name: Эхокардиография с допплеровским анализом (УЗИ-сердца)
+    price: 2400
+  - id: spirografiya
+    name: Спирография
+    price: 950
+  - id: spirometriya-s-medikomentoznoy-proboy-bronkholitik
+    name: Спирометрия с медикоментозной пробой (бронхолитик)
+    price: 1300
+  - id: elektroentsefalografiya-eeg-30-min
+    name: Электроэнцефалография (ЭЭГ) 30 мин
+    price: 1700
+  - id: elektroentsefalografiya-eeg-60-min
+    name: Электроэнцефалография (ЭЭГ) 60 мин
+    price: 3000

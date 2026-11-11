@@ -1,0 +1,79 @@
+title: МРТ (магнитно-резонансная томография) 1,5 Тесла
+page: /ceny/mrt-magnitno-rezonansnaya-tomografiya-1,5tesla/
+order: 2
+items:
+  - id: mrt-1-5-gipofiza
+    name: МРТ (1,5 ) гипофиза
+    price: 6200
+  - id: mrt-1-5-t-poyasnichno-kresttsovogo-otdela-pozvonochnika-i-kopchika
+    name: МРТ (1,5 Т ) пояснично-крестцового отдела позвоночника и копчика
+    price: 8700
+  - id: mrt-1-5-t-pary-visochno-nizhnechelyustnykh-sustavov
+    name: МРТ (1,5 Т) пары височно-нижнечелюстных суставов
+    price: 7300
+  - id: mrt-1-5-t-arteriy-golovnogo-mozga
+    name: МРТ (1,5 Т) артерий головного мозга
+    price: 5700
+  - id: mrt-1-5-t-arteriy-shei
+    name: МРТ (1,5 Т) артерий шеи
+    price: 5700
+  - id: mrt-1-5-t-vsego-tela-po-programme-onkopoisk-bez-kontrasta
+    name: МРТ (1,5 Т) всего тела по программе онкопоиск (БЕЗ КОНТРАСТА)
+    price: 15200
+  - id: mrt-1-5-t-golenostopnogo-sustava
+    name: МРТ (1,5 Т) голеностопного сустава
+    price: 7800
+  - id: mrt-1-5-t-golovnogo-mozga
+    name: МРТ (1,5 Т) головного мозга
+    price: 6100
+  - id: mrt-1-5-t-golovnogo-mozga-na-isklyuchenie-bolezni-altsgeymer
+    name: МРТ (1,5 Т) головного мозга на исключение болезни Альцгеймер
+    price: 7800
+  - id: mrt-1-5-t-golovnogo-mozga-na-isklyuchenie-bolezni-parkinsona
+    name: МРТ (1,5 Т) головного мозга на исключение болезни Паркинсона
+    price: 7800
+  - id: mrt-1-5-t-golovnogo-mozga-na-rasseyannyy-skleroz
+    name: МРТ (1,5 Т) головного мозга на рассеянный склероз
+    price: 8000
+  - id: mrt-1-5-t-golovnogo-mozga-po-programme-epilepsiya
+    name: МРТ (1,5 Т) головного мозга по программе эпилепсия
+    price: 10000
+  - id: mrt-1-5-t-grudnogo-otdela-pozvonochnika
+    name: МРТ (1,5 Т) грудного отдела позвоночника
+    price: 6100
+  - id: mrt-1-5-t-zabryushinnogo-prostranstva
+    name: МРТ (1,5 Т) забрюшинного пространства
+    price: 7800
+  - id: mrt-1-5-t-kolennogo-sustava
+    name: МРТ (1,5 Т) коленного сустава
+    price: 7500
+  - id: mrt-1-5-t-kraniovertebralnogo-perekhoda
+    name: МРТ (1,5 Т) краниовертебрального перехода
+    price: 5700
+  - id: mrt-1-5-t-kresttsovo-kopchikovyy-otdel-pozvonochnika
+    name: МРТ (1,5 Т) крестцово-копчиковый отдел позвоночника
+    price: 5700
+  - id: mrt-1-5-t-kresttsovo-povzdoshnykh-sustavov
+    name: МРТ (1,5 Т) крестцово-повздошных суставов
+    price: 7100
+  - id: mrt-1-5-t-loktevogo-sustava
+    name: МРТ (1,5 Т) локтевого сустава
+    price: 7600
+  - id: mrt-1-5-t-luchezapyastnogo-sustava
+    name: МРТ (1,5 Т) лучезапястного сустава
+    price: 7100
+  - id: mrt-1-5t-ven-golovnogo-mozga
+    name: МРТ (1,5Т) вен головного мозга
+    price: 6000
+  - id: mrt-1-5-t-myagkikh-tkaney-bedra-i-goleni
+    name: МРТ (1,5 Т) мягких тканей бедра и голени
+    price: 7300
+  - id: mrt-1-5-t-sheynogo-otdela-pozvonochnika
+    name: МРТ (1,5 Т) шейного отдела позвоночника
+    price: 6100
+  - id: mrt-1-5-t-poyasnichno-kresttsovogo-otdela-pozvonochnika
+    name: МРТ (1,5 Т) пояснично-крестцового отдела позвоночника
+    price: 6100
+  - id: mrt-1-5-t-organov-zhenskogo-malogo-taza
+    name: МРТ (1,5 Т) органов женского малого таза
+    price: 7700

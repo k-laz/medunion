@@ -1,0 +1,100 @@
+title: Консультации специалистов
+page: /ceny/konsultatsii-spetsialistov/
+order: 8
+items:
+  - id: konsultatsiya-ginekologa
+    name: Консультация гинеколога
+    price: 2800
+  - id: konsultatsiya-ginekologa-endokrinologa
+    name: Консультация гинеколога-эндокринолога
+    price: 2500
+  - id: konsultatsiya-detskogo-ginekologa-pervichnaya-s-0-let
+    name: Консультация детского гинеколога (первичная) с 0 лет
+    price: 2500
+  - id: konsultatsiya-detskogo-ginekologa-povtornaya-v-techenii-1-mesyatsa-s-0-let
+    name: Консультация детского гинеколога (повторная в течении 1 месяца) с 0 лет
+    price: 2400
+  - id: konsultatsiya-detskogo-nevrologa-pervichnaya
+    name: Консультация детского невролога (первичная)
+    price: 2800
+  - id: konsultatsiya-detskogo-nevrologa-povtornaya
+    name: Консультация детского невролога (повторная)
+    price: 2800
+  - id: konsultatsiya-detskogo-urologa
+    name: Консультация детского уролога
+    price: 2000
+  - id: konsultatsiya-kardiologa-pervichnaya
+    name: Консультация кардиолога (первичная)
+    price: 2600
+  - id: konsultatsiya-kardiologa-povtornaya
+    name: Консультация кардиолога (повторная)
+    price: 2500
+  - id: konsultatsiya-kardiologa-shtegman-o-a-dmn-pervichnaya
+    name: Консультация кардиолога Штегман О.А., ДМН (первичная)
+    price: 3800
+  - id: konsultatsiya-kardiologa-shtegman-o-a-dmn-povtornaya
+    name: Консультация кардиолога Штегман О.А., ДМН (повторная)
+    price: 3200
+  - id: konsultatsiya-kardiologa-shurdesova-m-v-pervichnaya
+    name: Консультация кардиолога Шурдесова М.В. (первичная)
+    price: 2500
+  - id: konsultatsiya-kardiologa-shurdesova-m-v-povtornaya
+    name: Консультация кардиолога Шурдесова М.В. (повторная)
+    price: 2200
+  - id: konsultatsiya-koloproktologa-pervichnaya
+    name: Консультация колопроктолога (первичная)
+    price: 3350
+  - id: konsultatsiya-koloproktologa-povtornaya-rektoromanoskopiya
+    name: Консультация колопроктолога (повторная)+ректороманоскопия
+    price: 3350
+  - id: konsultatsiya-koloproktologa-professora-popova-v-o
+    name: Консультация колопроктолога (профессора Попова В.О.)
+    price: 3100
+  - id: konsultatsiya-nevrologa-pervichnaya
+    name: Консультация невролога (первичная)
+    price: 2900
+  - id: konsultatsiya-neyrokhirurga
+    name: Консультация нейрохирурга
+    price: 3200
+  - id: konsultatsiya-nefrologa-kmn
+    name: Консультация нефролога, КМН
+    price: 3000
+  - id: konsultatsiya-onkologa-mammologa-pervichnaya
+    name: Консультация онколога-маммолога (первичная)
+    price: 3200
+  - id: konsultatsiya-pulmonologa-allergologa-pervichnaya
+    name: Консультация пульмонолога-аллерголога (первичная)
+    price: 2300
+  - id: konsultatsiya-pediatra-gastroenterologa-povtornaya
+    name: Консультация педиатра-гастроэнтеролога (повторная)
+    price: 2300
+  - id: konsultatsiya-pediatra-gastroenterologa-pervichnaya
+    name: Консультация педиатра-гастроэнтеролога (первичная)
+    price: 2500
+  - id: konsultatsiya-terapevta-gastroenterologa-povtornaya
+    name: Консультация терапевта-гастроэнтеролога (повторная)
+    price: 2700
+  - id: konsultatsiya-terapevta-gastroenterologa-pervichnaya
+    name: Консультация терапевта-гастроэнтеролога (первичная)
+    price: 2700
+  - id: konsultatsiya-terapevta-gastroenterologa-kuzyakinoy-i-g-povtornaya
+    name: Консультация терапевта-гастроэнтеролога Кузякиной И.Г. (повторная)
+    price: 3700
+  - id: konsultatsiya-terapevta-gastroenterologa-kuzyakinoy-i-g-pervichnaya
+    name: Консультация терапевта-гастроэнтеролога Кузякиной И.Г. (первичная)
+    price: 3700
+  - id: konsultatsiya-pediatra-povtornaya
+    name: Консультация педиатра (повторная)
+    price: 2300
+  - id: konsultatsiya-pediatra-pervichnaya
+    name: Консультация педиатра (первичная)
+    price: 2500
+  - id: konsultatsiya-sosudistogo-khirurga-flebologa-povtornyy
+    name: Консультация сосудистого хирурга, флеболога (повторный)
+    price: 2600
+  - id: konsultatsiya-sosudistogo-khirurga-flebologa-pervichnyy
+    name: Консультация сосудистого хирурга, флеболога (первичный)
+    price: 2700
+  - id: konsultatsiya-onkologa-mammologa-povtornaya
+    name: Консультация онколога-маммолога (повторная)
+    price: 2700

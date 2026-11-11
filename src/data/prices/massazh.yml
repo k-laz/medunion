@@ -1,0 +1,64 @@
+title: Массаж
+page: /ceny/massazh/
+order: 18
+items:
+  - id: antitsellyulitnyy-massazh-20-minut-1-zona
+    name: Антицеллюлитный массаж (20 минут) (1 зона)
+    price: 1500
+  - id: antitsellyulitnyy-massazh-50-minut-1-zona
+    name: Антицеллюлитный массаж (50 минут) (1 зона)
+    price: 2500
+  - id: kriomassazh-10-min
+    name: Криомассаж 10 мин
+    price: 450
+  - id: kriomassazh-3-min
+    name: Криомассаж 3 мин
+    price: 250
+  - id: kriomassazh-5-min
+    name: Криомассаж 5 мин
+    price: 350
+  - id: limfodrenazhnyy-massazh-20-minut-1-zona
+    name: Лимфодренажный массаж (20 минут) (1 зона)
+    price: 1500
+  - id: limfodrenazhnyy-massazh-50-minut-1-zona
+    name: Лимфодренажный массаж (50 минут) (1 зона)
+    price: 2500
+  - id: meditsinskiy-massazh-spiny-nizhnikh-konechnostey-90-minut
+    name: Медицинский массаж спины, нижних конечностей (90 минут)
+    price: 3000
+  - id: meditsinskiy-tochechnyy-massazh-shei-vorotnikovoy-zony-30-min
+    name: Медицинский + точечный массаж шеи, воротниковой зоны (30 мин)
+    price: 1300
+  - id: meditsinskiy-massazh-30-minut-sheya-vorotnikovaya-zona-spina-nogi-detskiy
+    name: Медицинский массаж (30 минут) шея, воротниковая зона, спина, ноги (детский)
+    price: 1500
+  - id: meditsinskiy-massazh-30-minut-sheya-vorotnikovaya-zona-spina-nogi
+    name: Медицинский массаж (30 минут) шея, воротниковая зона, спина, ноги
+    price: 2000
+  - id: meditsinskiy-massazh-60-minut-detskiy
+    name: Медицинский массаж (60 минут) (детский)
+    price: 1600
+  - id: meditsinskiy-massazh-60-minut-sheya-vorotnikovaya-zona-spina-nogi
+    name: Медицинский массаж (60 минут) шея, воротниковая зона, спина, ноги
+    price: 2500
+  - id: meditsinskiy-massazh-90-minut-sheya-vorotnikovaya-zona-spina-nogi
+    name: Медицинский массаж (90 минут) шея, воротниковая зона, спина, ноги
+    price: 3400
+  - id: meditsinskiy-massazh-verkhnikh-konechnostey-20-minut-detskiy
+    name: Медицинский массаж верхних конечностей (20 минут) (детский)
+    price: 1100
+  - id: meditsinskiy-massazh-verkhnikh-konechnostey-30-minut
+    name: Медицинский массаж верхних конечностей (30 минут)
+    price: 1400
+  - id: meditsinskiy-massazh-vorotnikovoy-zony-30-minut
+    name: Медицинский массаж воротниковой зоны (30 минут)
+    price: 1400
+  - id: meditsinskiy-massazh-vorotnikovoy-zony-golovy-30-minut
+    name: Медицинский массаж воротниковой зоны + головы (30 минут)
+    price: 1200
+  - id: meditsinskiy-massazh-golova-sheya-vorot-zona-spina-30-minut-detskiy
+    name: Медицинский массаж голова, шея, ворот.зона, спина (30 минут) (детский)
+    price: 1400
+  - id: meditsinskiy-massazh-grudnogo-otdela-pozvonochnika-20-minut-detskiy
+    name: Медицинский массаж грудного отдела позвоночника (20 минут) (детский)
+    price: 1000

@@ -10,6 +10,7 @@ import ReviewList from '../components/ReviewList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import { servicesOfDoctor, initials, years, rub, shortName } from '../lib/content';
 import { clinics, phones, reviewsPage, reviewFormPage } from '../data/site';
+import { currentPrices } from '../lib/prices';
 
 interface Props { entry: CollectionEntry<'doctors'> }
 const { entry } = Astro.props;
@@ -30,13 +31,13 @@ const visit = /при[её]м|консультац/i;
 // Rows naming another doctor ("... Мыльников И.И.") were copied onto the
 // wrong page on the old site, so they are left out.
 const surname = d.name.split(/\s+/)[0];
-const ownRows = d.prices.filter((p) => {
+const ownRows = currentPrices(d.prices).filter((p) => {
   const m = p.name.match(/([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+[А-ЯЁ]\.\s?[А-ЯЁ]\.?\s*\)?$/);
   return !m || m[1] === surname;
 });
 const prices = ownRows.length
   ? ownRows
-  : [...new Map(services.flatMap((s) => s.data.prices).filter((p) => visit.test(p.name)).map((p) => [p.name, p])).values()];
+  : [...new Map(currentPrices(services.flatMap((s) => s.data.prices)).filter((p) => visit.test(p.name)).map((p) => [p.name, p])).values()];
 const from = prices.length ? Math.min(...prices.map((p) => p.price)) : 0;
 
 // Education, in two lists: degrees (university, residency, retraining) as a

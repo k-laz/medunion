@@ -1,0 +1,64 @@
+title: Травматология-ортопедия
+page: /ceny/travmatologiya-ortopediya/
+order: 14
+items:
+  - id: konsultatsiya-travmatologa-ortopeda-pervichnaya
+    name: Консультация травматолога-ортопеда (первичная)
+    price: 2900
+  - id: konsultatsiya-travmatologa-ortopeda-pervichnaya-uzi-sustavov
+    name: Консультация травматолога-ортопеда (первичная) + УЗИ суставов
+    price: 4200
+  - id: konsultatsiya-travmatologa-ortopeda-pervichnaya-mylnikov-i-i
+    name: Консультация травматолога-ортопеда (первичная) Мыльников И.И.
+    price: 3100
+  - id: konsultatsiya-travmatologa-ortopeda-povtornaya
+    name: Консультация травматолога-ортопеда (повторная)
+    price: 2800
+  - id: konsultatsiya-travmatologa-ortopeda-povtornaya-uzi-sustavov
+    name: Консультация травматолога-ортопеда (повторная) + УЗИ суставов
+    price: 3000
+  - id: konsultatsiya-travmatologa-ortopeda-povtornaya-mylnikov-i-i
+    name: Консультация травматолога-ортопеда (повторная) Мыльников И.И.
+    price: 2900
+  - id: vnutrisustavnoe-vvedenie-lekarstvennogo-preparata-diprospan
+    name: Внутрисуставное введение лекарственного препарата (Дипроспан)
+    price: 2750
+  - id: vnutrisustavnoe-vvedenie-lekarstvennogo-preparata-diprospan-bez-stoimosti-preparata
+    name: Внутрисуставное введение лекарственного препарата (Дипроспан) (без стоимости препарата)
+    price: 2000
+  - id: vnutrisustavnoe-vvedenie-lekarstvennogo-preparata-diprospan-kenalog-s-ispolzovaniem-dlinnoy-igly
+    name: Внутрисуставное введение лекарственного препарата (Дипроспан/Кеналог) с использованием длинной иглы
+    price: 2550
+  - id: vnutrisustavnoe-vvedenie-lekarstvennogo-preparata-kenalog
+    name: Внутрисуставное введение лекарственного препарата (Кеналог)
+    price: 1700
+  - id: vnutrisustavnoe-vvedenie-preparata-gialuronovoy-kisloty-bez-stoimosti-preparata
+    name: Внутрисуставное введение препарата гиалуроновой кислоты без стоимости препарата
+    price: 2350
+  - id: vpravlenie-vyvikhov-sustavov-krupnykh-sustavov-plecho
+    name: "Вправление вывихов суставов: крупных суставов (плечо)"
+    price: 3400
+  - id: vpravlenie-vyvikhov-sustavov-malykh-sustavov-kisti
+    name: "Вправление вывихов суставов: малых суставов кисти"
+    price: 1000
+  - id: vpravlenie-vyvikhov-sustavov-malykh-sustavov-stopy
+    name: "Вправление вывихов суставов: малых суставов стопы"
+    price: 1200
+  - id: vpravlenie-vyvikhov-sustavov-nadkolennika
+    name: "Вправление вывихов суставов: надколенника"
+    price: 1200
+  - id: vpravlenie-vyvikhov-sustavov-srednikh-sustavov-golenostop-lokot-luchevoy
+    name: "Вправление вывихов суставов: средних суставов (голеностоп, локоть, лучевой)"
+    price: 2300
+  - id: immobilizatsiya-elastichnym-bintom-sustavov-verkhney-konechnosti
+    name: Иммобилизация эластичным бинтом (суставов верхней конечности)
+    price: 1500
+  - id: immobilizatsiya-elastichnym-bintom-sustavov-nizhney-konechnosti
+    name: Иммобилизация эластичным бинтом (суставов нижней конечности)
+    price: 1600
+  - id: nalozhenie-gipsovoy-povyazki-verkhnyaya-ili-nizhnyaya-konechnost-s-fiksatsiey-dvukh-sustavov
+    name: Наложение гипсовой повязки (верхняя или нижняя конечность с фиксацией двух суставов)
+    price: 2500
+  - id: nalozhenie-gipsovoy-povyazki-predpleche-plecho-stopa-lodyzhka
+    name: Наложение гипсовой повязки (предплечье, плечо, стопа, лодыжка)
+    price: 1800

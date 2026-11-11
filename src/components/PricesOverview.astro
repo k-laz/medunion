@@ -3,11 +3,13 @@
 // lists at once; each list opens and closes, with how many services it has.
 // Each list also keeps its own page (/ceny/rentgen/ and so on) from the old site.
 import { getCollection } from 'astro:content';
+import { priceSections, sectionItems } from '../lib/prices';
 import { rub } from '../lib/content';
 import { phones } from '../data/site';
 import { sales, saleGroups } from '../data/sales';
 
-const lists = (await getCollection('prices')).filter((p) => p.data.url !== '/ceny/' && p.data.items.length > 0);
+// Each section of the price list, with its items (from src/data/prices/).
+const lists = priceSections.map((s) => ({ title: s.title, url: s.page, items: sectionItems(s) })).filter((l) => l.items.length > 0);
 
 // Which group each list belongs to, by address. Anything new lands in "Другое".
 const GROUPS: { title: string; urls: string[] }[] = [
@@ -26,11 +28,11 @@ const GROUPS: { title: string; urls: string[] }[] = [
 ];
 const placed = new Set(GROUPS.flatMap((g) => g.urls));
 const groups = [
-  ...GROUPS.map((g) => ({ title: g.title, lists: g.urls.map((u) => lists.find((l) => l.data.url === u)).filter((l) => l !== undefined) })),
-  { title: 'Другое', lists: lists.filter((l) => !placed.has(l.data.url)) },
+  ...GROUPS.map((g) => ({ title: g.title, lists: g.urls.map((u) => lists.find((l) => l.url === u)).filter((l) => l !== undefined) })),
+  { title: 'Другое', lists: lists.filter((l) => !placed.has(l.url ?? '')) },
 ].filter((g) => g.lists.length > 0);
 
-const total = lists.reduce((n, l) => n + l.data.items.length, 0);
+const total = lists.reduce((n, l) => n + l.items.length, 0);
 const offers = await getCollection('articles', (a) => a.data.kind === 'sale');
 const social = Object.entries(sales)
   .filter(([, s]) => s.group === 'social')
@@ -54,11 +56,11 @@ const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услу�
         {g.lists.map((l) => (
           <details class="price-acc">
             <summary>
-              <span>{l.data.h1}</span>
-              <span class="price-acc-count">{l.data.items.length}</span>
+              <span>{l.title}</span>
+              <span class="price-acc-count">{l.items.length}</span>
             </summary>
             <dl class="price-list">
-              {l.data.items.map((p) => (
+              {l.items.map((p) => (
                 <div class="price-row">
                   <dt class="price-name">{p.name}</dt>
                   <span class="price-dots" aria-hidden="true"></span>
@@ -66,7 +68,7 @@ const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услу�
                 </div>
               ))}
             </dl>
-            <a class="link-more price-acc-link" href={l.data.url}>Отдельная страница раздела</a>
+            {l.url && <a class="link-more price-acc-link" href={l.url}>Отдельная страница раздела</a>}
           </details>
         ))}
       </section>

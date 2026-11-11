@@ -1,0 +1,79 @@
+title: Рентген
+page: /ceny/rentgen/
+order: 4
+items:
+  - id: rentgenografiya-grudo-poyasnichnogo-otdela-pozvonochnika-na-skolioz-1-proektsiya
+    name: Рентгенография грудо-поясничного отдела позвоночника на сколиоз (1 проекция)
+    price: 1500
+  - id: rentgenografiya-grudo-poyasnichnogo-otdela-pozvonochnika-na-skolioz-2-proektsii
+    name: Рентгенография грудо-поясничного отдела позвоночника на сколиоз (2 проекции)
+    price: 1500
+  - id: rentgenografiya-pozvonochnika-vertikalnaya-na-kifoskolioz
+    name: Рентгенография позвоночника вертикальная на кифосколиоз
+    price: 1700
+  - id: rentgenografiya-pozvonochnika-vertikalnaya-v-2-kh-proektsiyakh-nemasshtabirovannaya-dlya-diagnostiki-kifoskolioza-2-sshitykh-snimka
+    name: Рентгенография позвоночника вертикальная в 2-х проекциях немасштабированная для диагностики кифосколиоза (2 сшитых снимка)
+    price: 3250
+  - id: rentgenografiya-pozvonochnka-vertikalnaya-dlya-kifoskolioza-v-2-kh-proektsiyakh-v-masshtabe-100-4-snimka-dlya-voenkomatov
+    name: Рентгенография позвоночнка вертикальная (для кифосколиоза) в 2-х проекциях, в масштабе 100% (4 снимка) для военкоматов
+    price: 3650
+  - id: poyasnichnyy-otdel-funktsionalnye-snimki-4-snimka
+    name: Поясничный отдел + функциональные снимки (4 снимка)
+    price: 2550
+  - id: sheynyy-otdel-funktsionalnye-snimki-4-snimka
+    name: Шейный отдел + функциональные снимки (4 снимка)
+    price: 2550
+  - id: rentgenografiya-2-goleni-v-dvukh-proektsiyakh-4-snimka
+    name: Рентгенография 2 голени в двух проекциях, 4 снимка
+    price: 3350
+  - id: rentgenografiya-akromialno-klyuchichnogo-sustava
+    name: Рентгенография акромиально-ключичного сустава
+    price: 1450
+  - id: rentgenografiya-bedra-1-proektsiya
+    name: Рентгенография бедра (1 проекция)
+    price: 1300
+  - id: rentgenografiya-bedra-2-proektsii
+    name: Рентгенография бедра (2 проекции)
+    price: 1500
+  - id: rentgenografiya-bedrennoy-kosti-1-proektsiya
+    name: Рентгенография бедренной кости (1 проекция)
+    price: 1600
+  - id: rentgenografiya-goleni-v-trekh-proektsiyakh-2-proektsii
+    name: Рентгенография голени в трех проекциях (2 проекции)
+    price: 2000
+  - id: rentgenografiya-golenostopnogo-sustava-1-proektsiya
+    name: Рентгенография голеностопного сустава (1 проекция)
+    price: 1400
+  - id: rentgenografiya-golenostopnogo-sustava-2-proektsii
+    name: Рентгенография голеностопного сустава (2 проекции)
+    price: 1700
+  - id: rentgenografiya-golenostopnykh-sustavov-1-proektsiya
+    name: Рентгенография голеностопных суставов (1 проекция)
+    price: 2100
+  - id: rentgenografiya-golenostopnykh-sustavov-2-proektsii
+    name: Рентгенография голеностопных суставов (2 проекции)
+    price: 2900
+  - id: rentgenografiya-golenostopnykh-sustavov-v-dvukh-proektsiyakh-4-snimka
+    name: Рентгенография голеностопных суставов в двух проекциях, 4 снимка
+    price: 3400
+  - id: rentgenografiya-grudino-klyuchichnogo-sochleneniya-1-snimok
+    name: Рентгенография грудино-ключичного сочленения (1 снимок)
+    price: 1400
+  - id: rentgenografiya-grudiny-1-proektsiya
+    name: Рентгенография грудины (1 проекция)
+    price: 1400
+  - id: rentgenografiya-kisti-pri-travme-dve-proektsii
+    name: Рентгенография кисти при травме (две проекции)
+    price: 1650
+  - id: rentgenografiya-legkikh-1-proektsiya-lezha
+    name: Рентгенография легких (1 проекция) (лёжа)
+    price: 1750
+  - id: rentgenografiya-legkikh-2-proektsii
+    name: Рентгенография легких (2 проекции)
+    price: 1700
+  - id: rentgenografiya-legkikh-1-proektsiya
+    name: Рентгенография легких (1 проекция)
+    price: 1450
+  - id: rentgenografiya-kisti-na-artroz-artrit-1-proektsiya
+    name: Рентгенография кисти на артроз, артрит (1 проекция)
+    price: 1400

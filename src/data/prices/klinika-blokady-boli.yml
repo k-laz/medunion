@@ -1,0 +1,43 @@
+title: Клиника блокады боли
+page: /ceny/klinika-blokady-boli/
+order: 17
+items:
+  - id: blokada-bolshebertsovogo-nerva
+    name: Блокада большеберцового нерва
+    price: 3600
+  - id: blokada-zatylochnykh-nervov
+    name: Блокада затылочных нервов
+    price: 3600
+  - id: blokada-kresttsovo-podvzdoshnogo-sochleneniya-s-odnoy-storony
+    name: Блокада крестцово-подвздошного сочленения (с одной стороны)
+    price: 7000
+  - id: blokada-loktevogo-nerva
+    name: Блокада локтевого нерва
+    price: 3600
+  - id: blokada-luchevogo-nerva
+    name: Блокада лучевого нерва
+    price: 3600
+  - id: blokada-malobertsovogo-nerva
+    name: Блокада малоберцового нерва
+    price: 3600
+  - id: blokada-oblasti-karpalnogo-kanala
+    name: Блокада области карпального канала
+    price: 3600
+  - id: blokada-oblasti-kubitalnogo-kanala
+    name: Блокада области кубитального канала
+    price: 3600
+  - id: blokada-sedalishchnogo-nerva
+    name: Блокада седалищного нерва
+    price: 3600
+  - id: blokada-sredinnogo-nerva
+    name: Блокада срединного нерва
+    price: 3600
+  - id: blokada-triggernoy-zony-diprometoy
+    name: Блокада триггерной зоны Дипрометой
+    price: 3600
+  - id: blokada-triggernoy-zony-s-kenalogom
+    name: Блокада триггерной зоны с Кеналогом
+    price: 3600
+  - id: paravertebralnaya-blokada-pko-pozvonochnika
+    name: Паравертебральная блокада ПКО позвоночника
+    price: 1800

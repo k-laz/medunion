@@ -1,0 +1,82 @@
+title: Оториноларингология
+page: /ceny/otolaringologiya/
+order: 12
+items:
+  - id: konsultatsiya-otorinolaringologa-s-provedeniem-endoskopicheskogo-obsledovaniya-pervichnaya
+    name: Консультация оториноларинголога с проведением эндоскопического обследования (первичная)
+    price: 2500
+  - id: konsultatsiya-otorinolaringologa-s-provedeniem-endoskopicheskogo-obsledovaniya-povtornaya
+    name: Консультация оториноларинголога с проведением эндоскопического обследования (повторная)
+    price: 2500
+  - id: anesteziya-nosa
+    name: Анестезия носа
+    price: 750
+  - id: anesteziya-ukha
+    name: Анестезия уха
+    price: 750
+  - id: vvedenie-lekarstvennogo-sredstva-v-naruzhnyy-slukhovoy-prokhod
+    name: Введение лекарственного средства в наружный слуховой проход
+    price: 250
+  - id: vlivanie-v-gortan-lekarstvennogo-veshchestva
+    name: Вливание в гортань лекарственного вещества
+    price: 900
+  - id: vnutrinosnoe-peremeshchenie-lekarstvennykh-veshchestv-po-proettsu-kukushka
+    name: Внутриносное перемещение лекарственных веществ по Проэтцу ("кукушка")
+    price: 1200
+  - id: lechenie-vospalitelnykh-zabolevaniy-lor-organov-apparatom-last-lor-1-protsedura
+    name: Лечение воспалительных заболеваний ЛОР-органов аппаратом ЛАСТ-ЛОР (1 процедура)
+    price: 800
+  - id: lechenie-nebnykh-mindalin-apparatom-tonzillor
+    name: Лечение небных миндалин аппаратом Тонзиллор
+    price: 1250
+  - id: nanesenie-lekarstvennykh-veshchestv-na-slizistuyu-obolochku-glotki
+    name: Нанесение лекарственных веществ на слизистую оболочку глотки
+    price: 330
+  - id: nanesenie-lekarstvennykh-veshchestv-na-slizistuyu-obolochku-gortani
+    name: Нанесение лекарственных веществ на слизистую оболочку гортани
+    price: 500
+  - id: nanesenie-lekarstvennykh-veshchestv-na-slizistuyu-obolochku-polosti-nosa
+    name: Нанесение лекарственных веществ на слизистую оболочку полости носа
+    price: 250
+  - id: produvanie-slukhovykh-trub-po-polittseru
+    name: Продувание слуховых труб по Политцеру
+    price: 600
+  - id: promyvanie-lakun-nebnykh-mindalin
+    name: Промывание лакун небных миндалин
+    price: 900
+  - id: promyvanie-ukha-attikovoy-igloy
+    name: Промывание уха аттиковой иглой
+    price: 800
+  - id: smazyvanie-slizistoy-rotoglotki-lekarstvennymi-veshchestvami
+    name: Смазывание слизистой ротоглотки лекарственными веществами
+    price: 180
+  - id: tamponada-nosa-pri-nosovom-krovotechenii
+    name: Тампонада носа при носовом кровотечении
+    price: 1000
+  - id: tualet-polosti-nosa
+    name: Туалет полости носа
+    price: 750
+  - id: tualet-promyvanie-ukha
+    name: Туалет, промывание уха
+    price: 950
+  - id: udalenie-inorodnogo-tela-iz-glotki
+    name: Удаление инородного тела из глотки
+    price: 1200
+  - id: uzol-nosa-i-glotki-1-seans
+    name: УЗОЛ носа и глотки (1 сеанс)
+    price: 800
+  - id: udalenie-sernoy-probki-s-dvukh-storon-s-otoskopiey
+    name: Удаление серной пробки (с двух сторон) с отоскопией
+    price: 1700
+  - id: udalenie-sernoy-probki
+    name: Удаление серной пробки
+    price: 850
+  - id: udalenie-peredney-tamponady
+    name: Удаление передней тампонады
+    price: 250
+  - id: udalenie-inorodnogo-tela-iz-nosa
+    name: Удаление инородного тела из носа
+    price: 1200
+  - id: udalenie-inorodnogo-tela-iz-naruzhnogo-slukhovogo-prokhoda-s-lekarstvennym-sredstvom-s-odnoy-storony
+    name: Удаление инородного тела из наружного слухового прохода с лекарственным средством (с одной стороны)
+    price: 1200

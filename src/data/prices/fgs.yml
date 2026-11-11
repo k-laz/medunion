@@ -1,0 +1,22 @@
+title: ФГС/ФГДС (гастроскопия)
+page: /ceny/fgs/
+order: 6
+items:
+  - id: fibrogastroduodenoskopiya-fgds-test-na-khelikobakter-bez-gistologicheskogo-issledovaniya-na-onkopatologiyu
+    name: Фиброгастродуоденоскопия (ФГДС) + ТЕСТ НА ХЕЛИКОБАКТЕР (Без гистологического исследования на онкопатологию)
+    price: 7800
+  - id: ezofagogastroduodenoskopiya-fgs-bez-gistologicheskogo-issledovaniya-na-onkopatologiyu
+    name: Эзофагогастродуоденоскопия (ФГС) (без гистологического исследования на онкопатологию)
+    price: 5400
+  - id: fgs-kompleksnoe-fgs-gistologicheskoe-obsledovanie-biomateriala-rasshirennoe-s-5-uchastkov-analiz-na-khelikobakter
+    name: ФГС комплексное (ФГС + гистологическое обследование биоматериала расширенное с 5 участков + анализ на хеликобактер)
+    price: 14000
+  - id: test-na-khelikobakter-dlya-fgs
+    name: Тест на Хеликобактер для ФГС
+    price: 2800
+  - id: gistologicheskoe-issledovanie-biomateriala-s-1-uchastka-analiz-na-khelikobakter-fgs
+    name: Гистологическое исследование биоматериала с 1 участка + анализ на хеликобактер (ФГС)
+    price: 3000
+  - id: dopolnitelno-zapis-fgs-na-nositel-cd-disk
+    name: Дополнительно запись ФГС на носитель (CD диск)
+    price: 500

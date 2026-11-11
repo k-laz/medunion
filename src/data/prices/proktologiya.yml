@@ -1,0 +1,59 @@
+title: Проктология
+page: /ceny/proktologiya/
+order: 13
+items:
+  - id: anaskopiya
+    name: Анаскопия
+    price: 700
+  - id: vpravlenie-ushchemlennogo-uzla
+    name: Вправление ущемленного узла
+    price: 5000
+  - id: vskrytie-podkozhnogo-paroproktita-1-posleoperatsionnyy-konsultativnyy-priem-koloproktologa
+    name: Вскрытие подкожного паропроктита + 1 послеоперационный консультативный прием колопроктолога
+    price: 11000
+  - id: dopolnitelnoe-vvedenie-preparata-dlya-skleroterapii-1-ampula-2-ml
+    name: Дополнительное введение препарата для склеротерапии 1 ампула (2 мл)
+    price: 1500
+  - id: issechenie-gemorroidalnykh-bakhromok-radiovolnovym-metodom-edinichnye-obrazovaniya-s-gistologicheskim-issledovaniem-poluchennogo-materiala
+    name: Иссечение геморроидальных бахромок радиоволновым методом, единичные образования с гистологическим исследованием полученного материала
+    price: 18100
+  - id: issechenie-gipertrofirovannykh-analnykh-sosochkov-radiovolnovym-metodom-s-gistologicheskim-issledovaniem-poluchennogo-materiala-1-element
+    name: Иссечение гипертрофированных анальных сосочков радиоволновым методом с гистологическим исследованием полученного материала (1 элемент)
+    price: 14100
+  - id: koagulyatsiya-gemoroidalnogo-uzla-radiovolnovym-metodom
+    name: Коагуляция гемороидального узла радиоволновым методом
+    price: 20500
+  - id: ligirovanie-gemmoroidalnykh-uzlov-nalozhenie-1-lateksnogo-koltsa
+    name: Лигирование геммороидальных узлов, наложение 1 латексного кольца
+    price: 10000
+  - id: nalozhenie-povyazki-pri-operatsiyakh-na-pryamoy-kishke
+    name: Наложение повязки при операциях на прямой кишке
+    price: 850
+  - id: operativnoe-lechenie-edinichnogo-neoslozhnennogo-naruzhnogo-gemorroidalnogo-uzla-radiokhirurgicheskim-metodom-1-stepeni-slozhnosti
+    name: Оперативное лечение единичного неосложненного наружного геморроидального узла радиохирургическим методом 1 степени сложности
+    price: 20500
+  - id: ostanovka-gemorroidalnogo-krovotecheniya
+    name: Остановка геморроидального кровотечения
+    price: 5000
+  - id: pararektalnaya-blokada
+    name: Параректальная блокада
+    price: 3500
+  - id: rektoromanoskopiya
+    name: Ректороманоскопия
+    price: 2500
+  - id: skleroterapiya-sosudov-analnoy-oblasti-1-ampula-2-ml
+    name: Склеротерапия сосудов анальной области 1 ампула (2 мл)
+    price: 4800
+  - id: tromboektomiya-radiovolnovym-metodom-1-gemorroidalnyy-uzel-s-infiltrativnoy-anesteziey
+    name: Тромбоэктомия радиоволновым методом (1 геморроидальный узел) с инфильтративной анестезией
+    price: 11000
+  - id: udalenie-gemorroidalnykh-bakhromok-argonoplazmennym-metodom-mnozhestvennye-obrazovaniya-s-gistologicheskim-issledovaniem-poluchennogo-materiala
+    name: Удаление геморроидальных бахромок аргоноплазменным методом, множественные образования с гистологическим исследованием полученного материала
+    price: 39200
+  - id: udalenie-polipov-bolee-odnogo-analnoy-oblasti-s-gistologicheskim-issledovaniem-poluchennogo-materiala
+    name: Удаление полипов (более одного) анальной области с гистологическим исследованием полученного материала
+    price: 17100
+also:
+  - konsultatsiya-koloproktologa-pervichnaya
+  - konsultatsiya-koloproktologa-povtornaya-rektoromanoskopiya
+  - konsultatsiya-koloproktologa-professora-popova-v-o
