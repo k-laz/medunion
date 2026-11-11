@@ -493,6 +493,8 @@ async function write(collection, url, data, body = '') {
   for (const k of ['title', 'h1', 'description']) {
     if (typeof data[k] === 'string') for (const [re, to] of TITLE_FIXES) data[k] = data[k].replace(re, to);
   }
+  // A doctor's name is the name only: "Фомина Дарья Викторовна, врач-эндокринолог в Красноярске"
+  if (collection === 'doctors' && typeof data.name === 'string') data.name = data.name.replace(/\s*,.*$/, '');
   if (Array.isArray(data.education)) data.education = data.education.map((e) => TEXT_FIXES.reduce((t, [re, to]) => t.replace(re, to), e));
   pending.push({ collection, url, data, body, rawH1 });
 }

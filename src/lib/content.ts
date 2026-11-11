@@ -1,5 +1,7 @@
 // Small helpers shared by the page templates.
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 export const segments = (url: string) => url.split('/').filter(Boolean);
 
@@ -94,3 +96,11 @@ export const yearsSince = (iso: string, now = new Date()) => {
 
 /** "2026-11-10" -> "10.11.2026" */
 export const dmy = (iso: string) => iso.split('-').reverse().join('.');
+
+/** A doctor's photo: the `photo` field if set, else public/doctors/<last part of the page address>.jpg
+ *  (640x800, cropped to the face; see docs/photos.md). */
+export const photoFor = (url: string, photo?: string) => {
+  if (photo) return photo;
+  const file = `/doctors/${url.split('/').filter(Boolean).pop()}.jpg`;
+  return existsSync(join(process.cwd(), 'public', file)) ? file : undefined;
+};

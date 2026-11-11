@@ -8,13 +8,14 @@ import PriceList from '../components/PriceList.astro';
 import DoctorSchedule from '../components/DoctorSchedule.astro';
 import ReviewList from '../components/ReviewList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
-import { servicesOfDoctor, initials, years, rub, shortName } from '../lib/content';
+import { servicesOfDoctor, initials, years, rub, shortName, photoFor } from '../lib/content';
 import { clinics, phones, reviewsPage, reviewFormPage } from '../data/site';
 import { currentPrices } from '../lib/prices';
 
 interface Props { entry: CollectionEntry<'doctors'> }
 const { entry } = Astro.props;
 const d = entry.data;
+const photo = photoFor(d.url, d.photo);
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id);
@@ -82,8 +83,8 @@ const anchors = [
 
 <div class="wrap doctor-page">
   <aside class="doctor-side">
-    <div class:list={['doctor-portrait', { 'no-photo': !d.photo }]}>
-      {d.photo ? <img src={d.photo} alt={d.name} /> : <span aria-hidden="true">{initials(d.name)}</span>}
+    <div class:list={['doctor-portrait', { 'no-photo': !photo }]}>
+      {photo ? <img src={photo} alt={d.name} width="640" height="800" /> : <span aria-hidden="true">{initials(d.name)}</span>}
     </div>
     <div class="doctor-side-actions">
       <a class="btn btn-primary btn-wide" href="#schedule">Записаться на приём</a>

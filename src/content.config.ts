@@ -55,7 +55,8 @@ const doctors = defineCollection({
     qualification: z.string().optional(),
     specialization: z.string().optional(),
     experienceYears: z.number().int().positive().optional(),
-    // Put photos in /public/doctors/ and write the path here, e.g. "/doctors/kolova.jpg".
+    // Optional: a photo path. Without it, public/doctors/<last part of the url>.jpg is used
+    // when it exists (scripts/crop-doctor-photos.py makes those).
     photo: z.string().optional(),
     clinics: z.array(clinic).default([]),
     education: z.array(z.string()).default([]),

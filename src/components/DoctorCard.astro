@@ -1,6 +1,6 @@
 ---
 import { clinics, type ClinicKey } from '../data/site';
-import { initials, years } from '../lib/content';
+import { initials, years, photoFor } from '../lib/content';
 
 interface Props {
   name: string;
@@ -10,12 +10,13 @@ interface Props {
   experienceYears?: number;
   clinicKeys: ClinicKey[];
 }
-const { name, specialty, url, photo, experienceYears, clinicKeys } = Astro.props;
+const { name, specialty, url, experienceYears, clinicKeys } = Astro.props;
+const photo = photoFor(url, Astro.props.photo);
 ---
 
 <article class="doctor-card">
   <a class:list={["doctor-card-photo", { "no-photo": !photo }]} href={url} tabindex="-1" aria-hidden="true">
-    {photo ? <img src={photo} alt="" loading="lazy" /> : <span>{initials(name)}</span>}
+    {photo ? <img src={photo} alt="" loading="lazy" width="640" height="800" /> : <span>{initials(name)}</span>}
   </a>
   <div class="doctor-card-body">
     <h3><a href={url}>{name}</a></h3>
