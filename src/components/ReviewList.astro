@@ -2,8 +2,9 @@
 // Patient reviews, newest first.
 import { getEntry, type CollectionEntry } from 'astro:content';
 // grid: cards in columns with long texts folded (the reviews page)
-interface Props { reviews: CollectionEntry<'reviews'>[]; showDoctor?: boolean; grid?: boolean }
-const { reviews, showDoctor = false, grid = false } = Astro.props;
+// dates: off where old reviews would look stale (the home page)
+interface Props { reviews: CollectionEntry<'reviews'>[]; showDoctor?: boolean; grid?: boolean; dates?: boolean }
+const { reviews, showDoctor = false, grid = false, dates = true } = Astro.props;
 const list = await Promise.all(
   [...reviews]
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -19,7 +20,7 @@ const date = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month:
         <span class="review-avatar" aria-hidden="true">{r.author.trim()[0]}</span>
         <div>
           <strong>{r.author}</strong>
-          <span class="muted">{date(r.date)}</span>
+          {dates && <span class="muted">{date(r.date)}</span>}
         </div>
         {r.rating && <span class="review-stars" aria-label={`Оценка ${r.rating} из 5`}>{'★'.repeat(r.rating)}<span>{'★'.repeat(5 - r.rating)}</span></span>}
       </div>

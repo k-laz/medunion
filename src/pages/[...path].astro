@@ -9,6 +9,7 @@ import ArticlePage from '../templates/ArticlePage.astro';
 import PricesPage from '../templates/PricesPage.astro';
 import ListingPage from '../templates/ListingPage.astro';
 import ContactsPage from '../templates/ContactsPage.astro';
+import ClinicPage from '../templates/ClinicPage.astro';
 import { clinics } from '../data/site';
 
 export async function getStaticPaths() {
@@ -55,5 +56,5 @@ const jsonLd =
   {kind === 'articles' && <ArticlePage entry={entry} />}
   {kind === 'prices' && <PricesPage entry={entry} />}
   {kind === 'listings' && <ListingPage entry={entry} />}
-  {kind === 'pages' && (d.layout ? <ContactsPage entry={entry} /> : <ArticlePage entry={entry} />)}
+  {kind === 'pages' && (d.layout === 'clinic' ? <ClinicPage entry={entry} /> : d.layout ? <ContactsPage entry={entry} /> : <ArticlePage entry={entry} />)}
 </Base>

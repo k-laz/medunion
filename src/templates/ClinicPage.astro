@@ -1,0 +1,120 @@
+---
+// One clinic: address, hours, phones and map at the top, then its ratings on
+// review sites, awards, the doctors who see patients here, and the other clinics.
+import { getCollection, type CollectionEntry } from 'astro:content';
+import PageHead from '../components/PageHead.astro';
+import Ratings from '../components/Ratings.astro';
+import DoctorCard from '../components/DoctorCard.astro';
+import { clinics, clinicPage, awards, bookingPage, reviewFormPage, type ClinicKey } from '../data/site';
+import { yearsSince, years, plural } from '../lib/content';
+
+interface Props { entry: CollectionEntry<'pages'> }
+const d = Astro.props.entry.data;
+const key = d.clinic as ClinicKey;
+const c = clinics[key];
+const [lat, lon] = c.coords;
+const map = `https://yandex.ru/map-widget/v1/?ll=${lon},${lat}&z=16&pt=${lon},${lat},pm2rdm`;
+const route = `https://yandex.ru/maps/?rtext=~${lat},${lon}&rtt=auto`;
+const opened = new Date(c.opened + 'T00:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(/\s?г\.$/, '');
+const age = yearsSince(c.opened);
+
+const doctors = (await getCollection('doctors', (x) => x.data.clinics.includes(key)))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
+const SHOWN = 8;
+const own = awards.filter((a) => a.clinic === key);
+const others = (Object.keys(clinics) as ClinicKey[]).filter((k) => k !== key);
+---
+
+<PageHead url={d.url} h1={c.name} compact />
+
+<div class="wrap page-body clinic-page">
+  <section class="clinic-top block">
+    <div class="clinic-info">
+      <p class="clinic-city">{c.city}{c.district && `, ${c.district}`}</p>
+      <p class="clinic-address">{c.address}</p>
+      {c.note && <p class="muted">{c.note}</p>}
+      <dl class="clinic-facts">
+        <div>
+          <dt>Режим работы</dt>
+          <dd><ul class="hours">{c.hours.map((h) => <li>{h}</li>)}</ul></dd>
+        </div>
+        <div>
+          <dt>Телефоны</dt>
+          <dd class="clinic-phones">{c.phones.map((p) => <a href={`tel:${p.tel}`}>{p.display}</a>)}</dd>
+        </div>
+        <div>
+          <dt>Работаем</dt>
+          <dd>с {opened}{age > 0 && <span class="muted">, {years(age)}</span>}</dd>
+        </div>
+      </dl>
+      <div class="cta-row">
+        <a class="btn btn-primary" href={bookingPage}>Записаться</a>
+        <a class="btn btn-quiet" href={route} target="_blank" rel="noopener">Как добраться</a>
+      </div>
+    </div>
+    <div class="clinic-map">
+      <iframe src={map} title={`${c.name} на карте`} loading="lazy" allowfullscreen></iframe>
+    </div>
+  </section>
+
+  <section class="block" id="ratings">
+    <div class="block-head">
+      <h2>Рейтинг клиники</h2>
+      <a class="link-more" href={reviewFormPage}>Оставить отзыв</a>
+    </div>
+    <Ratings ratings={c.ratings} />
+    {own.length > 0 && (
+      <ul class="awards">
+        {own.map((a) => (
+          <li class="award">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2" /><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+            <span><strong>{a.url ? <a href={a.url}>{a.title}</a> : a.title}</strong><span class="muted">{a.by}</span></span>
+            <span class="award-years">{a.years}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  {doctors.length > 0 && (
+    <section class="block" id="doctors" data-more-box>
+      <div class="block-head">
+        <h2>Врачи клиники <span class="count">{doctors.length}</span></h2>
+        <a class="link-more" href="/vrachi/">Все врачи</a>
+      </div>
+      <div class="doctor-grid doctor-grid-4">
+        {doctors.map((doc, i) => (
+          <div class:list={{ 'more-item': i >= SHOWN }}>
+            <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+          </div>
+        ))}
+      </div>
+      {doctors.length > SHOWN && (
+        <button class="more-btn" type="button" data-more>Показать всех ({doctors.length} {plural(doctors.length, 'врач', 'врача', 'врачей')})</button>
+      )}
+    </section>
+  )}
+
+  <section class="block">
+    <h2>Другие клиники</h2>
+    <ul class="near-list near-list-row">
+      {others.map((k) => (
+        <li>
+          <a href={clinicPage[k]}>
+            <span class="clinic-city">{clinics[k].city}</span>
+            <strong>{clinics[k].address}</strong>
+            <span class="muted">{clinics[k].hours.join(' · ')}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</div>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-more-box]')) {
+    const btn = box.querySelector<HTMLButtonElement>('[data-more]');
+    if (!btn) { box.classList.add('is-open'); continue; }
+    btn.addEventListener('click', () => { box.classList.add('is-open'); btn.remove(); });
+  }
+</script>

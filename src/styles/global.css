@@ -691,3 +691,70 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 
 .subpages { margin-top: 40px; }
 .chip[aria-current] { background: var(--gradient); border-color: transparent; color: #fff; }
+
+/* Numbers, awards, clinics with ratings (home) */
+.trust-numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0 0 24px; }
+.trust-numbers div { padding: 0; }
+.trust-numbers dt { font-family: var(--font-head); font-weight: 600; font-size: clamp(2rem, 1.4rem + 2vw, 3rem); line-height: 1.1; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
+.trust-numbers dd { margin: 6px 0 0; color: var(--muted); }
+.awards { list-style: none; padding: 0; margin: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 12px; }
+.award { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.award svg { color: var(--pink); }
+.award strong { display: block; color: var(--ink); font-weight: 600; }
+.award strong a { color: inherit; text-decoration: none; }
+.award strong a:hover { color: var(--brand); }
+.award .muted { font-size: var(--step--1); }
+.award-years { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.trust-head { margin-top: 40px; }
+.trust-head h3 { font-size: var(--step-1); margin: 0; }
+.trust-clinics { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.trust-clinic { display: grid; align-content: start; gap: 14px; padding: 20px; border-radius: var(--radius); background: var(--surface); }
+.trust-clinic-head { display: grid; gap: 2px; color: var(--ink); text-decoration: none; }
+.trust-clinic-head:hover strong { color: var(--brand); }
+.trust-clinic-head .muted { font-size: var(--step--1); }
+.block-head-links { display: flex; gap: 20px; }
+@media (max-width: 900px) {
+  .trust-numbers { grid-template-columns: 1fr; gap: 16px; }
+  .trust-clinics { grid-template-columns: 1fr; }
+}
+
+/* Ratings on review sites */
+.ratings { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.rating { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); text-decoration: none; transition: border-color .15s; }
+.rating:hover { border-color: var(--brand); }
+.rating-score { font-family: var(--font-head); font-weight: 600; font-size: 1.6rem; white-space: nowrap; }
+.rating-star { color: var(--pink); margin-right: 4px; font-size: .8em; }
+.rating-score-none { color: var(--dots); font-size: 1.2rem; }
+.rating-text { display: grid; }
+.rating-text .muted { font-size: var(--step--1); }
+.rating-arrow { color: var(--brand); }
+.ratings-date { font-size: var(--step--1); margin: 10px 0 0; }
+.ratings-compact { display: flex; flex-wrap: wrap; gap: 8px; }
+.ratings-compact .rating { display: inline-flex; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: var(--step--1); }
+.ratings-compact .rating-score { font-family: var(--font); font-size: 1rem; }
+.ratings-compact .rating-score-none { display: none; }
+.ratings-compact .rating-text .muted, .ratings-compact .rating-arrow { display: none; }
+.ratings-compact .rating-text strong { font-weight: 400; }
+
+/* Clinic page */
+.clinic-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: stretch; }
+.clinic-address { font-family: var(--font-head); font-size: var(--step-2); color: var(--ink); margin: 4px 0 4px; line-height: 1.2; }
+.clinic-facts { display: grid; gap: 16px; margin: 20px 0 24px; }
+.clinic-facts dt { font-size: var(--step--1); color: var(--muted); margin-bottom: 2px; }
+.clinic-facts dd { margin: 0; }
+.clinic-facts .hours { margin: 0; color: var(--text); }
+.clinic-phones { display: grid; gap: 2px; }
+.clinic-phones a, .clinic-phone a { font-weight: 600; color: var(--ink); text-decoration: none; }
+.clinic-phone { display: grid; gap: 2px; }
+.clinic-map { min-height: 360px; border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.clinic-map iframe { display: block; width: 100%; height: 100%; min-height: 360px; border: 0; }
+.clinic-page .awards { margin-top: 16px; }
+[data-more-box]:not(.is-open) .more-item { display: none; }
+.near-list-row { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); margin-top: 16px; }
+.near-list-row a { background: var(--surface); }
+.clinic-card .ratings-compact { margin: 12px 0 0; }
+.review-places { margin-top: 14px; }
+.review-places .info-heading { margin: 0 0 2px; font-size: 1rem; }
+.review-places-links { margin: 0; }
+@media (max-width: 900px) { .clinic-top { grid-template-columns: 1fr; } .clinic-map, .clinic-map iframe { min-height: 300px; } }
+@media (max-width: 640px) { .block-head:has(.block-head-links), .trust-head { flex-wrap: wrap; row-gap: 4px; } .block-head-links { gap: 16px; } }

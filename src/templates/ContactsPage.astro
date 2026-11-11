@@ -1,18 +1,14 @@
 ---
+// /contacts/: all clinics, each with hours, phones, ratings and a link to its own page.
 import type { CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
-import { clinics, integrations, type ClinicKey, bookingPage } from '../data/site';
+import Ratings from '../components/Ratings.astro';
+import { clinics, clinicPage, type ClinicKey } from '../data/site';
 
 interface Props { entry: CollectionEntry<'pages'> }
 const d = Astro.props.entry.data;
-const keys: ClinicKey[] = d.layout === 'clinic' && d.clinic ? [d.clinic] : (Object.keys(clinics) as ClinicKey[]);
-const pageFor: Record<ClinicKey, string> = {
-  kurchatova: '/contacts/klinika-na-kurchatova/',
-  instrumentalnaya: '/contacts/klinika-na-instrumentalnoy/',
-  kansk: '/contacts/klinika-v-kanske/',
-};
-const mapUrl = (k: ClinicKey) => `https://yandex.ru/maps/?text=${encodeURIComponent(`${clinics[k].city}, ${clinics[k].address}, Медюнион`)}`;
-const bookingUrl = bookingPage; // our /appointment/ page
+const keys = Object.keys(clinics) as ClinicKey[];
+const route = (k: ClinicKey) => `https://yandex.ru/maps/?rtext=~${clinics[k].coords[0]},${clinics[k].coords[1]}&rtt=auto`;
 ---
 
 <PageHead url={d.url} h1={d.h1} compact />
@@ -23,13 +19,14 @@ const bookingUrl = bookingPage; // our /appointment/ page
       const c = clinics[k];
       return (
         <section class="clinic-card">
-          <p class="clinic-city">{c.city}</p>
-          <h2>{d.layout === 'clinic' ? c.address : <a href={pageFor[k]}>{c.address}</a>}</h2>
-          {c.district && <p class="muted">{c.district}</p>}
+          <p class="clinic-city">{c.city}{c.district && `, ${c.district}`}</p>
+          <h2><a href={clinicPage[k]}>{c.address}</a></h2>
           <ul class="hours">{c.hours.map((h) => <li>{h}</li>)}</ul>
-          <p class="clinic-phone"><a href={`tel:${c.phone.tel}`}>{c.phone.display}</a></p>
+          <p class="clinic-phone">{c.phones.map((p) => <a href={`tel:${p.tel}`}>{p.display}</a>)}</p>
+          <Ratings ratings={c.ratings} compact checked={false} />
           <div class="cta-row">
-            <a class="btn btn-quiet" href={mapUrl(k)} target="_blank" rel="noopener">Как добраться</a>
+            <a class="btn btn-quiet" href={clinicPage[k]}>О клинике</a>
+            <a class="btn btn-quiet" href={route(k)} target="_blank" rel="noopener">Как добраться</a>
           </div>
         </section>
       );

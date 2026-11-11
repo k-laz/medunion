@@ -77,3 +77,20 @@ const SHORT_NAMES: Record<string, string> = {
 /** "МРТ открытого типа (магнитно-резонансная томография) в Красноярске" -> "МРТ открытого типа" */
 export const shortName = (url: string, h1: string) =>
   SHORT_NAMES[url] ?? h1.replace(/\s*\((магнитно|компьютерная|Фиброгастроскопия)[^)]*\)/gi, '').replace(/\s+в Красноярске$/, '').trim();
+
+/** plural(5, 'врач', 'врача', 'врачей') -> "врачей" */
+export const plural = (n: number, one: string, few: string, many: string) => {
+  const m10 = n % 10, m100 = n % 100;
+  return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many;
+};
+
+/** Full years from an ISO date ("2011-11-22") to now. */
+export const yearsSince = (iso: string, now = new Date()) => {
+  const d = new Date(iso + 'T00:00:00');
+  let n = now.getFullYear() - d.getFullYear();
+  if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) n--;
+  return n;
+};
+
+/** "2026-11-10" -> "10.11.2026" */
+export const dmy = (iso: string) => iso.split('-').reverse().join('.');

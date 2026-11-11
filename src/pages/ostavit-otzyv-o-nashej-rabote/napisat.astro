@@ -3,7 +3,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import ReviewForm from '../../components/ReviewForm.astro';
-import { reviewPlatforms } from '../../data/site';
+import { clinics, platformName } from '../../data/site';
 ---
 
 <Base
@@ -17,16 +17,17 @@ import { reviewPlatforms } from '../../data/site';
     <div class="page-main">
       <ReviewForm />
     </div>
-    {reviewPlatforms.length > 0 && (
-      <div class="page-aside">
-        <aside class="info-card">
-          <p class="info-service">Отзыв на площадке</p>
-          <p class="info-note">Там его увидят те, кто выбирает клинику, и он войдёт в наш рейтинг.</p>
-          <div class="info-actions">
-            {reviewPlatforms.map((p) => <a class="btn btn-quiet btn-wide" href={p.url} target="_blank" rel="noopener">{p.name}</a>)}
+    <div class="page-aside">
+      <aside class="info-card">
+        <p class="info-service">Отзыв на площадке</p>
+        <p class="info-note">Там его увидят те, кто выбирает клинику, и он войдёт в её рейтинг.</p>
+        {Object.values(clinics).map((c) => (
+          <div class="review-places">
+            <p class="info-heading">{c.city}, {c.address}</p>
+            <p class="review-places-links">{c.ratings.map((r, i) => <>{i > 0 && ' · '}<a href={r.url} target="_blank" rel="noopener">{platformName[r.platform]}</a></>)}</p>
           </div>
-        </aside>
-      </div>
-    )}
+        ))}
+      </aside>
+    </div>
   </div>
 </Base>

@@ -1,0 +1,30 @@
+---
+// A clinic's ratings on review sites: platform, stars, how many ratings, and
+// a link to the clinic's page there. Numbers come from data/site.ts.
+import { platformName, ratingsChecked, type Rating } from '../data/site';
+import { plural, dmy } from '../lib/content';
+
+interface Props { ratings: readonly Rating[]; compact?: boolean; checked?: boolean }
+const { ratings, compact = false, checked = true } = Astro.props;
+const num = (r: number) => r.toLocaleString('ru-RU', { minimumFractionDigits: 1 });
+const count = (r: Rating) =>
+  r.count ? `${r.count.toLocaleString('ru-RU')} ${r.countWord === 'отзыв' ? plural(r.count, 'отзыв', 'отзыва', 'отзывов') : plural(r.count, 'оценка', 'оценки', 'оценок')}` : 'Отзывы и оценки';
+---
+
+<ul class:list={['ratings', { 'ratings-compact': compact }]}>
+  {ratings.map((r) => (
+    <li>
+      <a class="rating" href={r.url} target="_blank" rel="noopener">
+        {r.rating
+          ? <span class="rating-score"><span class="rating-star" aria-hidden="true">★</span>{num(r.rating)}</span>
+          : <span class="rating-score rating-score-none" aria-hidden="true">★</span>}
+        <span class="rating-text">
+          <strong>{platformName[r.platform]}</strong>
+          <span class="muted">{count(r)}</span>
+        </span>
+        <svg class="rating-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </li>
+  ))}
+</ul>
+{checked && <p class="ratings-date muted">Рейтинги на {dmy(ratingsChecked)}</p>}
