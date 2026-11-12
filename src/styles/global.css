@@ -698,8 +698,8 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 
 /* Numbers, awards, clinics with ratings (home) */
 .trust-numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0 0 24px; }
-.trust-numbers div { padding: 0; }
-.trust-numbers dt { font-family: var(--font-head); font-weight: 600; font-size: clamp(2rem, 1.4rem + 2vw, 3rem); line-height: 1.1; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
+.trust-numbers div { padding: 0; text-align: center; }
+.trust-numbers dt { font-family: var(--font-head); font-weight: 600; font-size: clamp(2rem, 1.4rem + 2vw, 3rem); line-height: 1.1; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; margin: 0 auto; }
 .trust-numbers dd { margin: 6px 0 0; color: var(--muted); }
 .awards { list-style: none; padding: 0; margin: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 12px; }
 .award { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }

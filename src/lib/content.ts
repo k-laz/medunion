@@ -86,13 +86,9 @@ export const plural = (n: number, one: string, few: string, many: string) => {
   return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many;
 };
 
-/** Full years from an ISO date ("2011-11-22") to now. */
-export const yearsSince = (iso: string, now = new Date()) => {
-  const d = new Date(iso + 'T00:00:00');
-  let n = now.getFullYear() - d.getFullYear();
-  if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) n--;
-  return n;
-};
+/** Years in business as people count them: calendar years since the opening
+ *  year ("2011-11-22" -> 15 in 2026), not full years to the day. */
+export const yearsSince = (iso: string, now = new Date()) => now.getFullYear() - Number(iso.slice(0, 4));
 
 /** "2026-11-10" -> "10.11.2026" */
 export const dmy = (iso: string) => iso.split('-').reverse().join('.');
