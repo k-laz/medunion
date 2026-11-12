@@ -2,7 +2,10 @@
 // One-off: gathers every price on the site (the /ceny/ lists, service pages,
 // doctor pages) into src/data/prices/, one file per /ceny/ list. After this the
 // files in src/data/prices/ are the only place a price is set; the admin page
-// (/admin/) edits them. Run again only to rebuild them from imported content.
+// (/admin/) edits them.
+//   node scripts/make-price-list.mjs --add-missing   after a new import: adds prices
+//        that are not in the list yet, leaves every existing row (and admin edits) alone
+//   node scripts/make-price-list.mjs                 rebuilds the list from scratch
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse, stringify } from 'yaml';
@@ -54,10 +57,35 @@ for (const c of ['services', 'doctors']) {
   }
 }
 
+const fileOf = (l) => l.page.split('/').filter(Boolean).pop().replace(/%D1%81/i, 'c').replace(/,/g, '-') + '.yml';
+
+if (process.argv.includes('--add-missing')) {
+  const have = new Set();
+  const existing = new Map();
+  for (const f of fs.readdirSync('src/data/prices')) {
+    const d = parse(fs.readFileSync(path.join('src/data/prices', f), 'utf8'));
+    existing.set(f, d);
+    for (const it of d.items ?? []) have.add(it.id || slug(it.name));
+  }
+  let added = 0;
+  for (const l of lists) {
+    const d = existing.get(fileOf(l));
+    if (!d) continue;
+    for (const it of l.items) {
+      if (have.has(it.id)) continue;
+      d.items.push(it); have.add(it.id); added++;
+      console.log('+', l.title, '|', it.name, it.price);
+    }
+    fs.writeFileSync(path.join('src/data/prices', fileOf(l)), stringify(d, { lineWidth: 0 }));
+  }
+  console.log(added, 'prices added');
+  process.exit(0);
+}
+
 fs.rmSync('src/data/prices', { recursive: true, force: true });
 fs.mkdirSync('src/data/prices', { recursive: true });
 for (const l of lists) {
-  const file = l.page.split('/').filter(Boolean).pop().replace(/%D1%81/i, 'c').replace(/,/g, '-') + '.yml';
+  const file = fileOf(l);
   const data = { title: l.title, page: l.page, order: l.order, items: l.items, ...(l.also.length ? { also: l.also } : {}) };
   fs.writeFileSync(path.join('src/data/prices', file), stringify(data, { lineWidth: 0 }));
 }

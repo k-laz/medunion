@@ -1,55 +1,35 @@
 ---
 url: "/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/"
 section: "vrachi"
-title: "Курбанзаде Фарид Маликович"
+title: "Лучшие врачи в Медюнион в вашем городе Красноярске"
 description: "Все врачи \"Медюнион\" в Красноярске"
-h1: "Курбанзаде Фарид Маликович"
+h1: "Сотрудники"
 images: []
 ---
 
-Должность
+Cотрудник не найден
 
-Травматолог-ортопед
+[Назад к списку](/vrachi/)
 
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-E-mail
-
-[info-med@medunion.group](mailto:info-med@medunion.group)
-
-Ведет прием
-
-ул.Инструментальная, 12/35
-
-На карте
-
-загрузка карты...
-
-- [Описание](#desc)
-- [Услуги](#services)
-- [Отзывы](#reviews)
-
-Специализация
-
-Травматология
-
-Услуги
-
-[](/uslugi/centr/travmatologiya-i-ortopediya/priem-vracha-travmatologa-ortopeda/)[
-
-](/uslugi/centr/travmatologiya-i-ortopediya/priem-vracha-travmatologa-ortopeda/)
-
-[
-
-](/uslugi/centr/travmatologiya-i-ortopediya/priem-vracha-travmatologa-ortopeda/)
-
-[Прием травматолога-ортопеда](/uslugi/centr/travmatologiya-i-ortopediya/priem-vracha-travmatologa-ortopeda/)
-
-Травматология и ортопедия для взрослых и детей в медицинских центрах «Медюнион». Комплексный подход к вашему здоровью: в одном месте вы получите точную диагностику (рентген, УЗИ, МРТ), консультацию опытного специалиста и полный спектр лечебных процедур. Профессиональная помощь при травмах и заболеваниях опорно-двигательного аппарата для детей и взрослых: от первичной диагностики до полного восстановления с использованием современного оборудования и эффективных методов лечения.
-
-Отзывы
-
-Наша клиника постоянно работает над повышением качества сервиса. Мы благодарны нашим пациентам за оказанное доверие и положительные отзывы о совместной работе.  
-Не стесняйтесь оставлять отзывы — они помогают нам становиться лучше!
+- [Врачи-аллергологи](/vrachi/vrachi-allergologi/)
+- [Врачи-гастроэнтерологи](/vrachi/vrachi-gastroenterologi/)
+- [Врачи-гинекологи](/vrachi/vrachi-ginekologi/)
+- [Врачи дерматологи, дерматовенерологи](/vrachi/vrachi-dermatologi-dermatovenerologi/)
+- [Врачи-кардиологи](/vrachi/vrachi-kardiologi/)
+- [Врачи-неврологи](/vrachi/vrachi-nevrologi/)
+- [Врачи-нейрохирурги](/vrachi/vrachi-neyrokhirurgi/)
+- [Врачи-нефрологи](/vrachi/vrachi-nefrologi/)
+- [Врачи онкологи-маммологи](/vrachi/vrachi-onkologi-mammologi/)
+- [Врачи-оториноларингологи](/vrachi/vrachi-otorinolaringologi/)
+- [Врачи-педиатры](/vrachi/vrachi-pediatry/)
+- [Врачи-проктологи](/vrachi/vrachi-proktologi/)
+- [Врачи-пульмонологи](/vrachi/vrachi-pulmonologi/)
+- [Врачи-сосудистые хирурги, флебологи](/vrachi/vrachi-sosudistye-khirurgi-flebologi/)
+- [Врачи-терапевты](/vrachi/vrachi-terapevty/)
+- [Врачи травматологи-ортопеды](/vrachi/vrachi-travmatologi-ortopedy/)
+- [Врачи-урологи](/vrachi/vrachi-urologi/)
+- [Врачи-хирурги](/vrachi/vrachi-khirurgi/)
+- [Врачи-эндокринологи](/vrachi/vrachi-endokrinologi/)
+- [Врачи: отделение диагностики](/vrachi/otdelenie-diagnostiki-/)
+- [Детские врачи "Медюнион"](/vrachi/detskie-vrachi-medyunion/)
+- [Все врачи "Медюнион"](/vrachi/vrachi-medyunion/)

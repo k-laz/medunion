@@ -18,17 +18,19 @@ fail=0; ok=0; moved=0
 report() { echo "FAIL  $*"; fail=$((fail+1)); }
 
 # 1. Every old live address
-# From the October copy, plus whatever the old site's sitemap lists now
-# (CHECK_SITEMAP=0 to skip; after the switch the sitemap is the new site's own).
+# Every address that worked when the old site was last copied (import/report.csv),
+# plus any address in the old site's live sitemap that the copy has not seen yet
+# (added since). Addresses the copy saw failing on the old site are left out.
+# CHECK_SITEMAP=0 skips the sitemap; after the switch it is the new site's own.
+KNOWN=$(awk -F'","' 'NR>1 {gsub(/^"/,"",$1); print $1}' import/report.csv | sort -u)
 mapfile -t URLS < <(
   awk -F'","' 'NR>1 && $3=="200" {gsub(/^"/,"",$1); print $1}' import/report.csv
   if [ "${CHECK_SITEMAP:-1}" = 1 ]; then
     for sm in $(curl -s --max-time 20 "https://$D/sitemap.xml" | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g'); do
       curl -s --max-time 20 "$sm" | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g; s#^https\?://[^/]*##'
-    done
+    done | grep '^/' | sort -u | comm -23 - <(printf '%s\n' "$KNOWN")
   fi | sort -u
 )
-mapfile -t URLS < <(printf '%s\n' "${URLS[@]}" | grep '^/' | sort -u)
 echo "Old live addresses: ${#URLS[@]}"
 check_one() {
   local u="$1" out code final

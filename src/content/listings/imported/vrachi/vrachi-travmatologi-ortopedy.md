@@ -6,6 +6,6 @@ h1: "Врачи травматологи-ортопеды"
 of: "doctors"
 members:
   - "/vrachi/vrachi-travmatologi-ortopedy/bersenev-denis-georgievich/"
-  - "/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/"
+  - "/vrachi/vrachi-travmatologi-ortopedy/dumikyan-taron-karenovich/"
   - "/vrachi/detskie-vrachi-medyunion/omurali-aktilek/"
 ---

@@ -16,4 +16,5 @@ export const articleService: Record<string, string> = {
   proktologiya: '/uslugi/centr/proktologiya/',
   travmotologiya: '/uslugi/centr/travmatologiya-i-ortopediya/',
   'urologiya-': '/uslugi/centr/urologiya/',
+  'uzi-diagnostika': '/uslugi/diagnostika/ultrazvukovaya-diagnostika/',
 };

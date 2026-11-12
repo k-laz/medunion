@@ -7,4 +7,5 @@ of: "doctors"
 members:
   - "/vrachi/vrachi-medyunion/kuzyakina-irina-gennadevna/"
   - "/vrachi/vrachi-medyunion/mankovskaya-tatyana-vladimirovna/"
+  - "/vrachi/vrachi-gastroenterologi/mashkov-aleksandr-anatolevich/"
 ---

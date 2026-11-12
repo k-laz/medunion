@@ -5,7 +5,6 @@ description: "Врачи: отделение диагностики: Медюн�
 h1: "Врачи: отделение диагностики"
 of: "doctors"
 members:
-  - "/vrachi/vrachi-medyunion/antsiferov-anton-vladimirovich/"
   - "/vrachi/vrachi-medyunion/korolkov-vladislav-yurevich/"
   - "/vrachi/vrachi-medyunion/lapurenko-ilya-aleksandrovich/"
   - "/vrachi/otdelenie-diagnostiki-/moiseeva-ekaterina-yurevna/"

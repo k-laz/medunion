@@ -4,7 +4,7 @@ order: 15
 items:
   - id: konsultatsiya-urologa-pervichnaya
     name: Консультация уролога (первичная)
-    price: 2500
+    price: 2700
   - id: konsultatsiya-urologa-povtornaya
     name: Консультация уролога (повторная)
     price: 2500

@@ -4,4 +4,6 @@ title: "Врачи-проктологи | Медюнион"
 description: "Врачи-проктологи: Медюнион в Красноярске и Канске. Запись онлайн и по телефону +7 (391) 220-03-03."
 h1: "Врачи-проктологи"
 of: "doctors"
+members:
+  - "/vrachi/vrachi-proktologi/ibrogimov-validzhon-sharifovich/"
 ---

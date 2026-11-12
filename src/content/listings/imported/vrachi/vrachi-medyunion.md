@@ -20,7 +20,6 @@ members:
   - "/vrachi/vrachi-medyunion/kraskovskaya-natalya-leonidovna/"
   - "/vrachi/vrachi-medyunion/kuzyakina-irina-gennadevna/"
   - "/vrachi/vrachi-medyunion/kuligina-natalya-anatolevna/"
-  - "/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/"
   - "/vrachi/vrachi-medyunion/lapurenko-ilya-aleksandrovich/"
   - "/vrachi/vrachi-medyunion/maysner-dmitriy-sergeevich/"
   - "/vrachi/vrachi-medyunion/malakhaeva-zhanna-vyacheslavovna/"

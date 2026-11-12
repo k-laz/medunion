@@ -61,7 +61,7 @@ items:
     price: 3000
   - id: konsultatsiya-onkologa-mammologa-pervichnaya
     name: Консультация онколога-маммолога (первичная)
-    price: 3200
+    price: 3500
   - id: konsultatsiya-pulmonologa-allergologa-pervichnaya
     name: Консультация пульмонолога-аллерголога (первичная)
     price: 2300
@@ -85,10 +85,10 @@ items:
     price: 3700
   - id: konsultatsiya-pediatra-povtornaya
     name: Консультация педиатра (повторная)
-    price: 2300
+    price: 2700
   - id: konsultatsiya-pediatra-pervichnaya
     name: Консультация педиатра (первичная)
-    price: 2500
+    price: 2800
   - id: konsultatsiya-sosudistogo-khirurga-flebologa-povtornyy
     name: Консультация сосудистого хирурга, флеболога (повторный)
     price: 2600
@@ -97,4 +97,4 @@ items:
     price: 2700
   - id: konsultatsiya-onkologa-mammologa-povtornaya
     name: Консультация онколога-маммолога (повторная)
-    price: 2700
+    price: 3500

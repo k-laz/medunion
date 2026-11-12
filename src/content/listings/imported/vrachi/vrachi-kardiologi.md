@@ -5,6 +5,7 @@ description: "Врачи-кардиологи: Медюнион в Красно�
 h1: "Врачи-кардиологи"
 of: "doctors"
 members:
+  - "/vrachi/vrachi-kardiologi/lyubenkova-ekaterina-viktorovna/"
   - "/vrachi/vrachi-medyunion/malakhaeva-zhanna-vyacheslavovna/"
   - "/vrachi/vrachi-medyunion/shtegman-oleg-anatolevich/"
   - "/vrachi/vrachi-medyunion/shurdesova-mariya-viktorovna/"
