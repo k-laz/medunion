@@ -64,7 +64,7 @@ images: []
 
 [Консультация педиатра (первичная)](/ceny/konsultatsii-spetsialistov/)
 
-2 500 ₽
+2 800 ₽
 
 Услуги
 

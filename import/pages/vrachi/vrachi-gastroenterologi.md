@@ -42,3 +42,13 @@ images: []
 Телефон
 
 [+7 (391) 220-03-03](tel:+73912200303)
+
+[](/vrachi/vrachi-gastroenterologi/mashkov-aleksandr-anatolevich/)[
+
+](/vrachi/vrachi-gastroenterologi/mashkov-aleksandr-anatolevich/)
+
+Гастроэнтеролог
+
+[Машков Александр Анатольевич](/vrachi/vrachi-gastroenterologi/mashkov-aleksandr-anatolevich/)[
+
+](/vrachi/vrachi-gastroenterologi/mashkov-aleksandr-anatolevich/)

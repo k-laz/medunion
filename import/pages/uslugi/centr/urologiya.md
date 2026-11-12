@@ -103,7 +103,7 @@ E-mail
 
 [Консультация уролога (первичная)](/ceny/konsultatsii-spetsialistov/)
 
-2 500 ₽
+2 700 ₽
 
 [Консультация гинеколога](/ceny/konsultatsii-spetsialistov/)
 

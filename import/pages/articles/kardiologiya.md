@@ -34,5 +34,6 @@ images: []
 - [Полезные советы 3](/articles/poleznye-sovety/)
 - [Проктология 3](/articles/proktologiya/)
 - [Травматология 3](/articles/travmotologiya/)
+- [УЗИ-диагностика 13](/articles/uzi-diagnostika/)
 - [Урология 1](/articles/urologiya-/)
 - [Хирургия 6](/articles/khirurgiya/)

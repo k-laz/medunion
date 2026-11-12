@@ -256,24 +256,6 @@ images:
 
 Сотрудники
 
-[](/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/)[
-
-](/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/)
-
-Травматолог-ортопед
-
-[Курбанзаде Фарид Маликович](/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/)[
-
-](/vrachi/vrachi-travmatologi-ortopedy/kurbanzade-farid-malikovich/)
-
-Телефон
-
-[+7 (391) 220-03-03](tel:+73912200303)
-
-E-mail
-
-[info-med@medunion.group](mailto:info-med@medunion.group)
-
 [](/vrachi/detskie-vrachi-medyunion/omurali-aktilek/)[
 
 ](/vrachi/detskie-vrachi-medyunion/omurali-aktilek/)

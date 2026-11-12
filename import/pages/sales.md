@@ -86,6 +86,14 @@ images: []
 
 5%
 
+[](/sales/skidka-5-na-mrt-po-napravleniyam-iz-drugikh-klinik/)
+
+бессрочно
+
+[Скидка 5% на МРТ по направлениям из других клиник](/sales/skidka-5-na-mrt-po-napravleniyam-iz-drugikh-klinik/)
+
+5%
+
 [](/sales/skidka-5/)
 
 бессрочно

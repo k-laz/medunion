@@ -145,40 +145,40 @@ images: []
 
 [Детские ЛОР‑заболевания](/articles/otorinolaringologiya/detskie-lor-zabolevaniya/)
 
-[](/articles/pediatriya/detskie-spravki-bez-dolgikh-ocheredey-i-lishnikh-perezhivaniy/)
+[](/articles/uzi-diagnostika/uzi-sosudov-shei-chto-takoe-dupleksnoe-skanirovanie-btsa/)
 
-[](/articles/pediatriya/detskie-spravki-bez-dolgikh-ocheredey-i-lishnikh-perezhivaniy/)
+[](/articles/uzi-diagnostika/uzi-sosudov-shei-chto-takoe-dupleksnoe-skanirovanie-btsa/)
 
-Педиатрия
+УЗИ-диагностика
 
-[Детские справки без долгих очередей и лишних переживаний](/articles/pediatriya/detskie-spravki-bez-dolgikh-ocheredey-i-lishnikh-perezhivaniy/)
+[УЗИ сосудов шеи: что такое дуплексное сканирование БЦА](/articles/uzi-diagnostika/uzi-sosudov-shei-chto-takoe-dupleksnoe-skanirovanie-btsa/)
 
-[](/articles/khirurgiya/posleoperatsionnaya-gematoma-simptomy-i-kogda-nuzhen-khirurg/)
+[](/articles/uzi-diagnostika/uzi-perifericheskikh-nervov-pri-onemenii-i-boli/)
 
-[](/articles/khirurgiya/posleoperatsionnaya-gematoma-simptomy-i-kogda-nuzhen-khirurg/)
+[](/articles/uzi-diagnostika/uzi-perifericheskikh-nervov-pri-onemenii-i-boli/)
 
-Хирургия
+УЗИ-диагностика
 
-[Послеоперационная гематома — симптомы и когда нужен хирург](/articles/khirurgiya/posleoperatsionnaya-gematoma-simptomy-i-kogda-nuzhen-khirurg/)
+[УЗИ периферических нервов: при онемении и боли](/articles/uzi-diagnostika/uzi-perifericheskikh-nervov-pri-onemenii-i-boli/)
 
-[](/articles/khirurgiya/shishka-pod-myshkoy-prichiny-i-k-kakomu-vrachu-obrashchatsya/)
+[](/articles/uzi-diagnostika/uzi-limfouzlov-kogda-naznachayut-i-chto-otsenivaet-vrach/)
 
-[](/articles/khirurgiya/shishka-pod-myshkoy-prichiny-i-k-kakomu-vrachu-obrashchatsya/)
+[](/articles/uzi-diagnostika/uzi-limfouzlov-kogda-naznachayut-i-chto-otsenivaet-vrach/)
 
-Хирургия
+УЗИ-диагностика
 
-[Шишка под мышкой — причины и к какому врачу обращаться](/articles/khirurgiya/shishka-pod-myshkoy-prichiny-i-k-kakomu-vrachu-obrashchatsya/)
+[УЗИ лимфоузлов: когда назначают и что оценивает врач](/articles/uzi-diagnostika/uzi-limfouzlov-kogda-naznachayut-i-chto-otsenivaet-vrach/)
 
-[](/articles/khirurgiya/infitsirovannaya-rana-priznaki-infektsii-obrabotka-i-lechenie/)
+[](/articles/uzi-diagnostika/uzi-myagkikh-tkaney-obsledovanie-uplotneniy-i-obrazovaniy-pod-kozhey/)
 
-[](/articles/khirurgiya/infitsirovannaya-rana-priznaki-infektsii-obrabotka-i-lechenie/)
+[](/articles/uzi-diagnostika/uzi-myagkikh-tkaney-obsledovanie-uplotneniy-i-obrazovaniy-pod-kozhey/)
 
-Хирургия
+УЗИ-диагностика
 
-[Инфицированная рана — признаки инфекции, обработка и лечение](/articles/khirurgiya/infitsirovannaya-rana-priznaki-infektsii-obrabotka-i-lechenie/)
+[УЗИ мягких тканей: обследование уплотнений и образований под кожей](/articles/uzi-diagnostika/uzi-myagkikh-tkaney-obsledovanie-uplotneniy-i-obrazovaniy-pod-kozhey/)
 
 Загрузить еще
 
 [](/articles/?PAGEN_1=2 "След.")
 
-1 [2](/articles/?PAGEN_1=2) [3](/articles/?PAGEN_1=3)
+1 [2](/articles/?PAGEN_1=2) [3](/articles/?PAGEN_1=3) [4](/articles/?PAGEN_1=4)

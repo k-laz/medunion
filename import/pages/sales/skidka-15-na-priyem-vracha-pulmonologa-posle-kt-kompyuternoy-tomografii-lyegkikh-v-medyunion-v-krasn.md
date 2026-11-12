@@ -69,4 +69,4 @@ images: []
 
 [Консультация пульмонолога (первичная)](/ceny/konsultatsii-spetsialistov/)
 
-2 500 ₽
+2 900 ₽

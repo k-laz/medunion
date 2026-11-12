@@ -13,11 +13,11 @@ images: []
 
 [Консультация педиатра (повторная)](/ceny/konsultatsii-spetsialistov/)
 
-2 300 ₽
+2 700 ₽
 
 [Консультация педиатра (первичная)](/ceny/konsultatsii-spetsialistov/)
 
-2 500 ₽
+2 800 ₽
 
 ## Приём врача педиатра 
 

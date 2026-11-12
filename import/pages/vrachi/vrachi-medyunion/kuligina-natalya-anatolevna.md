@@ -52,11 +52,11 @@ images: []
 
 [Консультация онколога-маммолога (повторная)](/ceny/konsultatsii-spetsialistov/)
 
-2700 ₽
+3500 ₽
 
 [Консультация онколога-маммолога (первичная)](/ceny/konsultatsii-spetsialistov/)
 
-3200 ₽
+3500 ₽
 
 Отзывы
 

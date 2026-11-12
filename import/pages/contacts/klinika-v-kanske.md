@@ -35,6 +35,28 @@ E-mail
 
 загрузка карты...
 
+[](/vrachi/vrachi-medyunion/safronova-svetlana-valerevna/)
+
+Врач-гинеколог, гинеколог-эндокринолог
+
+Сафронова Светлана Валерьевна
+
+Врач-гинеколог, гинеколог-эндокринолог
+
+[
+
+Сафронова Светлана Валерьевна
+
+](/vrachi/vrachi-medyunion/safronova-svetlana-valerevna/)
+
+Телефон
+
+[+7 (391) 220-03-03](tel:+73912200303)
+
+E-mail
+
+[info-med@medunion.group](mailto:info-med@medunion.group)
+
 [](/vrachi/vrachi-neyrokhirurgi/pachema-liliya-sergeevna/)
 
 Нейрохирург

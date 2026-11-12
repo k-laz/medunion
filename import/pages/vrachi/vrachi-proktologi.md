@@ -7,27 +7,22 @@ h1: "Врачи-проктологи"
 images: []
 ---
 
-Нет сотрудников
+\- Выберите специализацию
 
-- [Врачи-аллергологи](/vrachi/vrachi-allergologi/)
-- [Врачи-гастроэнтерологи](/vrachi/vrachi-gastroenterologi/)
-- [Врачи-гинекологи](/vrachi/vrachi-ginekologi/)
-- [Врачи дерматологи, дерматовенерологи](/vrachi/vrachi-dermatologi-dermatovenerologi/)
-- [Врачи-кардиологи](/vrachi/vrachi-kardiologi/)
-- [Врачи-неврологи](/vrachi/vrachi-nevrologi/)
-- [Врачи-нейрохирурги](/vrachi/vrachi-neyrokhirurgi/)
-- [Врачи-нефрологи](/vrachi/vrachi-nefrologi/)
-- [Врачи онкологи-маммологи](/vrachi/vrachi-onkologi-mammologi/)
-- [Врачи-оториноларингологи](/vrachi/vrachi-otorinolaringologi/)
-- [Врачи-педиатры](/vrachi/vrachi-pediatry/)
-- [Врачи-проктологи](/vrachi/vrachi-proktologi/)
-- [Врачи-пульмонологи](/vrachi/vrachi-pulmonologi/)
-- [Врачи-сосудистые хирурги, флебологи](/vrachi/vrachi-sosudistye-khirurgi-flebologi/)
-- [Врачи-терапевты](/vrachi/vrachi-terapevty/)
-- [Врачи травматологи-ортопеды](/vrachi/vrachi-travmatologi-ortopedy/)
-- [Врачи-урологи](/vrachi/vrachi-urologi/)
-- [Врачи-хирурги](/vrachi/vrachi-khirurgi/)
-- [Врачи-эндокринологи](/vrachi/vrachi-endokrinologi/)
-- [Врачи: отделение диагностики](/vrachi/otdelenie-diagnostiki-/)
-- [Детские врачи "Медюнион"](/vrachi/detskie-vrachi-medyunion/)
-- [Все врачи "Медюнион"](/vrachi/vrachi-medyunion/)
+[\- Выберите специализацию](/vrachi/vrachi-proktologi/)
+
+[Колопроктология](/vrachi/vrachi-proktologi/?SPECIALIZATION=%D0%9A%D0%BE%D0%BB%D0%BE%D0%BF%D1%80%D0%BE%D0%BA%D1%82%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F)
+
+[](/vrachi/vrachi-proktologi/ibrogimov-validzhon-sharifovich/)[
+
+](/vrachi/vrachi-proktologi/ibrogimov-validzhon-sharifovich/)
+
+Колопроктолог
+
+[Иброгимов Валиджон Шарифович](/vrachi/vrachi-proktologi/ibrogimov-validzhon-sharifovich/)[
+
+](/vrachi/vrachi-proktologi/ibrogimov-validzhon-sharifovich/)
+
+Телефон
+
+[+7 (391) 220-03-03](tel:+73912200303)
