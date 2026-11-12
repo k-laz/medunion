@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 import { integrations, phones, bookingPage } from '../data/site';
 interface Props { title?: string; text?: string }
 const { title = 'Запишитесь на приём', text = 'Онлайн или по телефону, в удобной для вас клинике.' } = Astro.props;
@@ -12,6 +13,6 @@ const bookingUrl = bookingPage; // our /appointment/ page
   </div>
   <div class="cta-row">
     <a class="btn btn-light" href={bookingUrl}>Записаться</a>
-    <a class="btn btn-ghost-light" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+    <a class="btn btn-ghost-light" href={`tel:${city.phone.tel}`}>{city.phone.display}</a>
   </div>
 </section>

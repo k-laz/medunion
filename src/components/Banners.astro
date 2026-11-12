@@ -5,6 +5,7 @@
 // Several banners scroll sideways with arrows and dots; nothing moves by itself.
 import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
+import { CITY } from '../data/city';
 
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/banners/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
 const find = (path?: string) => {
@@ -19,7 +20,7 @@ const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Krasnoyarsk' })
 const day = (d?: Date) => d?.toISOString().slice(0, 10);
 const list = (await getCollection('banners'))
   .map((b) => b.data)
-  .filter((b) => b.enabled && (!b.start || day(b.start)! <= today) && (!b.end || day(b.end)! >= today))
+  .filter((b) => b.enabled && (b.city === 'both' || b.city === CITY) && (!b.start || day(b.start)! <= today) && (!b.end || day(b.end)! >= today))
   .sort((a, b) => a.order - b.order || (day(b.start) ?? '').localeCompare(day(a.start) ?? ''));
 
 const srcset = async (src: ImageMetadata, widths: number[]) => {

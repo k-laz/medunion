@@ -1,0 +1,61 @@
+title: Травматология-ортопедия
+page: /ceny/travmatologiya-ortopediya/
+order: 10
+items:
+  - id: konsultatsiya-travmatologa-ortopeda-pervichnaya
+    name: Консультация травматолога-ортопеда (первичная)
+    price: 3000
+  - id: konsultatsiya-travmatologa-ortopeda-povtornaya
+    name: Консультация травматолога-ортопеда (повторная)
+    price: 3000
+  - id: vnutrisustavnoe-vvedenie-preparata-diprospan-bez-stoimosti-preparata
+    name: Внутрисуставное введение препарата (Дипроспан) (без стоимости препарата)
+    price: 1800
+  - id: vnutrisustavnoe-vvedenie-lekarstvennogo-preparata-diprospan-kenalog
+    name: Внутрисуставное введение лекарственного препарата (Дипроспан/Кеналог)
+    price: 2750
+  - id: vnutrisustavnoe-vvedenie-lekarstvennogo-preparata-diprospan-kenalog-s-ispolzovaniem-dlinnoy-igly
+    name: Внутрисуставное введение лекарственного препарата (Дипроспан/Кеналог) с использованием длинной иглы
+    price: 2900
+  - id: vnutrisustavnoe-vvedenie-preparata-gialuronovoy-kisloty-bez-stoimosti-preparata
+    name: Внутрисуставное введение препарата гиалуроновой кислоты без стоимости препарата
+    price: 2350
+  - id: vpravlenie-vyvikhov-sustavov-krupnykh-sustavov-plecho
+    name: "Вправление вывихов суставов: крупных суставов (плечо)"
+    price: 2900
+  - id: vpravlenie-vyvikhov-sustavov-malykh-sustavov-kisti
+    name: "Вправление вывихов суставов: малых суставов кисти"
+    price: 1900
+  - id: vpravlenie-vyvikhov-sustavov-malykh-sustavov-stopy
+    name: "Вправление вывихов суставов: малых суставов стопы"
+    price: 2000
+  - id: vpravlenie-vyvikhov-sustavov-nadkolennika
+    name: "Вправление вывихов суставов: надколенника"
+    price: 2100
+  - id: vpravlenie-vyvikhov-sustavov-srednikh-sustavov-golenostop-lokot-luchevoy
+    name: "Вправление вывихов суставов: средних суставов (голеностоп, локоть, лучевой)"
+    price: 2600
+  - id: immobilizatsiya-elastichnym-bintom-sustavov-verkhney-konechnosti
+    name: Иммобилизация эластичным бинтом (суставов верхней конечности)
+    price: 1150
+  - id: immobilizatsiya-elastichnym-bintom-sustavov-nizhney-konechnosti
+    name: Иммобилизация эластичным бинтом (суставов нижней конечности)
+    price: 1250
+  - id: nalozhenie-gipsovoy-povyazki-verkhnyaya-ili-nizhnyaya-konechnost-s-fiksatsiey-dvukh-sustavov
+    name: Наложение гипсовой повязки (верхняя или нижняя конечность с фиксацией двух суставов)
+    price: 2500
+  - id: nalozhenie-gipsovoy-povyazki-predpleche-plecho-stopa-lodyzhka
+    name: Наложение гипсовой повязки (предплечье, плечо, стопа, лодыжка)
+    price: 1800
+  - id: nalozhenie-gipsovoy-povyazki-falangi-paltsev-kist
+    name: Наложение гипсовой повязки (фаланги пальцев, кисть)
+    price: 1700
+  - id: nalozhenie-poliuretanovoy-povyazki-kist-zapyaste-predpleche-lodyzhka-stopa-malaya-vzroslye
+    name: Наложение полиуретановой повязки кисть, запястье,предплечье,лодыжка стопа (малая) взрослые
+    price: 3200
+  - id: nalozhenie-poliuretanovoy-povyazki-kist-zapyaste-predpleche-lodyzhka-stopa-malaya-detyam
+    name: Наложение полиуретановой повязки кисть, запястье, предплечье, лодыжка стопа (малая) детям
+    price: 1900
+  - id: nalozhenie-poliuretanovoy-povyazki-na-verkhnyuyu-ili-nizhnyuyu-konechnost-s-fiksatsiey-2-sustava
+    name: Наложение полиуретановой повязки на верхнюю или нижнюю конечность с фиксацией 2 сустава.
+    price: 4600

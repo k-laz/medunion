@@ -7,7 +7,8 @@
     "preview": "astro preview",
     "import": "node scripts/import-bitrix.mjs",
     "convert": "node scripts/convert-import.mjs",
-    "files": "node scripts/download-files.mjs"
+    "files": "node scripts/download-files.mjs",
+    "build:kansk": "CITY=kansk astro build && node scripts/rehost.mjs dist-kansk"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

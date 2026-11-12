@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 // Doctor page. Left: photo, booking and review buttons, links to the page's
 // sections. Right: name and key facts, schedule, about, education, prices,
 // reviews and other doctors of the same department.
@@ -89,7 +90,7 @@ const anchors = [
     <div class="doctor-side-actions">
       <a class="btn btn-primary btn-wide" href="#schedule">Записаться на приём</a>
       <a class="btn btn-quiet btn-wide" href={`${reviewFormPage}?doctor=${encodeURIComponent(d.url)}`}>Оставить отзыв</a>
-      <a class="doctor-side-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+      <a class="doctor-side-phone" href={`tel:${city.phone.tel}`}>{city.phone.display}</a>
     </div>
     {anchors.length > 1 && (
       <nav class="chips doctor-anchors" aria-label="Разделы страницы">

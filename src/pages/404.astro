@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 import Base from '../layouts/Base.astro';
 import SearchBox from '../components/SearchBox.astro';
 import { phones } from '../data/site';
@@ -8,7 +9,7 @@ import { phones } from '../data/site';
   <section class="page-head">
     <div class="wrap page-head-inner">
       <h1>Страница не найдена</h1>
-      <p class="lead">Возможно, адрес изменился. Найдите нужную услугу или врача через поиск, или позвоните: <a href={`tel:${phones.main.tel}`}>{phones.main.display}</a>.</p>
+      <p class="lead">Возможно, адрес изменился. Найдите нужную услугу или врача через поиск, или позвоните: <a href={`tel:${city.phone.tel}`}>{city.phone.display}</a>.</p>
       <SearchBox id="q-404" large />
       <nav class="chips" aria-label="Разделы">
         <a class="chip" href="/">Главная</a>

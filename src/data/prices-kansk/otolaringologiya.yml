@@ -1,0 +1,10 @@
+title: Оториноларингология
+page: /ceny/otolaringologiya/
+order: 8
+items:
+  - id: vzyatie-mazka-dlya-lora-zabor-mazkov
+    name: Взятие мазка ДЛЯ ЛОРА (забор мазков)
+    price: 200
+also:
+  - konsultativnyy-priem-vracha-otorinolaringologa-pervichnyy
+  - konsultativnyy-priem-vracha-otorinolaringologa-povtornyy

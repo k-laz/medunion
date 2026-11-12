@@ -12,6 +12,8 @@ import { z } from 'astro/zod';
 
 // Entry id = file path without ".md", so references are easy to read,
 // e.g. "imported/vrachi/vrachi-ginekologi/kolova-lyudmila-mikhaylovna".
+// The Kansk build reads its own copy of the city pages (src/content-kansk/).
+const ROOT = process.env.CITY === 'kansk' ? './src/content-kansk' : './src/content';
 const files = (base: string) =>
   glob({ pattern: '**/*.md', base, generateId: ({ entry }) => entry.replace(/\.md$/, '') });
 
@@ -28,7 +30,7 @@ const seo = {
 };
 
 const services = defineCollection({
-  loader: files('./src/content/services'),
+  loader: files(`${ROOT}/services`),
   schema: z.object({
     ...seo,
     h1: z.string(),
@@ -47,7 +49,7 @@ const services = defineCollection({
 });
 
 const doctors = defineCollection({
-  loader: files('./src/content/doctors'),
+  loader: files(`${ROOT}/doctors`),
   schema: z.object({
     ...seo,
     name: z.string(),
@@ -65,7 +67,7 @@ const doctors = defineCollection({
 });
 
 const articles = defineCollection({
-  loader: files('./src/content/articles'),
+  loader: files(`${ROOT}/articles`),
   schema: z.object({
     ...seo,
     h1: z.string(),
@@ -78,7 +80,7 @@ const articles = defineCollection({
 });
 
 const prices = defineCollection({
-  loader: files('./src/content/prices'),
+  loader: files(`${ROOT}/prices`),
   schema: z.object({
     ...seo,
     h1: z.string(),
@@ -88,7 +90,7 @@ const prices = defineCollection({
 
 // Section pages whose list is built automatically (all doctors, all articles...).
 const listings = defineCollection({
-  loader: files('./src/content/listings'),
+  loader: files(`${ROOT}/listings`),
   schema: z.object({
     ...seo,
     h1: z.string(),
@@ -99,7 +101,7 @@ const listings = defineCollection({
 });
 
 const pages = defineCollection({
-  loader: files('./src/content/pages'),
+  loader: files(`${ROOT}/pages`),
   schema: z.object({
     ...seo,
     h1: z.string(),
@@ -136,6 +138,7 @@ const banners = defineCollection({
   schema: z
     .object({
       enabled: z.boolean().default(true),
+      city: z.enum(['both', 'krasnoyarsk', 'kansk']).default('both'),
       title: z.string().optional(),
       highlight: z.string().optional(),
       text: z.string().optional(),

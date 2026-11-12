@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 // Booking. Same address as on the old site (/appointment/), which every old
 // page, ad and bookmark links to.
 //
@@ -21,8 +22,8 @@ import { clinics, phones } from '../data/site';
 
   <div class="wrap page-body booking-page">
     <section class="booking-main info-card">
-      <p class="info-price"><span>Единый номер для записи</span><a href={`tel:${phones.main.tel}`}>{phones.main.display}</a></p>
-      <a class="btn btn-primary booking-call" href={`tel:${phones.main.tel}`}>Позвонить</a>
+      <p class="info-price"><span>Единый номер для записи</span><a href={`tel:${city.phone.tel}`}>{city.phone.display}</a></p>
+      <a class="btn btn-primary booking-call" href={`tel:${city.phone.tel}`}>Позвонить</a>
       <p class="booking-note">Если не можете говорить, напишите нам в мессенджер через кнопку в углу экрана.</p>
     </section>
 

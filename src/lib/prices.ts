@@ -1,4 +1,5 @@
-// The one price list. Every price on the site comes from src/data/prices/*.yml,
+// The one price list. Every price on the site comes from src/data/prices/*.yml
+// (Kansk site: src/data/prices-kansk/*.yml),
 // one file per /ceny/ section; the admin page (/admin/) edits those files.
 // Service and doctor pages name their prices in their own files; those names
 // are only links into this list (by id, see slug.mjs): the price shown, and
@@ -9,7 +10,10 @@ import { slug } from './slug.mjs';
 export interface PriceItem { id: string; name: string; price: number }
 export interface PriceSection { file: string; title: string; page?: string; order: number; items: PriceItem[]; also: string[] }
 
-const files = import.meta.glob('../data/prices/*.yml', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+// Krasnoyarsk prices in src/data/prices/, Kansk prices in src/data/prices-kansk/.
+const all = import.meta.glob(['../data/prices/*.yml', '../data/prices-kansk/*.yml'], { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const dir = process.env.CITY === 'kansk' ? '/prices-kansk/' : '/prices/';
+const files = Object.fromEntries(Object.entries(all).filter(([p]) => p.includes(dir)));
 
 export const priceSections: PriceSection[] = Object.entries(files)
   .map(([path, raw]) => {

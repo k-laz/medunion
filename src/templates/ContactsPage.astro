@@ -5,10 +5,11 @@ import PageHead from '../components/PageHead.astro';
 import Ratings from '../components/Ratings.astro';
 import Social from '../components/Social.astro';
 import { clinics, clinicPage, phones, type ClinicKey } from '../data/site';
+import { isKansk, city, MAIN_ORIGIN } from '../data/city';
 
 interface Props { entry: CollectionEntry<'pages'> }
 const d = Astro.props.entry.data;
-const keys = Object.keys(clinics) as ClinicKey[];
+const keys = (isKansk ? city.clinics : Object.keys(clinics)) as ClinicKey[];
 const route = (k: ClinicKey) => `https://yandex.ru/maps/?rtext=~${clinics[k].coords[0]},${clinics[k].coords[1]}&rtt=auto`;
 ---
 
@@ -33,12 +34,15 @@ const route = (k: ClinicKey) => `https://yandex.ru/maps/?rtext=~${clinics[k].coo
       );
     })}
   </div>
+  {isKansk && (
+    <p class="block muted">Клиники в Красноярске (Курчатова, 17 и Инструментальная, 12/35): <a href={`${MAIN_ORIGIN}/contacts/`}>адреса и телефоны</a>.</p>
+  )}
   <section class="block">
     <h2>Общие контакты</h2>
     <dl class="contact-facts">
       <div>
         <dt>Запись и вопросы</dt>
-        <dd><a class="contact-strong" href={`tel:${phones.main.tel}`}>{phones.main.display}</a><span class="muted">единый номер, все клиники</span></dd>
+        <dd><a class="contact-strong" href={`tel:${city.phone.tel}`}>{city.phone.display}</a><span class="muted">{isKansk ? 'клиника в Канске' : 'единый номер, все клиники'}</span></dd>
       </div>
       <div>
         <dt>Электронная почта</dt>

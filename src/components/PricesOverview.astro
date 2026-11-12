@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 // /ceny/: every price list on one page. A search box finds a service in all
 // lists at once; each list opens and closes, with how many services it has.
 // Each list also keeps its own page (/ceny/rentgen/ and so on) from the old site.
@@ -48,7 +49,7 @@ const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услу�
       <input id="price-search" type="search" placeholder="Найти услугу: МРТ колена, приём уролога, рентген…" autocomplete="off" />
       <p class="muted price-search-note">{count(total)} в {lists.length} разделах</p>
     </div>
-    <p class="price-search-empty" hidden>Ничего не нашлось. Цену любой услуги подскажет администратор: <a href={`tel:${phones.main.tel}`}>{phones.main.display}</a>.</p>
+    <p class="price-search-empty" hidden>Ничего не нашлось. Цену любой услуги подскажет администратор: <a href={`tel:${city.phone.tel}`}>{city.phone.display}</a>.</p>
 
     {groups.map((g) => (
       <section class="block price-group">
@@ -87,7 +88,7 @@ const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услу�
       <p class="info-note"><a href="/pacientam/obsluzhivanie-oms-dms/">Обслуживание по ОМС и ДМС</a><br /><a href="/pacientam/pravila-predostavleniya-platnyh-medicinskih-uslug/">Правила платных услуг</a></p>
       <p class="info-note">Цену любой услуги, которой нет в списке, подскажет администратор.</p>
       <div class="info-actions">
-        <a class="btn btn-quiet btn-wide" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+        <a class="btn btn-quiet btn-wide" href={`tel:${city.phone.tel}`}>{city.phone.display}</a>
       </div>
     </aside>
   </div>

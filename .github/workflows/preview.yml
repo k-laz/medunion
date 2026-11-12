@@ -1,5 +1,6 @@
 # Preview of the site on GitHub Pages, for showing it to people before
-# launch: https://k-laz.github.io/medunion/
+# launch: https://k-laz.github.io/medunion/ and the Kansk site at
+# https://k-laz.github.io/medunion/kansk/
 # Rebuilt on every push to main. It is a preview build: search engines
 # are told not to index it, and Metrica/Bitrix24 are off.
 #
@@ -34,9 +35,18 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - name: Move the site under /medunion/
-        run: node scripts/rebase.mjs dist /medunion
+      - name: Build both sites
+        env:
+          MAIN_ORIGIN: https://k-laz.github.io/medunion
+          KANSK_ORIGIN: https://k-laz.github.io/medunion/kansk
+        run: |
+          npm run build
+          npm run build:kansk
+      - name: Move the sites under /medunion/ and /medunion/kansk/
+        run: |
+          node scripts/rebase.mjs dist /medunion
+          node scripts/rebase.mjs dist-kansk /medunion/kansk
+          mv dist-kansk dist/kansk
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

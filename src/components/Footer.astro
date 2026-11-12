@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 import { clinics, phones, integrations, legal, bookingPage } from '../data/site';
 import Social from './Social.astro';
 const year = new Date().getFullYear();
@@ -43,7 +44,7 @@ const pages: Record<string, string> = {
 
     <div class="footer-cta">
       <span class="footer-cta-label">Запись и вопросы</span>
-      <a class="footer-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+      <a class="footer-phone" href={`tel:${city.phone.tel}`}>{city.phone.display}</a>
       <Social size={26} class="footer-social" />
     </div>
 

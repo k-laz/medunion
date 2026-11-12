@@ -21,9 +21,13 @@ import { readFile, writeFile, mkdir, rm, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 
-const IMPORT = 'import';
-const CONTENT = 'src/content';
-const OLD_SITE = 'https://medunion.group';
+// The Kansk site is converted with the same rules into its own folders:
+//   CONVERT_IN=import-kansk CONVERT_OUT=src/content-kansk CONVERT_REDIRECTS=deploy/redirects-kansk \
+//   OLD_SITE=https://kansk.medunion.group node scripts/convert-import.mjs
+const IMPORT = process.env.CONVERT_IN || 'import';
+const CONTENT = process.env.CONVERT_OUT || 'src/content';
+const REDIRECTS = process.env.CONVERT_REDIRECTS || 'deploy/redirects';
+const OLD_SITE = process.env.OLD_SITE || 'https://medunion.group';
 // A file from the old site, if we have it in public/upload: the same name, or
 // the same name with another extension (big PNG photos were saved as .jpg).
 function localUpload(path) {
@@ -1000,9 +1004,9 @@ async function main() {
 
   await mkdir('deploy', { recursive: true });
   const sorted = [...redirects].sort((a, b) => a[0].localeCompare(b[0]));
-  await writeFile('deploy/redirects.csv', 'from,to\n' + sorted.map(([f, t]) => `${f},${t}`).join('\n') + '\n');
+  await writeFile(`${REDIRECTS}.csv`, 'from,to\n' + sorted.map(([f, t]) => `${f},${t}`).join('\n') + '\n');
   await writeFile(
-    'deploy/redirects.nginx.conf',
+    `${REDIRECTS}.nginx.conf`,
     '# Permanent (301) redirects from old Bitrix addresses. Include inside the server { } block.\n# nginx matches the decoded path, so non-Latin characters are written as-is.\n' +
       sorted.map(([f, t]) => `location = "${safeDecode(f)}" { return 301 ${encodeURI(safeDecode(t))}; }`).join('\n') + '\n' +
       // The old site's sitemap files (Bitrix: sitemap-files.xml, sitemap-iblock-13.xml ...) -> the new sitemap
@@ -1012,7 +1016,7 @@ async function main() {
   console.log('Written:', counts);
   console.log(`Duplicate pages merged: ${dupes}. Titles made unique: ${retitled}. Descriptions made unique: ${redescribed}.`);
   console.log(`Pages with links fixed: ${relinked}`);
-  console.log(`Redirects: ${redirects.size} (deploy/redirects.csv, deploy/redirects.nginx.conf)`);
+  console.log(`Redirects: ${redirects.size} (${REDIRECTS}.csv, ${REDIRECTS}.nginx.conf)`);
   console.log(`Kept as hand-written (not overwritten): ${[...manual].join(', ') || 'none'}`);
 }
 

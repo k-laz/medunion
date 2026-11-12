@@ -109,3 +109,24 @@ certbot renews the certificate by itself.
 - Metrica: confirm visits and goals keep coming in.
 - Bitrix24: confirm calls and the chat button still create leads.
 - Keep the old server running (on another address) for a month in case something was missed.
+
+## 5. The Kansk site (kansk.medunion.group)
+
+The same code builds a second site with only the Kansk city pages
+(`npm run build:kansk`, see `src/data/city.ts`). The deploy uploads it to
+`/var/www/medunion/kansk` and its redirects to `/var/www/medunion/redirects-kansk.conf`
+on every push; nothing serves it until its nginx config is installed. Pages it does
+not have (articles, news, patient information, Krasnoyarsk-only services) redirect
+to the same address on medunion.group.
+
+On the Kansk switch day (after the main domain has moved):
+
+```bash
+sudo certbot certonly --webroot -w /var/www/letsencrypt -d kansk.medunion.group   # after the DNS change
+# or in advance with --manual --preferred-challenges dns, as for the main domain
+sudo curl -fsSL -o /etc/nginx/sites-available/kansk.medunion.group https://raw.githubusercontent.com/k-laz/medunion/main/deploy/nginx/kansk.medunion.group.conf
+sudo ln -sf /etc/nginx/sites-available/kansk.medunion.group /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Then in Beget DNS change the `A` record of `kansk` to the server IP.

@@ -1,4 +1,5 @@
 ---
+import { city } from '../data/city';
 // Booking card in the right-hand column: starting price, where, when, book.
 // On articles it can name the related service and skip the clinic hours.
 import { clinics, type ClinicKey, bookingPage } from '../data/site';
@@ -13,7 +14,7 @@ interface Props {
   note?: string;
 }
 const { prices = [], service, places = true, heading, note } = Astro.props;
-const clinicKeys = Astro.props.clinicKeys?.length ? Astro.props.clinicKeys : (['kurchatova', 'instrumentalnaya'] as ClinicKey[]);
+const clinicKeys = Astro.props.clinicKeys?.length ? Astro.props.clinicKeys : (city.clinics as ClinicKey[]);
 const from = prices.length ? Math.min(...prices.map((p) => p.price)) : 0;
 const phonesShown = [...new Map(clinicKeys.map((k) => [clinics[k].phone.tel, clinics[k].phone])).values()];
 ---

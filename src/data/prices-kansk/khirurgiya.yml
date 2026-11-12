@@ -1,0 +1,64 @@
+title: Хирургия
+page: /ceny/khirurgiya/
+order: 12
+items:
+  - id: konsultatsiya-khirurga-pervichnaya
+    name: Консультация хирурга (первичная)
+    price: 2000
+  - id: konsultatsiya-khirurga-povtornaya
+    name: Консультация хирурга (повторная)
+    price: 2000
+  - id: vskrytie-gematomy
+    name: Вскрытие гематомы
+    price: 2350
+  - id: vskrytie-paronikhiya
+    name: Вскрытие паронихия
+    price: 2350
+  - id: vskrytie-furunkula
+    name: Вскрытие фурункула
+    price: 2550
+  - id: gistologicheskoe-issledovanie-biologicheskogo-materiala-1-obrazovanie
+    name: Гистологическое исследование биологического материала (1 образование)
+    price: 2000
+  - id: gistologicheskoe-issledovanie-biologicheskogo-materiala-2-obrazovaniya
+    name: Гистологическое исследование биологического материала (2 образования)
+    price: 2800
+  - id: gistologicheskoe-issledovanie-biologicheskogo-materiala-3-obrazovaniya
+    name: Гистологическое исследование биологического материала (3 образования)
+    price: 3600
+  - id: kraevaya-rezektsiya-vrosshego-nogtya
+    name: Краевая резекция вросшего ногтя
+    price: 4550
+  - id: perevyazka
+    name: Перевязка
+    price: 1200
+  - id: posleoperatsionnyy-osmotr-khirurga-s-perevyazkoy
+    name: Послеоперационный осмотр хирурга с перевязкой
+    price: 1400
+  - id: punktsiya-limfaticheskogo-uzla-1-lokalizatsiya
+    name: Пункция лимфатического узла (1 локализация)
+    price: 1500
+  - id: punktsiya-molochnoy-zhelezy-1-lokalizatsiya-tsitologicheskoe-issledovanie-punktata
+    name: Пункция молочной железы (1 локализация)+ цитологическое исследование пунктата
+    price: 3500
+  - id: punktsiya-molochnoy-zhelezy-2-lokalizatsii-tsitologicheskoe-issledovanie-punktata
+    name: Пункция молочной железы (2 локализации) + цитологическое исследование пунктата
+    price: 4400
+  - id: snyatie-shvov
+    name: Снятие швов
+    price: 950
+  - id: udalenie-ateromy-1-stepeni
+    name: Удаление атеромы ( 1 степени)
+    price: 5750
+  - id: udalenie-ateromy-i-stepeni-s-primeneniem-shovnogo-materiala
+    name: Удаление атеромы ( I степени) с применением шовного материала
+    price: 6700
+  - id: udalenie-vrosshego-nogtya
+    name: Удаление вросшего ногтя
+    price: 5900
+  - id: udalenie-lipomy-1-stepeni
+    name: Удаление липомы (1 степени)
+    price: 5900
+  - id: udalenie-lipomy-1-stepeni-s-primeneniem-shovnogo-materiala
+    name: Удаление липомы (1 степени) с применением шовного материала
+    price: 6650

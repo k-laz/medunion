@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { phones, clinics, clinicPage, bookingPage } from '../data/site';
+import { CITY, city, cities } from '../data/city';
 import SearchBox from './SearchBox.astro';
 import Social from './Social.astro';
 import { childrenOf, shortName } from '../lib/content';
@@ -21,15 +22,16 @@ const directions = childrenOf('/uslugi/', await getCollection('services')).map((
 <div class="topbar">
   <div class="wrap topbar-row">
     <nav class="topbar-cities" aria-label="Города">
-      <a href="/contacts/">Красноярск</a>
-      <a href="/contacts/klinika-v-kanske/">Канск</a>
+      {(['krasnoyarsk', 'kansk'] as const).map((c) => (
+        <a href={`${cities[c].origin}/`} aria-current={c === CITY ? 'true' : undefined}>{cities[c].name}</a>
+      ))}
     </nav>
     <button class="topbar-link" type="button" data-a11y-toggle aria-pressed="false">
       <svg width="20" height="12" viewBox="0 0 30 16" aria-hidden="true"><circle cx="7" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="23" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="2" /><path d="M12.5 8.5c1.5-1.4 3.5-1.4 5 0" fill="none" stroke="currentColor" stroke-width="2" /></svg>
       <span>Версия для слабовидящих</span>
     </button>
     <Social class="topbar-social" />
-    <a class="topbar-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a>
+    <a class="topbar-phone" href={`tel:${city.phone.tel}`}>{city.phone.display}</a>
   </div>
 </div>
 
@@ -98,7 +100,7 @@ const directions = childrenOf('/uslugi/', await getCollection('services')).map((
 </div>
 
 <div class="mobile-bar" role="navigation" aria-label="Быстрые действия">
-  <a class="btn btn-quiet" href={`tel:${phones.main.tel}`}>Позвонить</a>
+  <a class="btn btn-quiet" href={`tel:${city.phone.tel}`}>Позвонить</a>
   <a class="btn btn-primary" href={bookingUrl}>Записаться</a>
 </div>
 

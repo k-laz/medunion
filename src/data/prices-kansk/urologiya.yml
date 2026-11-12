@@ -1,0 +1,16 @@
+title: Урология
+page: /ceny/urologiya/
+order: 11
+items:
+  - id: konsultatsiya-urologa-pervichnaya
+    name: Консультация уролога (первичная)
+    price: 3000
+  - id: konsultatsiya-urologa-povtornaya
+    name: Консультация уролога (повторная)
+    price: 3000
+  - id: vaporizatsiya-kondilom-krayney-ploti-professor
+    name: Вапоризация кондилом крайней плоти (профессор)
+    price: 3600
+  - id: vzyatie-mazka-urologicheskogo
+    name: Взятие мазка (урологического)
+    price: 200

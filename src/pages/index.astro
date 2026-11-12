@@ -8,10 +8,11 @@ import Banners from '../components/Banners.astro';
 import ReviewList from '../components/ReviewList.astro';
 import { clinics, clinicPage, integrations, phones, bookingPage, founded, awards, ratingsChecked, reviewsPage, reviewFormPage } from '../data/site';
 import { childrenOf, shortName, yearsSince, plural, dmy } from '../lib/content';
+import { isKansk, city, cities } from '../data/city';
 
 const services = await getCollection('services');
 const byUrl = new Map(services.map((s) => [s.data.url, s]));
-const short = (s: string) => s.replace(/\s*\(.*?\)/g, '').replace(/\s*в Красноярске$/, '');
+const short = (s: string) => s.replace(/\s*\(.*?\)/g, '').replace(/\s*в (Красноярске|Канске)$/, '');
 
 // Quick links under the search box
 const popular = [
@@ -54,21 +55,37 @@ const news = articles.filter((a) => a.data.kind === 'news').sort((a, b) => (b.da
 const age = yearsSince(founded);
 const doctorCount = (await getCollection('doctors')).length;
 const clinicCount = Object.keys(clinics).length;
+const cityClinics = city.clinics.map((k) => [k, clinics[k]] as const);
+const cityAge = yearsSince(city.since);
+const awardsHere = isKansk ? awards.filter((a) => a.clinic && city.clinics.includes(a.clinic)) : awards;
+// The page's title and texts, per city. Kansk keeps the old Kansk site's title.
+const head = isKansk
+  ? {
+      title: 'Сеть медицинских центров Медюнион в Канске',
+      description: 'Приём врачей для взрослых и детей, МРТ, УЗИ и анализы в Медюнион в Канске, ул. Урицкого, 8. Запись онлайн и по телефону.',
+      h1: 'Медицинский центр Медюнион в&nbsp;Канске',
+      lead: 'Диагностика и приём врачей для взрослых и детей. Клиника на ул. Урицкого, 8.',
+    }
+  : {
+      title: 'Медюнион: медицинские центры в Красноярске и Канске',
+      description: 'МРТ, КТ, рентген, УЗИ, анализы и приём врачей в Медюнион: Красноярск, Курчатова, 17 и Инструментальная, 12/35, Канск, Урицкого, 8. Запись онлайн.',
+      h1: 'Медицинские центры Медюнион в&nbsp;Красноярске и&nbsp;Канске',
+      lead: 'Диагностика и приём врачей для взрослых и детей. Три клиники в Красноярске и Канске.',
+    };
+const heroPhones = isKansk
+  ? [{ label: 'Канск', phone: phones.kansk }, { label: 'Красноярск', phone: phones.main }]
+  : [{ label: 'Красноярск, обе клиники', phone: phones.main }, { label: 'Канск', phone: phones.kansk }];
 const reviews = (await getCollection('reviews')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 3);
 const bookingUrl = bookingPage; // our /appointment/ page
 const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 ---
 
-<Base
-  title="Медюнион: медицинские центры в Красноярске и Канске"
-  description="МРТ, КТ, рентген, УЗИ, анализы и приём врачей в Медюнион: Красноярск, Курчатова, 17 и Инструментальная, 12/35, Канск, Урицкого, 8. Запись онлайн."
-  url="/"
->
+<Base title={head.title} description={head.description} url="/">
   <section class="hero">
     <div class="wrap hero-inner">
       <div class="hero-main">
-        <h1>Медицинские центры Медюнион в&nbsp;Красноярске и&nbsp;Канске</h1>
-        <p class="lead">Диагностика и приём врачей для взрослых и детей. Три клиники в Красноярске и Канске.</p>
+        <h1 set:html={head.h1} />
+        <p class="lead">{head.lead}</p>
         <SearchBox id="q-home" large placeholder="Гинеколог, невролог, МРТ, УЗИ, анализы" />
         <nav class="chips" aria-label="Популярное">
           {popular.map(([u, label]) => <a class="chip" href={u}>{label}</a>)}
@@ -78,8 +95,7 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
         <p class="hero-card-title">Запись на приём</p>
         <a class="btn btn-primary btn-wide" href={bookingUrl}>Записаться</a>
         <dl class="hero-phones">
-          <div><dt>Красноярск, обе клиники</dt><dd><a class="hero-phone" href={`tel:${phones.main.tel}`}>{phones.main.display}</a></dd></div>
-          <div><dt>Канск</dt><dd><a class="hero-phone" href={`tel:${phones.kansk.tel}`}>{phones.kansk.display}</a></dd></div>
+          {heroPhones.map((p) => <div><dt>{p.label}</dt><dd><a class="hero-phone" href={`tel:${p.phone.tel}`}>{p.phone.display}</a></dd></div>)}
         </dl>
       </aside>
     </div>
@@ -121,13 +137,23 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
     <section class="block trust" aria-labelledby="trust-title">
       <h2 class="sr-only" id="trust-title">Медюнион в цифрах</h2>
       <dl class="trust-numbers">
-        <div><dt><span data-since={founded}>{age}</span> <span data-since-word={founded}>{plural(age, 'год', 'года', 'лет')}</span></dt><dd>работаем с 2011 года</dd></div>
-        <div><dt>{doctorCount} {plural(doctorCount, 'врач', 'врача', 'врачей')}</dt><dd>взрослые и детские специалисты</dd></div>
-        <div><dt>{clinicCount} {plural(clinicCount, 'клиника', 'клиники', 'клиник')}</dt><dd>в Красноярске и Канске</dd></div>
+        {isKansk ? (
+          <>
+            <div><dt><span data-since={city.since}>{cityAge}</span> <span data-since-word={city.since}>{plural(cityAge, 'год', 'года', 'лет')}</span></dt><dd>в Канске, с 2015 года</dd></div>
+            <div><dt>{doctorCount} {plural(doctorCount, 'врач', 'врача', 'врачей')}</dt><dd>взрослые и детские специалисты</dd></div>
+            <div><dt><span data-since={founded}>{age}</span> <span data-since-word={founded}>{plural(age, 'год', 'года', 'лет')}</span></dt><dd>сеть Медюнион, с 2011 года</dd></div>
+          </>
+        ) : (
+          <>
+            <div><dt><span data-since={founded}>{age}</span> <span data-since-word={founded}>{plural(age, 'год', 'года', 'лет')}</span></dt><dd>работаем с 2011 года</dd></div>
+            <div><dt>{doctorCount} {plural(doctorCount, 'врач', 'врача', 'врачей')}</dt><dd>взрослые и детские специалисты</dd></div>
+            <div><dt>{clinicCount} {plural(clinicCount, 'клиника', 'клиники', 'клиник')}</dt><dd>в Красноярске и Канске</dd></div>
+          </>
+        )}
       </dl>
-      {awards.length > 0 && (
+      {awardsHere.length > 0 && (
         <ul class="awards">
-          {awards.map((a) => (
+          {awardsHere.map((a) => (
             <li class="award">
               <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2" /><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
               <span><strong>{a.url ? <a href={a.url}>{a.title}</a> : a.title}</strong><span class="muted">{a.by}</span></span>
@@ -137,11 +163,11 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
         </ul>
       )}
       <div class="block-head trust-head">
-        <h3>Клиники и их рейтинг</h3>
+        <h3>{isKansk ? 'Клиника и её рейтинг' : 'Клиники и их рейтинг'}</h3>
         <a class="link-more" href="/contacts/">Все адреса и контакты</a>
       </div>
       <ul class="trust-clinics">
-        {Object.entries(clinics).map(([key, c]) => (
+        {(isKansk ? cityClinics : Object.entries(clinics)).map(([key, c]) => (
           <li class="trust-clinic">
             <a class="trust-clinic-head" href={clinicPage[key as keyof typeof clinics]}>
               <span class="clinic-city">{c.city}</span>

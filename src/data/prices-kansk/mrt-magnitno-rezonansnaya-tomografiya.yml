@@ -1,0 +1,64 @@
+title: МРТ (магнитно-резонансная томография) открытого типа
+page: /ceny/mrt-magnitno-rezonansnaya-tomografiya/
+order: 1
+items:
+  - id: mrt-bryushnoy-polosti-ves-do-95-kg-obkhvat-128-sm-40-min-s-14-let
+    name: МРТ брюшной полости (вес до 95 кг, обхват 128 см, 40 мин, с 14 лет)
+    price: 5300
+  - id: mrt-golenostopnogo-sustava-1-sustav-ves-do-110-kg-60-min
+    name: МРТ голеностопного сустава (1 сустав)(вес до 110 кг, 60 мин)
+    price: 6200
+  - id: mrt-golovnogo-mozga-i-sosudov-golovnogo-mozga-ves-do-110-kg-obkhvat-bez-ogranicheniy-40-min
+    name: МРТ головного мозга и сосудов головного мозга (вес до 110 кг, обхват без ограничений, 40 мин)
+    price: 6850
+  - id: mrt-golovnogo-mozga-obzornaya-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ головного мозга обзорная (вес до 110 кг, обхват без ограничений, 20 мин)
+    price: 5500
+  - id: mrt-grudnogo-otdela-pozvonochnika-ves-do-95-kg-obkhvat-do-126-sm-20-min
+    name: МРТ грудного отдела позвоночника (вес до 95 кг, обхват до 126 см, 20 мин)
+    price: 5500
+  - id: mrt-zabryushinnogo-prostranstva-pochki-nadpochechniki-ves-do-95-kg-obkhvat-do-128-sm-40-min-s-14-let
+    name: МРТ забрюшинного пространства (почки, надпочечники) (вес до 95 кг, обхват до 128 см, 40 мин, с 14 лет)
+    price: 5700
+  - id: mrt-ileosakralnykh-sochleneniy-ves-do-95-kg-obkhvat-do-126-sm-60-min
+    name: МРТ илеосакральных сочленений (вес до 95 кг, обхват до 126 см, 60 мин)
+    price: 6300
+  - id: mrt-kolennogo-sustava-1-sustav-ves-do-110-kg-40-min
+    name: МРТ коленного сустава (1 сустав) (вес до 110 кг, 40 мин)
+    price: 6400
+  - id: mrt-kopchika-ves-do-95-kg-obkhvat-do-126-sm-rost-bolee-175-sm-20-min
+    name: МРТ копчика (вес до 95 кг, обхват до 126 см, рост более 175 см, 20 мин)
+    price: 5500
+  - id: mrt-kraniovertebralnogo-perekhoda-ves-do-95-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ краниовертебрального перехода (вес до 95 кг, обхват без ограничений, 20 мин)
+    price: 5000
+  - id: mrt-myagkikh-tkaney-konechnostey-ves-do-110-kg-60min
+    name: МРТ мягких тканей конечностей (вес до 110 кг, 60мин)
+    price: 6000
+  - id: mrt-myagkikh-tkaney-shei-ves-do-110-kg-obkhvat-bez-ogranicheniy-60-min
+    name: МРТ мягких тканей шеи (вес до 110 кг, обхват без ограничений, 60 мин)
+    price: 5200
+  - id: mrt-orbit-ves-do-110-kg-obkhvat-bez-ogranicheniy-40-min
+    name: МРТ орбит (вес до 110 кг, обхват без ограничений, 40 мин)
+    price: 4200
+  - id: mrt-plechevogo-sustava-ves-do-110-kg-obkhvat-do-128-60-min
+    name: МРТ плечевого сустава (вес до 110 кг, обхват до 128, 60 мин)
+    price: 6400
+  - id: mrt-poyasnichno-kresttsovogo-otdela-pozvonochnika-ves-do-95-kg-obkhvat-do-126-sm-20-min
+    name: МРТ пояснично-крестцового отдела позвоночника (вес до 95 кг, обхват до 126 см, 20 мин)
+    price: 5600
+  - id: mrt-poyasnichno-kresttsovogo-otdela-pozvonochnika-i-kopchika-ves-do-95-kg-obkhvat-do-126-sm-175-sm-20-min
+    name: МРТ пояснично-крестцового отдела позвоночника и копчика (вес до 95 кг, обхват до 126 см, 175 см, 20 мин)
+    price: 6700
+  - id: mrt-pridatochnykh-pazukh-nosa-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ придаточных пазух носа (вес до 110 кг, обхват без ограничений, 20 мин)
+    price: 6000
+  - id: mrt-sosudov-shei-ves-do-95-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ сосудов шеи (вес до 95 кг, обхват без ограничений, 20 мин)
+    price: 5600
+  - id: mrt-sosudov-golovnogo-mozga-ves-do-110-kg-obkhvat-bez-ogranicheniy-20-min
+    name: МРТ сосудов головного мозга (вес до 110 кг, обхват без ограничений, 20 мин)
+    price: 5500
+  - id: mrt-tazobedrennogo-sustava-1-sustav-ves-do-95-kg-obkhvat-do-128-sm-40-min
+    name: МРТ тазобедренного сустава (1 сустав) (вес до 95 кг, обхват до 128 см, 40 мин)
+    price: 6400

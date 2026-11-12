@@ -1,0 +1,67 @@
+title: Консультации специалистов
+page: /ceny/konsultatsii-spetsialistov/
+order: 4
+items:
+  - id: konsultativnyy-priem-vracha-otorinolaringologa-pervichnyy
+    name: Консультативный прием врача-оториноларинголога (первичный)
+    price: 2700
+  - id: konsultativnyy-priem-vracha-otorinolaringologa-povtornyy
+    name: Консультативный прием врача-оториноларинголога (повторный)
+    price: 2500
+  - id: konsultatsiya-ginekologa-endokrinologa
+    name: Консультация гинеколога-эндокринолога
+    price: 3000
+  - id: konsultatsiya-detskogo-ginekologa-pervichnaya-s-0-let
+    name: Консультация детского гинеколога (первичная) с 0 лет
+    price: 3000
+  - id: konsultatsiya-detskogo-ginekologa-povtornaya-v-techenii-1-mesyatsa-s-0-let
+    name: Консультация детского гинеколога (повторная в течении 1 месяца) с 0 лет
+    price: 2900
+  - id: konsultatsiya-detskogo-nevrologa-pervichnaya
+    name: Консультация детского невролога (первичная)
+    price: 2200
+  - id: konsultatsiya-detskogo-nevrologa-povtornaya
+    name: Консультация детского невролога (повторная)
+    price: 2200
+  - id: konsultatsiya-kardiologa-pervichnaya
+    name: Консультация кардиолога (первичная)
+    price: 2800
+  - id: konsultatsiya-kardiologa-povtornaya
+    name: Консультация кардиолога (повторная)
+    price: 2800
+  - id: konsultatsiya-koloproktologa-pervichnaya
+    name: Консультация колопроктолога (первичная)
+    price: 3000
+  - id: konsultatsiya-koloproktologa-povtornaya
+    name: Консультация колопроктолога (повторная)
+    price: 2900
+  - id: konsultatsiya-koloproktologa-professor-pervichnaya
+    name: Консультация колопроктолога (профессор) первичная
+    price: 3500
+  - id: konsultatsiya-koloproktologa-professor-povtornaya
+    name: Консультация колопроктолога (профессор) повторная
+    price: 3400
+  - id: konsultatsiya-nevrologa-pervichnaya
+    name: Консультация невролога (первичная)
+    price: 2500
+  - id: konsultatsiya-neyrokhirurga
+    name: Консультация нейрохирурга
+    price: 3200
+  - id: konsultatsiya-onkologa-mammologa-professor-pervichnaya
+    name: Консультация онколога-маммолога (профессор) первичная
+    price: 2800
+  - id: konsultatsiya-onkologa-mammologa-professor-povtornaya
+    name: Консультация онколога-маммолога (профессор) повторная
+    price: 2600
+  - id: konsultatsiya-sosudistogo-khirurga-professor-popov-v-o-pervichnaya
+    name: Консультация сосудистого-хирурга (профессор Попов В.О.) первичная
+    price: 2800
+  - id: konsultatsiya-sosudistogo-khirurga-professor-popov-v-o-povtornaya
+    name: Консультация сосудистого-хирурга (профессор Попов В.О.) повторная
+    price: 2600
+  - id: konsultatsiya-terapevta-pervichnaya
+    name: Консультация терапевта (первичная)
+    price: 3000
+  - id: konsultatsiya-terapevta-povtornaya
+    name: Консультация терапевта (повторная)
+    price: 3000

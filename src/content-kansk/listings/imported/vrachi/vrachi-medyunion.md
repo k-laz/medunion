@@ -1,0 +1,20 @@
+---
+url: "/vrachi/vrachi-medyunion/"
+title: "Врачи сети медицинских центров \"Медюнион\" в Красноярске и Канске"
+description: "Приём врачей узких специальностей для взрослых и детей с первых дней жизни."
+h1: "Все врачи \"Медюнион\""
+of: "doctors"
+members:
+  - "/vrachi/vrachi-medyunion/baranova-elena-vyacheslavovna/"
+  - "/vrachi/vrachi-medyunion/evpak-aleksey-vyacheslavovich/"
+  - "/vrachi/vrachi-medyunion/korolkov-vladislav-yurevich/"
+  - "/vrachi/vrachi-medyunion/malakhaeva-zhanna-vyacheslavovna/"
+  - "/vrachi/vrachi-medyunion/mishchuk-elena-viktorovna-/"
+  - "/vrachi/detskie-vrachi-medyunion/omurali-aktilek/"
+  - "/vrachi/vrachi-medyunion/safronova-svetlana-valerevna/"
+  - "/vrachi/vrachi-medyunion/smykova-anastasiya-nikolaevna/"
+  - "/vrachi/otdelenie-diagnostiki-/timofeeva-darya-aleksandrovna/"
+  - "/vrachi/vrachi-medyunion/khitrova-ekaterina-nikolaevna/"
+  - "/vrachi/otdelenie-diagnostiki-/shinkarenko-elena-vladimirovna/"
+  - "/vrachi/vrachi-medyunion/shurdesova-mariya-viktorovna/"
+---

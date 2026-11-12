@@ -24,12 +24,43 @@ editor:
 
 collections:
   - name: prices
-    label: Цены
+    label: Цены Красноярск
     label_singular: Раздел цен
     description: >-
-      Цены на сайте. Откройте раздел, найдите услугу, поменяйте цену и нажмите «Сохранить».
+      Цены на сайте Красноярска (medunion.group). Откройте раздел, найдите услугу, поменяйте цену и нажмите «Сохранить».
       Через минуту-две новая цена появится на всех страницах сайта, где есть эта услуга.
     folder: src/data/prices
+    extension: yml
+    format: yml
+    create: false
+    delete: false
+    identifier_field: title
+    summary: '{{title}}'
+    sortable_fields: [order, title]
+    fields:
+      - { name: title, label: Раздел, widget: string, readonly: true }
+      - { name: page, widget: hidden }
+      - { name: order, widget: hidden }
+      - name: items
+        label: Услуги и цены
+        label_singular: услугу
+        widget: list
+        collapsed: true
+        summary: '{{fields.name}}: {{fields.price}} ₽'
+        hint: Чтобы убрать услугу с сайта, удалите строку. Новая строка появится в конце раздела.
+        fields:
+          - { name: id, widget: hidden }
+          - { name: name, label: Название, widget: string, hint: 'Как в прайсе клиники' }
+          - { name: price, label: 'Цена, ₽', widget: number, value_type: int, min: 1 }
+      - { name: also, widget: hidden }
+
+  - name: prices-kansk
+    label: Цены Канск
+    label_singular: Раздел цен (Канск)
+    description: >-
+      Цены на сайте Канска (kansk.medunion.group). Откройте раздел, найдите услугу, поменяйте цену и нажмите «Сохранить».
+      Через минуту-две новая цена появится на всех страницах сайта, где есть эта услуга.
+    folder: src/data/prices-kansk
     extension: yml
     format: yml
     create: false
@@ -74,6 +105,14 @@ collections:
     public_folder: /src/assets/banners
     fields:
       - { name: enabled, label: Показывать, widget: boolean, default: true }
+      - name: city
+        label: Где показывать
+        widget: select
+        default: both
+        options:
+          - { label: 'На обоих сайтах', value: both }
+          - { label: 'Только Красноярск (medunion.group)', value: krasnoyarsk }
+          - { label: 'Только Канск (kansk.medunion.group)', value: kansk }
       - name: image
         label: Картинка для компьютера
         widget: image

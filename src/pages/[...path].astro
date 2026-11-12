@@ -11,6 +11,7 @@ import ListingPage from '../templates/ListingPage.astro';
 import ContactsPage from '../templates/ContactsPage.astro';
 import ClinicPage from '../templates/ClinicPage.astro';
 import { clinics } from '../data/site';
+import { inThisSite, city } from '../data/city';
 
 export async function getStaticPaths() {
   const strip = (u: string) => decodeURI(u).replace(/^\/|\/$/g, '');
@@ -21,6 +22,7 @@ export async function getStaticPaths() {
     for (const entry of await getCollection(kind)) {
       const url = entry.data.url;
       if (url === '/') continue; // the home page has its own file
+      if (!inThisSite(url, entry.data.clinic)) continue; // Kansk build: shared pages stay on medunion.group
       if (seen.has(url)) throw new Error(`Two files claim ${url}: ${seen.get(url)} and ${kind}/${entry.id}`);
       seen.set(url, `${kind}/${entry.id}`);
       paths.push({ params: { path: strip(url) }, props: { kind, entry } });
@@ -42,7 +44,7 @@ const jsonLd =
           '@type': 'MedicalClinic',
           name: 'Медюнион',
           url: new URL(d.url, site).href,
-          address: (d.clinics.length ? d.clinics : ['kurchatova', 'instrumentalnaya']).map((k: keyof typeof clinics) => ({
+          address: (d.clinics.length ? d.clinics : city.clinics).map((k: keyof typeof clinics) => ({
             '@type': 'PostalAddress', addressLocality: clinics[k].city, streetAddress: clinics[k].address, addressCountry: 'RU',
           })),
         }

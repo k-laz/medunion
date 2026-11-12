@@ -1,0 +1,10 @@
+---
+url: "/vrachi/vrachi-travmatologi-ortopedy/"
+title: "Врачи травматологи-ортопеды | Медюнион"
+description: "Врачи травматологи-ортопеды: Медюнион в Красноярске и Канске. Запись онлайн и по телефону +7 (391) 220-03-03."
+h1: "Врачи травматологи-ортопеды"
+of: "doctors"
+members:
+  - "/vrachi/detskie-vrachi-medyunion/omurali-aktilek/"
+  - "/vrachi/vrachi-medyunion/khitrova-ekaterina-nikolaevna/"
+---

@@ -796,3 +796,6 @@ a.contact-strong:hover { color: var(--brand); }
 .promo-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--line); cursor: pointer; }
 .promo-dots button[aria-current="true"] { background: var(--brand); width: 22px; border-radius: 4px; }
 @media (max-width: 640px) { .promo-text { flex-direction: column; align-items: flex-start; } }
+
+/* City switch: the site you are on */
+.topbar-cities a[aria-current] { color: var(--ink); font-weight: 600; }
