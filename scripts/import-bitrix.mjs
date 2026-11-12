@@ -4,6 +4,7 @@
 //   npm run import                 # whole site
 //   npm run import -- --limit 20   # quick test on the first 20 pages
 //   npm run import -- --images     # also download images used in page content
+//   IMPORT_BASE=https://kansk.medunion.group IMPORT_OUT=import-kansk npm run import   # the Kansk site
 //
 // It only READS the live site, slowly (a few pages at a time), and changes
 // nothing there. Output goes to ./import/, not into the site itself:
@@ -102,7 +103,10 @@ async function sitemapUrls() {
       const u = new URL(loc, BASE);
       if (/\.xml$/i.test(u.pathname)) queue.push(u.pathname);
       else {
-        const n = normalize(loc);
+        // kansk.medunion.group shares one Bitrix site with medunion.group, and its
+        // sitemap lists the main domain's addresses: read them as paths of BASE.
+        const sameSite = u.hostname === 'medunion.group' || u.hostname.endsWith('.medunion.group');
+        const n = normalize(sameSite ? u.pathname : loc);
         if (n) found.add(n);
       }
     }
