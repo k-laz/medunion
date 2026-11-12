@@ -127,4 +127,29 @@ const reviews = defineCollection({
   }),
 });
 
-export const collections = { services, doctors, articles, prices, listings, pages, reviews };
+// Banners on the home page (src/content/banners/*.yml), edited at /admin/.
+// Either a picture made by marketing (image, optional image_mobile, alt) or a
+// text banner (title, text, button). Shown between start and end, Krasnoyarsk
+// dates; the site rebuilds every night so they appear and disappear on time.
+const banners = defineCollection({
+  loader: glob({ pattern: '*.yml', base: 'src/content/banners' }),
+  schema: z
+    .object({
+      enabled: z.boolean().default(true),
+      title: z.string().optional(),
+      highlight: z.string().optional(),
+      text: z.string().optional(),
+      button: z.string().optional(),
+      link: z.string().optional(),
+      image: z.string().optional(),
+      image_mobile: z.string().optional(),
+      alt: z.string().optional(),
+      start: z.coerce.date().optional(),
+      end: z.coerce.date().optional(),
+      order: z.number().default(10),
+    })
+    .refine((b) => b.image || b.title, { message: 'Баннер: нужна картинка или заголовок' })
+    .refine((b) => !b.image || (b.alt && b.alt.trim().length > 3), { message: 'Баннер с картинкой: заполните «Текст с картинки»' }),
+});
+
+export const collections = { services, doctors, articles, prices, listings, pages, reviews, banners };

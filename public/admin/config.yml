@@ -1,6 +1,6 @@
 # Price editor (/admin/). Staff change prices here; each save is a commit to
 # the repository, and the site rebuilds itself in about a minute.
-# Only the price list is editable. Instructions: docs/admin.md
+# Editable here: prices and the home page banners. Instructions: docs/admin.md
 backend:
   name: github
   repo: k-laz/medunion
@@ -13,6 +13,12 @@ backend:
 app_title: 'Медюнион: цены'
 media_folder: public/upload/cms
 public_folder: /upload/cms
+# Uploaded file names in Latin letters, and no huge originals.
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
+      max_file_size: 8000000
 editor:
   preview: false
 
@@ -47,3 +53,51 @@ collections:
           - { name: name, label: Название, widget: string, hint: 'Как в прайсе клиники' }
           - { name: price, label: 'Цена, ₽', widget: number, value_type: int, min: 1 }
       - { name: also, widget: hidden }
+
+  - name: banners
+    label: Баннеры на главной
+    label_singular: баннер
+    description: >-
+      Баннеры под первым экраном главной страницы. Либо картинка от маркетинга, либо текстовый баннер
+      (заголовок, текст, кнопка). Баннер показывается с даты «Показывать с» по дату «Показывать до»
+      включительно; сайт обновляется каждую ночь, так что баннеры появляются и исчезают сами.
+    folder: src/content/banners
+    extension: yml
+    format: yml
+    create: true
+    delete: true
+    slug: '{{year}}-{{month}}-{{slug}}'
+    identifier_field: title
+    summary: '{{title}}{{alt}}'
+    sortable_fields: [order, start, title]
+    media_folder: /src/assets/banners
+    public_folder: /src/assets/banners
+    fields:
+      - { name: enabled, label: Показывать, widget: boolean, default: true }
+      - name: image
+        label: Картинка для компьютера
+        widget: image
+        required: false
+        hint: 'Около 1920 × 640 пикселей, JPG или PNG. Если картинки нет, заполните заголовок и текст ниже.'
+      - name: image_mobile
+        label: Картинка для телефона
+        widget: image
+        required: false
+        hint: 'Около 1080 × 1080. Если нет, на телефоне покажется картинка для компьютера.'
+      - name: alt
+        label: Текст с картинки
+        widget: string
+        required: false
+        hint: 'Обязательно для баннера с картинкой: что на ней написано. Его читают поисковики и программы для незрячих.'
+      - name: title
+        label: Заголовок
+        widget: string
+        required: false
+        hint: 'Для текстового баннера. Для баннера с картинкой это просто название в списке.'
+      - { name: highlight, label: 'Крупная надпись слева', widget: string, required: false, hint: 'Необязательно. Например: «15 лет», «−20%».' }
+      - { name: text, label: Текст, widget: text, required: false }
+      - { name: button, label: Надпись на кнопке, widget: string, required: false, hint: 'По умолчанию «Подробнее».' }
+      - { name: link, label: Ссылка, widget: string, required: false, hint: 'Куда ведёт баннер: /sales/... или полный адрес https://...' }
+      - { name: start, label: Показывать с, widget: datetime, required: false, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
+      - { name: end, label: Показывать до (включительно), widget: datetime, required: false, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
+      - { name: order, label: Порядок, widget: number, value_type: int, default: 10, hint: 'Меньше число, раньше в списке.' }

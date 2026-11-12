@@ -774,3 +774,25 @@ a.contact-strong:hover { color: var(--brand); }
 .contact-social { display: flex; gap: 12px; }
 .contact-social a { color: var(--brand); }
 .clinic-phone a, .clinic-phones a, .contact-strong[href^="tel:"] { white-space: nowrap; }
+
+/* Banners on the home page */
+.promo { position: relative; }
+.promo-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: var(--radius); }
+.promo-track::-webkit-scrollbar { display: none; }
+.promo-track:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
+.promo-slide { flex: 0 0 100%; scroll-snap-align: start; min-width: 0; }
+.promo-picture { display: block; border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.promo-picture img { display: block; width: 100%; height: auto; }
+.promo-text { display: flex; align-items: center; gap: clamp(20px, 4vw, 56px); height: 100%; padding: clamp(24px, 4vw, 44px) clamp(20px, 5vw, 56px); border-radius: var(--radius); background: var(--tint); }
+.promo-highlight { flex: none; margin: 0; font-family: var(--font-head); font-weight: 600; font-size: clamp(3rem, 2rem + 4vw, 5.5rem); line-height: 1; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.promo-body { display: grid; gap: 10px; justify-items: start; max-width: 60ch; }
+.promo-title { margin: 0; font-size: var(--step-2); }
+.promo-body p { margin: 0; color: var(--text); }
+.promo-body .btn { margin-top: 6px; }
+.promo-controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 12px; }
+.promo-arrow { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--ink); cursor: pointer; }
+.promo-arrow:hover { border-color: var(--brand); color: var(--brand); }
+.promo-dots { display: flex; gap: 8px; }
+.promo-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--line); cursor: pointer; }
+.promo-dots button[aria-current="true"] { background: var(--brand); width: 22px; border-radius: 4px; }
+@media (max-width: 640px) { .promo-text { flex-direction: column; align-items: flex-start; } }

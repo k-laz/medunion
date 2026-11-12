@@ -12,6 +12,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Every night at 03:00 Krasnoyarsk time (20:00 UTC): banners start and end on
+  # their dates, and the years on the home page stay right.
+  schedule:
+    - cron: '0 20 * * *'
 
 concurrency: deploy
 

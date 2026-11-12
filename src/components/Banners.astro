@@ -1,0 +1,92 @@
+---
+// Banners on the home page, from src/content/banners/ (edited at /admin/).
+// A picture banner shows marketing's image (the phone version on small
+// screens, when there is one); a text banner shows title, text and button.
+// Several banners scroll sideways with arrows and dots; nothing moves by itself.
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/banners/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const find = (path?: string) => {
+  if (!path) return undefined;
+  const hit = images[path];
+  if (!hit) throw new Error(`Баннер: картинка ${path} не найдена в src/assets/banners/`);
+  return hit.default;
+};
+
+// "Today" in Krasnoyarsk, as YYYY-MM-DD
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Krasnoyarsk' }).format(new Date());
+const day = (d?: Date) => d?.toISOString().slice(0, 10);
+const list = (await getCollection('banners'))
+  .map((b) => b.data)
+  .filter((b) => b.enabled && (!b.start || day(b.start)! <= today) && (!b.end || day(b.end)! >= today))
+  .sort((a, b) => a.order - b.order || (day(b.start) ?? '').localeCompare(day(a.start) ?? ''));
+
+const srcset = async (src: ImageMetadata, widths: number[]) => {
+  const out = await Promise.all(widths.filter((w) => w <= src.width).map((w) => getImage({ src, width: w, format: 'webp' })));
+  if (!out.length) out.push(await getImage({ src, format: 'webp' }));
+  return { srcset: out.map((i) => `${i.src} ${i.attributes.width}w`).join(', '), last: out.at(-1)! };
+};
+const slides = await Promise.all(
+  list.map(async (b) => {
+    const desk = find(b.image);
+    const mob = find(b.image_mobile);
+    return {
+      ...b,
+      desk: desk && { meta: desk, ...(await srcset(desk, [960, 1440, 1920, 2400])) },
+      mob: mob && { meta: mob, ...(await srcset(mob, [540, 1080])) },
+    };
+  }),
+);
+---
+
+{slides.length > 0 && (
+  <section class="promo block" aria-label="Новости и акции" data-promo>
+    <div class="promo-track" tabindex="0">
+      {slides.map((b, i) => (
+        <div class="promo-slide" aria-label={`${i + 1} из ${slides.length}`}>
+          {b.desk ? (
+            <a class="promo-picture" href={b.link} {...(b.link ? {} : { role: 'img' })}>
+              <picture>
+                {b.mob && <source media="(max-width: 640px)" srcset={b.mob.srcset} sizes="100vw" type="image/webp" />}
+                <source srcset={b.desk.srcset} sizes="(min-width: 1260px) 1200px, 100vw" type="image/webp" />
+                <img src={b.desk.last.src} width={b.desk.meta.width} height={b.desk.meta.height} alt={b.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+              </picture>
+            </a>
+          ) : (
+            <div class="promo-text">
+              {b.highlight && <p class="promo-highlight">{b.highlight}</p>}
+              <div class="promo-body">
+                <h2 class="promo-title">{b.title}</h2>
+                {b.text && <p>{b.text}</p>}
+                {b.link && <a class="btn btn-primary" href={b.link}>{b.button || 'Подробнее'}</a>}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+    {slides.length > 1 && (
+      <div class="promo-controls">
+        <button class="promo-arrow" type="button" data-dir="-1" aria-label="Предыдущий"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>
+        <div class="promo-dots">{slides.map((_, i) => <button type="button" aria-label={`Баннер ${i + 1}`} data-i={i} />)}</div>
+        <button class="promo-arrow" type="button" data-dir="1" aria-label="Следующий"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>
+      </div>
+    )}
+  </section>
+)}
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-promo]')) {
+    const track = box.querySelector<HTMLElement>('.promo-track')!;
+    const dots = [...box.querySelectorAll<HTMLButtonElement>('.promo-dots button')];
+    if (!dots.length) continue;
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    const go = (i: number) => track.scrollTo({ left: Math.max(0, Math.min(dots.length - 1, i)) * track.clientWidth, behavior: 'smooth' });
+    const mark = () => dots.forEach((d, i) => d.setAttribute('aria-current', String(i === current())));
+    box.querySelectorAll<HTMLButtonElement>('.promo-arrow').forEach((b) => b.addEventListener('click', () => go(current() + Number(b.dataset.dir))));
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+    track.addEventListener('scroll', () => requestAnimationFrame(mark), { passive: true });
+    mark();
+  }
+</script>
