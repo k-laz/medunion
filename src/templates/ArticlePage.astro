@@ -2,14 +2,15 @@
 // Articles, offers, news and plain pages (about, legal...).
 // Articles and offers get the booking card in a right-hand column; articles
 // also get the doctors of the related service and more articles on the topic.
-import { getCollection, getEntries, render, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import CtaBand from '../components/CtaBand.astro';
 import InfoCard from '../components/InfoCard.astro';
 import DoctorCard from '../components/DoctorCard.astro';
-import { sales as saleInfo } from '../data/sales';
+import { saleInfo as loadSaleInfo } from '../lib/sales';
+const saleInfo = await loadSaleInfo();
 import { articleService } from '../data/articles';
-import { childrenOf, shortName } from '../lib/content';
+import { childrenOf, shortName, doctorsByIds } from '../lib/content';
 import { currentPrices } from '../lib/prices';
 
 interface Props { entry: CollectionEntry<'articles'> | CollectionEntry<'pages'> }
@@ -39,8 +40,7 @@ if (isArticle) {
   if (service) {
     const subtree = services.filter((s) => s.data.url.startsWith(service!.data.url));
     servicePrices = currentPrices(subtree.flatMap((s) => s.data.prices));
-    const refs = [...new Map(subtree.flatMap((s) => s.data.doctors).map((r) => [r.id, r])).values()];
-    doctors = (await getEntries(refs)).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru')).slice(0, 3);
+    doctors = (await doctorsByIds(subtree.flatMap((s) => s.data.doctors))).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru')).slice(0, 3);
   }
   const same = (await getCollection('articles', (a) => a.data.kind === 'article' && 'category' in a.data && a.data.category === category))
     .sort((a, b) => a.data.h1.localeCompare(b.data.h1, 'ru'));

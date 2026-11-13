@@ -5,3 +5,4 @@ dist/
 .DS_Store
 dist-kansk/
 dist-kansk.redirects.conf
+dist.redirects.conf

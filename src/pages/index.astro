@@ -42,7 +42,7 @@ const features = [
 ].filter((f) => byUrl.has(f.url));
 
 const doctors = (await getCollection('doctors'))
-  .map((d) => ({ d, n: services.filter((s) => s.data.doctors.some((r) => r.id === d.id)).length }))
+  .map((d) => ({ d, n: services.filter((s) => s.data.doctors.includes(d.id)).length }))
   .sort((a, b) => b.n - a.n || a.d.data.name.localeCompare(b.d.data.name, 'ru'))
   .slice(0, 4)
   .map((x) => x.d);

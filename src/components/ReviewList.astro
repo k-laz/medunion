@@ -8,7 +8,7 @@ const { reviews, showDoctor = false, grid = false, dates = true } = Astro.props;
 const list = await Promise.all(
   [...reviews]
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-    .map(async (r) => ({ r: r.data, doc: showDoctor && r.data.doctor ? await getEntry(r.data.doctor) : undefined })),
+    .map(async (r) => ({ r: r.data, doc: showDoctor && r.data.doctor ? await getEntry('doctors', r.data.doctor) : undefined })),
 );
 const date = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).replace(/\s?г\.$/, '');
 ---

@@ -3,7 +3,9 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import PageHead from '../components/PageHead.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import PricesOverview from '../components/PricesOverview.astro';
-import { sales as saleInfo, saleGroups, validity } from '../data/sales';
+import { saleGroups, validity } from '../data/sales';
+import { saleInfo as loadSaleInfo } from '../lib/sales';
+const saleInfo = await loadSaleInfo();
 
 interface Props { entry: CollectionEntry<'listings'> }
 const { entry } = Astro.props;
@@ -24,7 +26,7 @@ if (d.of === 'doctors') {
   const all = await getCollection('doctors');
   // Doctors the old page listed, plus any whose address is inside this section
   const everyone = /^Все врачи/.test(d.h1);
-  const picked = all.filter((doc) => everyone || d.members?.includes(doc.data.url) || (doc.data.url !== d.url && doc.data.url.startsWith(d.url)));
+  const picked = all.filter((doc) => everyone || d.members?.includes(doc.data.url) || doc.data.groups.includes(d.url) || (doc.data.url !== d.url && doc.data.url.startsWith(d.url)));
   doctors = picked.sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
   // Specialty filters: the doctor sections under /vrachi/
   // Short filter labels: "Врачи-гинекологи" becomes "Гинекологи". Page titles keep the full name.

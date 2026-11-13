@@ -1,9 +1,14 @@
 // Small helpers shared by the page templates.
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const segments = (url: string) => url.split('/').filter(Boolean);
+
+/** Doctors by entry id, leaving out any that are hidden or gone. */
+export const doctorsByIds = async (ids: string[]) =>
+  (await Promise.all([...new Set(ids)].map((id) => getEntry('doctors', id)))).filter((x) => x !== undefined);
 
 /** Pages one level below `url` (e.g. the services inside a section). */
 export function childrenOf<T extends { data: { url: string } }>(url: string, entries: T[]): T[] {
@@ -34,7 +39,7 @@ export async function breadcrumbs(url: string) {
 /** Services that list this doctor. */
 export async function servicesOfDoctor(doctorId: string) {
   const services = await getCollection('services');
-  return services.filter((s) => s.data.doctors.some((d) => d.id === doctorId));
+  return services.filter((s) => s.data.doctors.includes(doctorId));
 }
 
 export const rub = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
@@ -93,9 +98,16 @@ export const yearsSince = (iso: string, now = new Date()) => now.getFullYear() -
 /** "2026-11-10" -> "10.11.2026" */
 export const dmy = (iso: string) => iso.split('-').reverse().join('.');
 
-/** A doctor's photo: the `photo` field if set, else public/doctors/<last part of the page address>.jpg
- *  (640x800, cropped to the face; see docs/photos.md). */
-export const photoFor = (url: string, photo?: string) => {
+/** A doctor's photo: one uploaded at /admin/ (src/assets/doctors/, cut to 640x800
+ *  from the top, where the face is), else public/doctors/<last part of the page
+ *  address>.jpg (640x800, cropped to the face by scripts/crop-doctor-photos.py). */
+const uploaded = import.meta.glob<{ default: ImageMetadata }>('/src/assets/doctors/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+export const photoFor = async (url: string, photo?: string) => {
+  if (photo?.startsWith('/src/assets/')) {
+    const img = uploaded[photo]?.default;
+    if (!img) throw new Error(`Врач ${url}: фото ${photo} не найдено в src/assets/doctors/`);
+    return (await getImage({ src: img, width: 640, height: 800, fit: 'cover', position: 'top', format: 'jpg', quality: 84 })).src;
+  }
   if (photo) return photo;
   const file = `/doctors/${url.split('/').filter(Boolean).pop()}.jpg`;
   return existsSync(join(process.cwd(), 'public', file)) ? file : undefined;

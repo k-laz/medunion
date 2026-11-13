@@ -46,6 +46,8 @@ for (const f of files) {
   let s = before;
   if (f.endsWith('.html')) {
     s = s.replace(/\bhref="(\/(?!\/)[^"]*)"/g, (m, p) => (p === '/' || !elsewhere(p) ? m : (links++, `href="${MAIN}${p}"`)));
+    // One word split into two links to the same page (old site markup): one link
+    for (let prev; prev !== s; ) { prev = s; s = s.replace(/(<a\b[^>]*\bhref="([^"]+)"[^>]*>)([^<]*)<\/a><a\b[^>]*\bhref="\2"[^>]*>([^<]*)<\/a>/g, '$1$3$4</a>'); }
     // A service this site does not have is done in Krasnoyarsk: say so on the link.
     s = s.replace(/(<a\b[^>]*\bhref="https?:\/\/[^"/]+\/(?:uslugi|ceny)\/[^"]*"[^>]*>)([\s\S]*?)<\/a>/g, (m, open, text) =>
       open.startsWith(`<a`) && open.includes(MAIN) && !text.includes('city-note') ? `${open}${text}<span class="city-note"> (в Красноярске)</span></a>` : m);

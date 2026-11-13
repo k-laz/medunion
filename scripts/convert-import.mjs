@@ -20,6 +20,7 @@
 import { readFile, writeFile, mkdir, rm, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 // The Kansk site is converted with the same rules into its own folders:
 //   CONVERT_IN=import-kansk CONVERT_OUT=src/content-kansk CONVERT_REDIRECTS=deploy/redirects-kansk \
@@ -732,7 +733,26 @@ function classify(url) {
   return 'page';
 }
 
+// Files under imported/ that were changed at /admin/ (commit message with
+// [админка]) or by hand in a commit marked [вручную]: the site's copy wins over
+// the old site's, so they are put back as they are after the conversion.
+async function editedSinceImport() {
+  let log = '';
+  try { log = execFileSync('git', ['log', '--format=%x01%s', '--name-only', '--', CONTENT], { encoding: 'utf8', maxBuffer: 64 << 20 }); }
+  catch { return new Map(); }
+  const files = new Set();
+  for (const commit of log.split('\x01').slice(1)) {
+    const [subject, ...names] = commit.split('\n');
+    if (!/\[(админка|вручную)\]/.test(subject)) continue;
+    for (const n of names) if (n.includes('/imported/')) files.add(n.trim());
+  }
+  const kept = new Map();
+  for (const f of files) if (existsSync(f)) kept.set(f, await readFile(f, 'utf8'));
+  return kept;
+}
+
 async function main() {
+  const edited = await editedSinceImport();
   for (const col of ['services', 'doctors', 'articles', 'prices', 'listings', 'pages']) {
     await rm(join(CONTENT, col, 'imported'), { recursive: true, force: true });
   }
@@ -1018,6 +1038,8 @@ async function main() {
   console.log(`Pages with links fixed: ${relinked}`);
   console.log(`Redirects: ${redirects.size} (${REDIRECTS}.csv, ${REDIRECTS}.nginx.conf)`);
   console.log(`Kept as hand-written (not overwritten): ${[...manual].join(', ') || 'none'}`);
+  for (const [f, text] of edited) { await mkdir(dirname(f), { recursive: true }); await writeFile(f, text); }
+  console.log(`Kept as edited at /admin/ or by hand: ${edited.size} file(s)`);
 }
 
 main().catch((e) => {

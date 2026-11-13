@@ -1,7 +1,8 @@
-import { defineCollection, reference } from 'astro:content';
+import { defineCollection } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { dropCity } from './data/city';
+import { slug } from './lib/slug.mjs';
 
 // Every page is a Markdown file. The fields at the top of the file
 // (between the --- lines) are checked here, so a page with a missing
@@ -30,13 +31,57 @@ const KRASNOYARSK_ONLY = KANSK ? [
 const files = (base: string) =>
   glob({ pattern: ['**/*.md', ...KRASNOYARSK_ONLY.map((p) => '!' + p)], base, generateId: ({ entry }) => entry.replace(/\.md$/, '') });
 
+// Doctors, articles, news and offers are also edited at /admin/ (docs/admin.md).
+// There a new entry needs no address or SEO texts: they are made here, when the
+// site is built. The address comes from the file name, which the editor sets once
+// when the entry is created, so it stays put when the heading is edited later.
+// An entry marked hidden ("Скрыть с сайта") is left out of the site entirely; its
+// address redirects to its section (scripts/hidden-redirects.mjs).
+const plain = (md = '') =>
+  md.replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[#>*_`|]/g, '').replace(/\s+/g, ' ').trim();
+const cut = (s: string, n: number) => (s.length <= n ? s : s.slice(0, s.lastIndexOf(' ', n - 1)).replace(/[,.:;\s]+$/, '') + '…');
+const newAddress = (id: string, d: Record<string, any>) => {
+  const name = slug(id.split('/').pop()!);
+  if (d.name !== undefined) return `/vrachi/vrachi-medyunion/${name}/`;
+  if (d.kind === 'news') return `/news/${name}/`;
+  if (d.kind === 'sale') return `/sales/${name}/`;
+  return d.category ? `/articles/${d.category}/${name}/` : `/articles/${name}/`;
+};
+type Loader = ReturnType<typeof glob>;
+const editable = (loader: Loader): Loader => ({
+  ...loader,
+  load: (ctx) =>
+    loader.load({
+      ...ctx,
+      store: new Proxy(ctx.store, {
+        get(store, key) {
+          if (key !== 'set') { const v = Reflect.get(store, key); return typeof v === 'function' ? v.bind(store) : v; }
+          return (entry: Parameters<typeof store.set>[0]) => {
+            const d = entry.data as Record<string, any>;
+            if (d.hidden) { store.delete(entry.id); return false; }
+            if (!d.url) d.url = newAddress(entry.id, d);
+            const heading = d.name !== undefined ? `${d.name}, ${String(d.specialty).toLowerCase()}` : d.h1;
+            if (!d.title) d.title = cut(`${heading} | Медюнион`, 80);
+            if (!d.description) d.description = cut(d.name !== undefined ? `${heading}. ${plain(entry.body)}`.trim() : plain(entry.body) || heading, 180);
+            return store.set(entry);
+          };
+        },
+      }),
+    }),
+});
+
 // Kansk build: no city in titles and headings (dropCity in src/data/city.ts).
 // Clinic pages keep theirs, it is part of the address.
 const cityless = <T extends z.ZodType<{ title: string; h1?: string; layout?: string }>>(schema: T) =>
   KANSK ? schema.transform((d) => (d.layout === 'clinic' ? d : { ...d, title: dropCity(d.title), ...(d.h1 !== undefined && { h1: dropCity(d.h1) }) })) : schema;
 
 const clinic = z.enum(['kurchatova', 'instrumentalnaya', 'kansk']);
-const price = z.object({ name: z.string(), price: z.number().positive() });
+// A link to a doctor: the doctor's entry id. Not reference('doctors'), so that a
+// doctor hidden at /admin/ is not an error: pages skip ids they can't find
+// (doctorsByIds in src/lib/content.ts).
+const doctorRef = z.string();
+// Prices shown always come from the price list (src/lib/prices.ts); the number here is only a note.
+const price = z.object({ name: z.string(), price: z.number().positive().optional() });
 
 const seo = {
   // Full page address, exactly as on the old site, e.g. "/uslugi/centr/ginekologiya/".
@@ -45,6 +90,15 @@ const seo = {
   title: z.string().min(10).max(80),
   // Meta description: the grey text under the link. 50 to 200 characters.
   description: z.string().min(50).max(200),
+};
+
+// Doctors and articles: the same, but may be left empty (made at build, see `editable`).
+const seoEditable = {
+  url: z.string().regex(/^(\/.*\/)?$/, 'адрес начинается и кончается на /').default(''),
+  title: z.string().max(80).default(''),
+  description: z.string().max(200).default(''),
+  // "Скрыть с сайта" at /admin/
+  hidden: z.boolean().default(false),
 };
 
 const services = defineCollection({
@@ -61,39 +115,68 @@ const services = defineCollection({
     pricesCheckedOn: z.coerce.date().optional(),
     // Where the service is offered. Empty = both Krasnoyarsk clinics are shown.
     clinics: z.array(clinic).default([]),
-    doctors: z.array(reference('doctors')).default([]),
+    doctors: z.array(doctorRef).default([]),
     faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
   })),
 });
 
 const doctors = defineCollection({
-  loader: files(`${ROOT}/doctors`),
+  loader: editable(files(`${ROOT}/doctors`)),
   schema: cityless(z.object({
-    ...seo,
+    ...seoEditable,
     name: z.string(),
     specialty: z.string(),
     qualification: z.string().optional(),
     specialization: z.string().optional(),
     experienceYears: z.number().int().positive().optional(),
-    // Optional: a photo path. Without it, public/doctors/<last part of the url>.jpg is used
-    // when it exists (scripts/crop-doctor-photos.py makes those).
+    // Optional: a photo uploaded at /admin/ (src/assets/doctors/...). Without it,
+    // public/doctors/<last part of the url>.jpg is used when it exists
+    // (scripts/crop-doctor-photos.py makes those).
     photo: z.string().optional(),
     clinics: z.array(clinic).default([]),
+    // Doctor sections (/vrachi/vrachi-kardiologi/ ...) the doctor is shown in,
+    // besides those whose `members` list them
+    groups: z.array(z.string()).default([]),
     education: z.array(z.string()).default([]),
     prices: z.array(price).default([]),
   })),
 });
 
+// Articles and news are the same on both sites: the Kansk build reads them from
+// src/content/ and only its offers from src/content-kansk/.
+const articleFiles = KANSK
+  ? (() => {
+      const l = glob({
+        pattern: ['content/articles/**/*.md', 'content-kansk/articles/**/*.md', ...KRASNOYARSK_ONLY.map((p) => '!' + p)],
+        base: './src',
+        generateId: ({ entry }) => entry.replace(/^content\/articles\//, '').replace(/\.md$/, ''),
+      });
+      // main site's offers and the old Kansk copy's articles and news are not used
+      return { ...l, load: (ctx: Parameters<typeof l.load>[0]) => l.load({ ...ctx, parseData: async (e: any) => {
+        const d = (await ctx.parseData(e)) as Record<string, any>;
+        const kansk = String(e.filePath ?? '').includes('content-kansk/');
+        return (kansk ? d.kind === 'sale' : d.kind !== 'sale') ? d : { ...d, hidden: true, url: d.url || '/' };
+      } }) } as typeof l;
+    })()
+  : files(`${ROOT}/articles`);
+
+const link = z.object({ label: z.string(), url: z.string() });
 const articles = defineCollection({
-  loader: files(`${ROOT}/articles`),
+  loader: editable(articleFiles),
   schema: cityless(z.object({
-    ...seo,
+    ...seoEditable,
     h1: z.string(),
     kind: z.enum(['article', 'news', 'sale']),
-    discount: z.string().optional(), // offers: "5%"
-    period: z.string().optional(), // offers: "с 01.01.2025, бессрочно"
     date: z.coerce.date().optional(), // news
-    category: z.string().optional(),
+    category: z.string().optional(), // articles: the section under /articles/
+    // Offers
+    discount: z.string().optional(), // "5%"
+    period: z.string().optional(), // "с 01.01.2025, бессрочно"
+    group: z.enum(['social', 'special']).optional(), // on /sales/: social discounts or special offers
+    summary: z.string().optional(), // one line on the offer's card
+    badge: z.string().optional(), // instead of the discount, e.g. "5 500 ₽"
+    card_title: z.string().optional(), // shorter title for the card
+    links: z.array(link).default([]), // what the offer is about; it also shows on those service pages
   })),
 });
 
@@ -139,7 +222,7 @@ const reviews = defineCollection({
     author: z.string(),
     text: z.string(),
     rating: z.number().int().min(1).max(5).optional(),
-    doctor: reference('doctors').optional(),
+    doctor: doctorRef.optional(),
     // Where the review was first posted (2ГИС, ПроДокторов)
     source: z.object({ name: z.string(), url: z.string().url() }).optional(),
     // The clinic's answer

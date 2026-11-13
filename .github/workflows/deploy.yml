@@ -47,7 +47,7 @@ jobs:
           # refresh the package list first: without it the runner's mirror can 404
           sudo apt-get update -q
           sudo apt-get install -y -q nginx-light
-          printf 'events {}\nhttp { server { listen 8080; include %s; } }\n' "$PWD/deploy/redirects.nginx.conf" > /tmp/test.conf
+          printf 'events {}\nhttp { server { listen 8080; include %s; } }\n' "$PWD/dist.redirects.conf" > /tmp/test.conf
           sudo nginx -t -c /tmp/test.conf
           printf 'events {}\nhttp { server { listen 8080; include %s; location @main { return 301 https://medunion.group$request_uri; } } }\n' "$PWD/dist-kansk.redirects.conf" > /tmp/test-kansk.conf
           sudo nginx -t -c /tmp/test-kansk.conf
@@ -64,7 +64,7 @@ jobs:
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
           SSH="ssh -i ~/.ssh/id_deploy"
           rsync -az --delete -e "$SSH" dist/ "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/site/"
-          rsync -az -e "$SSH" deploy/redirects.nginx.conf "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/redirects.conf"
+          rsync -az -e "$SSH" dist.redirects.conf "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/redirects.conf"
           # The Kansk site: ready on the server, served once its nginx config is installed
           rsync -az --delete -e "$SSH" dist-kansk/ "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/kansk/"
           rsync -az -e "$SSH" dist-kansk.redirects.conf "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/redirects-kansk.conf"

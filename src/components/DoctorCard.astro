@@ -11,7 +11,7 @@ interface Props {
   clinicKeys: ClinicKey[];
 }
 const { name, specialty, url, experienceYears, clinicKeys } = Astro.props;
-const photo = photoFor(url, Astro.props.photo);
+const photo = await photoFor(url, Astro.props.photo);
 ---
 
 <article class="doctor-card">

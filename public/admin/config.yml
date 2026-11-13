@@ -1,6 +1,8 @@
-# Price editor (/admin/). Staff change prices here; each save is a commit to
-# the repository, and the site rebuilds itself in about a minute.
-# Editable here: prices and the home page banners. Instructions: docs/admin.md
+# Site editor (/admin/). Staff change prices, banners, doctors, articles, news
+# and offers here; each save is a commit to the repository, and the site
+# rebuilds itself in about a minute. Instructions: docs/admin.md
+# Commits are marked [админка]: the old-site converter then keeps those files
+# as they are (scripts/convert-import.mjs).
 backend:
   name: github
   repo: k-laz/medunion
@@ -8,9 +10,13 @@ backend:
   # Sign-in with an access token only (no OAuth server needed). See docs/admin.md.
   auth_methods: [token]
   commit_messages:
-    update: 'Цены: изменён раздел «{{slug}}» ({{author-name}})'
+    create: '{{collection}}: добавлено «{{slug}}» ({{author-name}}) [админка]'
+    update: '{{collection}}: изменено «{{slug}}» ({{author-name}}) [админка]'
+    delete: '{{collection}}: удалено «{{slug}}» ({{author-name}}) [админка]'
+    uploadMedia: 'Файл «{{path}}» ({{author-name}}) [админка]'
+    deleteMedia: 'Удалён файл «{{path}}» ({{author-name}}) [админка]'
 
-app_title: 'Медюнион: цены'
+app_title: 'Медюнион: сайт'
 media_folder: public/upload/cms
 public_folder: /upload/cms
 # Uploaded file names in Latin letters, and no huge originals.
@@ -148,3 +154,237 @@ collections:
       - { name: start, label: Показывать с, widget: datetime, required: false, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
       - { name: end, label: Показывать до (включительно), widget: datetime, required: false, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
       - { name: order, label: Порядок, widget: number, value_type: int, default: 10, hint: 'Меньше число, раньше в списке.' }
+
+  # Doctors, articles, news and offers: Markdown files with fields at the top.
+  # Imported ones sit in imported/ subfolders (the folder tree on the left); new
+  # ones are saved at the top of the folder. The page address and the Yandex
+  # texts of a new entry are made at build time (src/content.config.ts).
+  - name: doctors
+    label: Врачи Красноярск
+    label_singular: Врач
+    description: >-
+      Врачи на сайте Красноярска (medunion.group). Найдите врача поиском вверху. Врач, который принимает и в Канске,
+      есть и в разделе «Врачи Канск»: там его карточку нужно поправить отдельно.
+    folder: src/content/doctors
+    nested: { depth: 4, subfolders: false }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: name
+    summary: '{{name}} · {{specialty}}'
+    sortable_fields: [name, specialty]
+    media_folder: /src/assets/doctors
+    public_folder: /src/assets/doctors
+    fields: &doctor_fields
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: name, label: 'Фамилия, имя, отчество', widget: string }
+      - { name: specialty, label: Специальность, widget: string, hint: 'Как на карточке врача, например «Кардиолог, терапевт».' }
+      - { name: photo, label: Фото, widget: image, required: false, hint: 'Вертикальное фото, лицо в верхней части, от 800 пикселей в высоту. Сайт сам обрежет его до 4:5. Если фото не загружено, остаётся прежнее.' }
+      - name: clinics
+        label: Где принимает
+        widget: select
+        multiple: true
+        required: false
+        options:
+          - { label: 'Красноярск, Курчатова, 17', value: kurchatova }
+          - { label: 'Красноярск, Инструментальная, 12/35', value: instrumentalnaya }
+          - { label: 'Канск, Урицкого, 8', value: kansk }
+      - name: groups
+        label: Показывать в разделах врачей
+        widget: select
+        multiple: true
+        required: false
+        hint: 'Разделы на странице «Врачи». Врач, который уже есть в разделе, остаётся там и без этой отметки.'
+        options:
+          - { label: 'Детские врачи', value: '/vrachi/detskie-vrachi-medyunion/' }
+          - { label: 'Отделение диагностики', value: '/vrachi/otdelenie-diagnostiki-/' }
+          - { label: 'Аллергологи', value: '/vrachi/vrachi-allergologi/' }
+          - { label: 'Дерматологи, дерматовенерологи', value: '/vrachi/vrachi-dermatologi-dermatovenerologi/' }
+          - { label: 'Эндокринологи', value: '/vrachi/vrachi-endokrinologi/' }
+          - { label: 'Гастроэнтерологи', value: '/vrachi/vrachi-gastroenterologi/' }
+          - { label: 'Гинекологи', value: '/vrachi/vrachi-ginekologi/' }
+          - { label: 'Кардиологи', value: '/vrachi/vrachi-kardiologi/' }
+          - { label: 'Хирурги', value: '/vrachi/vrachi-khirurgi/' }
+          - { label: 'Нефрологи', value: '/vrachi/vrachi-nefrologi/' }
+          - { label: 'Неврологи', value: '/vrachi/vrachi-nevrologi/' }
+          - { label: 'Нейрохирурги', value: '/vrachi/vrachi-neyrokhirurgi/' }
+          - { label: 'Онкологи-маммологи', value: '/vrachi/vrachi-onkologi-mammologi/' }
+          - { label: 'Оториноларингологи', value: '/vrachi/vrachi-otorinolaringologi/' }
+          - { label: 'Педиатры', value: '/vrachi/vrachi-pediatry/' }
+          - { label: 'Проктологи', value: '/vrachi/vrachi-proktologi/' }
+          - { label: 'Пульмонологи', value: '/vrachi/vrachi-pulmonologi/' }
+          - { label: 'Сосудистые хирурги, флебологи', value: '/vrachi/vrachi-sosudistye-khirurgi-flebologi/' }
+          - { label: 'Терапевты', value: '/vrachi/vrachi-terapevty/' }
+          - { label: 'Травматологи-ортопеды', value: '/vrachi/vrachi-travmatologi-ortopedy/' }
+          - { label: 'Урологи', value: '/vrachi/vrachi-urologi/' }
+      - { name: experienceYears, label: 'Стаж, лет', widget: number, value_type: int, min: 1, required: false }
+      - { name: qualification, label: Категория, widget: string, required: false, hint: 'Например «Высшая квалификационная категория».' }
+      - { name: specialization, label: Направления, widget: string, required: false }
+      - name: education
+        label: Образование
+        label_singular: строку
+        widget: list
+        required: false
+        field: { name: line, label: Строка, widget: string }
+      - name: prices
+        label: Приёмы врача из прайса
+        label_singular: приём
+        widget: list
+        required: false
+        summary: '{{fields.name}}'
+        hint: 'Название точно как в прайсе: цена подставится сама и будет меняться вместе с прайсом.'
+        fields:
+          - { name: name, label: Услуга, widget: string }
+      - { name: body, label: О враче, widget: markdown, required: false }
+      - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из заголовка.' }
+      - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало текста.' }
+      - { name: url, widget: hidden }
+
+  - name: doctors-kansk
+    label: Врачи Канск
+    label_singular: Врач (Канск)
+    description: >-
+      Врачи на сайте Канска (kansk.medunion.group). Карточки отдельные от красноярских: если врач принимает в обоих
+      городах, правьте его в обоих разделах.
+    folder: src/content-kansk/doctors
+    nested: { depth: 4, subfolders: false }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: name
+    summary: '{{name}} · {{specialty}}'
+    sortable_fields: [name, specialty]
+    media_folder: /src/assets/doctors
+    public_folder: /src/assets/doctors
+    fields: *doctor_fields
+
+  - name: articles
+    label: Статьи
+    label_singular: Статья
+    description: Статьи раздела «Статьи». Они одинаковые на сайтах Красноярска и Канска.
+    folder: src/content/articles
+    nested: { depth: 4, subfolders: false }
+    filter: { field: kind, value: article }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: h1
+    summary: '{{h1}}'
+    sortable_fields: [h1, category]
+    fields:
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: h1, label: Заголовок, widget: string }
+      - name: category
+        label: Тема
+        widget: select
+        options:
+          - { label: 'Аллергология и пульмонология', value: 'allergologiya-i-pulmonologiya' }
+          - { label: 'Гинекология', value: 'ginekologiya' }
+          - { label: 'Кардиология', value: 'kardiologiya' }
+          - { label: 'Хирургия', value: 'khirurgiya' }
+          - { label: 'Лечебное дело', value: 'lechebnoe-delo' }
+          - { label: 'Лучевая диагностика', value: 'luchevaya-diagnostika' }
+          - { label: 'Неврология', value: 'nevrologiya' }
+          - { label: 'Онкология и маммология', value: 'onkologiya-i-mammologiya' }
+          - { label: 'Оториноларингология', value: 'otorinolaringologiya' }
+          - { label: 'Педиатрия', value: 'pediatriya' }
+          - { label: 'Подготовка к анализам и исследованиям', value: 'podgotovki-k-analizam-i-issledovaniyam' }
+          - { label: 'Полезные советы', value: 'poleznye-sovety' }
+          - { label: 'Проктология', value: 'proktologiya' }
+          - { label: 'Травматология', value: 'travmotologiya' }
+          - { label: 'Урология', value: 'urologiya-' }
+          - { label: 'УЗИ-диагностика', value: 'uzi-diagnostika' }
+          - { label: 'Вопросы врачу', value: 'voprosy-vrachu' }
+      - { name: body, label: Текст, widget: markdown }
+      - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из заголовка.' }
+      - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало текста.' }
+      - { name: kind, widget: hidden, default: article }
+      - { name: url, widget: hidden }
+
+  - name: news
+    label: Новости
+    label_singular: Новость
+    description: Новости. Одинаковые на сайтах Красноярска и Канска.
+    folder: src/content/articles
+    nested: { depth: 4, subfolders: false }
+    filter: { field: kind, value: news }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: h1
+    summary: '{{date}} · {{h1}}'
+    sortable_fields: [date, h1]
+    fields:
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: h1, label: Заголовок, widget: string }
+      - { name: date, label: Дата, widget: datetime, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
+      - { name: body, label: Текст, widget: markdown }
+      - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из заголовка.' }
+      - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало текста.' }
+      - { name: kind, widget: hidden, default: news }
+      - { name: url, widget: hidden }
+
+  - name: sales
+    label: Акции Красноярск
+    label_singular: Акция
+    description: Акции на сайте Красноярска (medunion.group), страница «Акции».
+    folder: src/content/articles
+    nested: { depth: 4, subfolders: false }
+    filter: { field: kind, value: sale }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: h1
+    summary: '{{h1}}'
+    sortable_fields: [h1]
+    fields: &sale_fields
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Когда акция закончилась. Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: h1, label: Заголовок, widget: string }
+      - name: group
+        label: Где показывать на странице «Акции»
+        widget: select
+        default: special
+        options:
+          - { label: 'Социальные скидки (постоянные, по документу)', value: social }
+          - { label: 'Спецпредложения', value: special }
+      - { name: summary, label: Коротко для карточки, widget: string, required: false, hint: 'Одна строка под заголовком на странице «Акции».' }
+      - { name: discount, label: Скидка, widget: string, required: false, hint: 'Например «10%». Покажется крупно на карточке.' }
+      - { name: badge, label: Вместо скидки на карточке, widget: string, required: false, hint: 'Например «5 500 ₽», если это не процент.' }
+      - { name: card_title, label: Короткий заголовок для карточки, widget: string, required: false, hint: 'Если основной заголовок длинный.' }
+      - { name: period, label: Срок, widget: string, required: false, hint: 'Например «до 31.12.2026» или «бессрочно».' }
+      - name: links
+        label: К каким услугам и врачам относится
+        label_singular: ссылку
+        widget: list
+        required: false
+        summary: '{{fields.label}}'
+        hint: 'Акция покажется и на этих страницах услуг. Адрес страницы без домена, например /uslugi/centr/kardiologiya/.'
+        fields:
+          - { name: label, label: Название, widget: string }
+          - { name: url, label: Адрес, widget: string, pattern: ['^/.*/$', 'Адрес начинается и кончается на /'] }
+      - { name: body, label: Условия акции, widget: markdown }
+      - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из заголовка.' }
+      - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало текста.' }
+      - { name: kind, widget: hidden, default: sale }
+      - { name: url, widget: hidden }
+
+  - name: sales-kansk
+    label: Акции Канск
+    label_singular: Акция (Канск)
+    description: Акции на сайте Канска (kansk.medunion.group), отдельные от красноярских.
+    folder: src/content-kansk/articles
+    nested: { depth: 4, subfolders: false }
+    filter: { field: kind, value: sale }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: h1
+    summary: '{{h1}}'
+    sortable_fields: [h1]
+    fields: *sale_fields

@@ -7,7 +7,9 @@ import { getCollection } from 'astro:content';
 import { priceSections, sectionItems } from '../lib/prices';
 import { rub } from '../lib/content';
 import { phones } from '../data/site';
-import { sales, saleGroups } from '../data/sales';
+import { saleGroups } from '../data/sales';
+import { saleInfo } from '../lib/sales';
+const sales = await saleInfo();
 
 // Each section of the price list, with its items (from src/data/prices/).
 const lists = priceSections.map((s) => ({ title: s.title, url: s.page, items: sectionItems(s) })).filter((l) => l.items.length > 0);
@@ -37,7 +39,9 @@ const total = lists.reduce((n, l) => n + l.items.length, 0);
 const offers = await getCollection('articles', (a) => a.data.kind === 'sale');
 const social = Object.entries(sales)
   .filter(([, s]) => s.group === 'social')
-  .map(([url, s]) => ({ url, label: s.title ?? offers.find((o) => o.data.url === url)?.data.h1 ?? url }));
+  .map(([url, s]) => ({ url, label: s.title ?? offers.find((o) => o.data.url === url)?.data.h1 ?? url }))
+  // smallest discount first, as on /sales/ cards read top to bottom
+  .sort((a, b) => Number(a.label.match(/(\d+)%/)?.[1] ?? 0) - Number(b.label.match(/(\d+)%/)?.[1] ?? 0) || a.label.localeCompare(b.label, 'ru'));
 const socialTitle = saleGroups.find((g) => g.key === 'social')!.title;
 const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'услуга' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'услуги' : 'услуг'}`;
 ---

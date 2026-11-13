@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/hidden-redirects.mjs dist deploy/redirects.nginx.conf dist.redirects.conf src/content",
     "preview": "astro preview",
     "import": "node scripts/import-bitrix.mjs",
     "convert": "node scripts/convert-import.mjs",
     "files": "node scripts/download-files.mjs",
-    "build:kansk": "CITY=kansk astro build && node scripts/rehost.mjs dist-kansk"
+    "build:kansk": "CITY=kansk astro build && node scripts/rehost.mjs dist-kansk && node scripts/hidden-redirects.mjs dist-kansk dist-kansk.redirects.conf dist-kansk.redirects.conf src/content-kansk src/content/articles"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
