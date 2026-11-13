@@ -29,6 +29,8 @@ for (const f of await walk(dir)) {
   if (f.endsWith('.html') || f.endsWith('.js')) {
     // href="/x", src="/x", action="/x" (not "//cdn"), also inside scripts
     s = s.replace(/\b(href|src|action|data-src)="\/(?!\/)/g, `$1="${base}/`);
+    // srcset="/a.webp 960w, /b.webp 1440w": every address in the list
+    s = s.replace(/\b(srcset)="([^"]*)"/g, (m, a, list) => `${a}="${list.replace(/(^|,\s*)\/(?!\/)/g, `$1${base}/`)}"`);
   }
   if (f.endsWith('.css') || f.endsWith('.html')) s = s.replace(/url\(\s*(["']?)\/(?!\/)/g, `url($1${base}/`);
   if (f.endsWith('.js') || f.endsWith('.html')) s = s.replace(/(["'`])\/(search\.json|_astro\/)/g, `$1${base}/$2`);
