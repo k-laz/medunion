@@ -1,9 +1,19 @@
 ---
-// The review form, on its own page. Doctor pages link here with ?doctor=...
+// "Оставить отзыв". Doctor pages link here with ?doctor=/vrachi/.../, clinic
+// pages with ?clinic=<key>. Until our server takes reviews (reviewFormOn in
+// data/site.ts), the page sends patients to the clinics' pages on review sites:
+// those reviews also count in the clinics' public ratings.
+import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import ReviewForm from '../../components/ReviewForm.astro';
-import { clinics, platformName } from '../../data/site';
+import Ratings from '../../components/Ratings.astro';
+import { clinics, platformName, reviewFormOn, type ClinicKey } from '../../data/site';
+import { city } from '../../data/city';
+
+// This city's clinics first
+const keys = (Object.keys(clinics) as ClinicKey[]).sort((a, b) => Number(!city.clinics.includes(a)) - Number(!city.clinics.includes(b)));
+const doctors = Object.fromEntries((await getCollection('doctors')).map((d) => [d.data.url, { name: d.data.name, clinics: d.data.clinics }]));
 ---
 
 <Base
@@ -12,22 +22,71 @@ import { clinics, platformName } from '../../data/site';
   url="/ostavit-otzyv-o-nashej-rabote/napisat/"
   noindex
 >
-  <PageHead url="/ostavit-otzyv-o-nashej-rabote/napisat/" h1="Оставить отзыв" lead="Расскажите, как прошёл приём: что понравилось и что нам стоит улучшить." compact />
-  <div class="wrap page-body with-aside review-new">
-    <div class="page-main">
-      <ReviewForm />
-    </div>
-    <div class="page-aside">
-      <aside class="info-card">
-        <p class="info-service">Отзыв на площадке</p>
-        <p class="info-note">Там его увидят те, кто выбирает клинику, и он войдёт в её рейтинг.</p>
-        {Object.values(clinics).map((c) => (
-          <div class="review-places">
-            <p class="info-heading">{c.city}, {c.address}</p>
-            <p class="review-places-links">{c.ratings.map((r, i) => <>{i > 0 && ' · '}<a href={r.url} target="_blank" rel="noopener">{platformName[r.platform]}</a></>)}</p>
-          </div>
-        ))}
-      </aside>
-    </div>
-  </div>
+  {reviewFormOn ? (
+    <>
+      <PageHead url="/ostavit-otzyv-o-nashej-rabote/napisat/" h1="Оставить отзыв" lead="Расскажите, как прошёл приём: что понравилось и что нам стоит улучшить." compact />
+      <div class="wrap page-body with-aside review-new">
+        <div class="page-main">
+          <ReviewForm />
+        </div>
+        <div class="page-aside">
+          <aside class="info-card">
+            <p class="info-service">Отзыв на площадке</p>
+            <p class="info-note">Там его увидят те, кто выбирает клинику, и он войдёт в её рейтинг.</p>
+            {keys.map((k) => (
+              <div class="review-places">
+                <p class="info-heading">{clinics[k].city}, {clinics[k].address}</p>
+                <p class="review-places-links">{clinics[k].ratings.map((r, i) => <>{i > 0 && ' · '}<a href={r.url} target="_blank" rel="noopener">{platformName[r.platform]}</a></>)}</p>
+              </div>
+            ))}
+          </aside>
+        </div>
+      </div>
+    </>
+  ) : (
+    <>
+      <PageHead
+        url="/ostavit-otzyv-o-nashej-rabote/napisat/"
+        h1="Оставить отзыв"
+        lead="Выберите клинику и площадку: отзыв увидят те, кто выбирает клинику, и он войдёт в её рейтинг. Спасибо, что помогаете нам стать лучше."
+        compact
+      />
+      <div class="wrap page-body review-sites" data-review-sites data-doctors={JSON.stringify(doctors)}>
+        <p class="info-card review-doctor-note" data-doctor-note hidden>
+          Отзыв о враче? Укажите в тексте его имя, <strong data-doctor-name></strong>, тогда клиника будет знать, о ком отзыв.
+        </p>
+        <ul class="review-site-list">
+          {keys.map((k) => (
+            <li class="info-card review-site" data-clinic={k}>
+              <p class="clinic-city">{clinics[k].city}</p>
+              <h2>{clinics[k].address}</h2>
+              <Ratings ratings={clinics[k].ratings} checked={false} />
+            </li>
+          ))}
+        </ul>
+        <p class="muted">Нажмите на площадку: откроется страница клиники, где можно оставить отзыв.</p>
+      </div>
+    </>
+  )}
 </Base>
+
+<script>
+  // Coming from a doctor's or clinic's page: their clinics first, and for a
+  // doctor a reminder to name them in the review.
+  const box = document.querySelector<HTMLElement>('[data-review-sites]');
+  if (box) {
+    const q = new URLSearchParams(location.search);
+    const doctors = JSON.parse(box.dataset.doctors || '{}') as Record<string, { name: string; clinics: string[] }>;
+    const doc = doctors[q.get('doctor') || ''];
+    const first = doc ? doc.clinics : q.get('clinic') ? [q.get('clinic')!] : [];
+    const list = box.querySelector('.review-site-list')!;
+    for (const k of [...first].reverse()) {
+      const li = list.querySelector(`[data-clinic="${k}"]`);
+      if (li) list.prepend(li);
+    }
+    if (doc) {
+      box.querySelector<HTMLElement>('[data-doctor-name]')!.textContent = doc.name;
+      box.querySelector<HTMLElement>('[data-doctor-note]')!.hidden = false;
+    }
+  }
+</script>

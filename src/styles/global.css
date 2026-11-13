@@ -848,3 +848,10 @@ a.contact-strong:hover { color: var(--brand); }
 
 /* City switch: the site you are on */
 .topbar-cities a[aria-current] { color: var(--ink); font-weight: 600; }
+
+/* "Оставить отзыв" while it sends to review sites */
+.review-sites { display: grid; gap: 20px; }
+.review-doctor-note { margin: 0; }
+.review-site-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.review-site h2 { font-size: var(--step-1); margin: 2px 0 14px; }
+.review-site .ratings { grid-template-columns: 1fr; }

@@ -60,7 +60,7 @@ const others = (Object.keys(clinics) as ClinicKey[]).filter((k) => k !== key);
   <section class="block" id="ratings">
     <div class="block-head">
       <h2>Рейтинг клиники</h2>
-      <a class="link-more" href={reviewFormPage}>Оставить отзыв</a>
+      <a class="link-more" href={`${reviewFormPage}?clinic=${key}`}>Оставить отзыв</a>
     </div>
     <Ratings ratings={c.ratings} />
     {own.length > 0 && (

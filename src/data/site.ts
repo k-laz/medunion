@@ -100,6 +100,10 @@ export const social = [
 // Reviews: the list of reviews, and the separate page with the form.
 export const reviewsPage = '/ostavit-otzyv-o-nashej-rabote/';
 export const reviewFormPage = '/ostavit-otzyv-o-nashej-rabote/napisat/';
+// The review form on that page sends to our server (POST /api/reviews), which is
+// not built yet. Until then the page sends patients to 2ГИС, ПроДокторов and
+// Яндекс Карты instead. Set to true once /api/reviews works.
+export const reviewFormOn = false;
 
 // Legal details shown in the footer. Copied from the "Сведения о медицинской
 // организации" page of the old site; check against the current license.
