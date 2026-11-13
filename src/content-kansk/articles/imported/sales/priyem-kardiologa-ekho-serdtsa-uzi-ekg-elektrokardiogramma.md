@@ -5,6 +5,17 @@ description: "Кардиологический комплекс проводит
 h1: "Приём кардиолога + ЭХО-сердца (УЗИ) + ЭКГ (электрокардиограмма) = 5500 рублей"
 kind: "sale"
 period: "с 01.01.2025, бессрочно"
+group: "special"
+summary: "Кардиологический комплекс за один день по фиксированной цене."
+badge: "5 500 ₽"
+card_title: "Приём кардиолога + ЭХО сердца + ЭКГ"
+links:
+  - label: "Приём кардиолога"
+    url: "/uslugi/centr/kardiologiya/priyem-vracha-kardiologa/"
+  - label: "ЭХО сердца"
+    url: "/uslugi/diagnostika/ultrazvukovaya-diagnostika/ekho-serdtsa/"
+  - label: "ЭКГ"
+    url: "/uslugi/proczedurnyj-kabinet/ekg-ekg-s-nagruzkoy/"
 ---
 
 Специальная цена: 5500 рублей

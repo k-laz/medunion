@@ -6,6 +6,13 @@ h1: "Прием гинеколога со скидкой 15%"
 kind: "sale"
 discount: "15%"
 period: "до отмены акции"
+group: "special"
+summary: "Консультация гинеколога, гинеколога-эндокринолога Коловой Л.М."
+links:
+  - label: "Колова Людмила Михайловна"
+    url: "/vrachi/vrachi-ginekologi/kolova-lyudmila-mikhaylovna/"
+  - label: "Гинекология"
+    url: "/uslugi/centr/ginekologiya/"
 ---
 
 Не откладывайте заботу о женском здоровье. Запишитесь на консультацию врача-гинеколога со скидкой 15%.

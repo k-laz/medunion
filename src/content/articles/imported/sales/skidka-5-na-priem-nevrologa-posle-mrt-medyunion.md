@@ -6,6 +6,15 @@ h1: "Скидка 5% на прием невролога после МРТ"
 kind: "sale"
 discount: "5%"
 period: "с 01.01.2025, бессрочно"
+group: "special"
+summary: "Если вы сделали МРТ в Медюнион."
+links:
+  - label: "МРТ открытого типа"
+    url: "/uslugi/diagnostika/mrt/"
+  - label: "МРТ 1,5 Тесла"
+    url: "/uslugi/diagnostika/mrt-1-5-tesla/"
+  - label: "Неврология"
+    url: "/uslugi/centr/nevrologiya/"
 ---
 
 ![Скидка 5% на прием невролога после МРТ  ](/upload/iblock/1e7/62bizbhfpzosocvax4b52rcic318rrsj.jpg)

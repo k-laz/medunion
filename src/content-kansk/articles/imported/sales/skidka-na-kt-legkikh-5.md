@@ -6,6 +6,11 @@ h1: "Скидка на КТ легких 5%"
 kind: "sale"
 discount: "5%"
 period: "с 30.05.2025, бессрочно"
+group: "special"
+summary: "КТ лёгких за 4 180 ₽, на Инструментальной."
+links:
+  - label: "КТ лёгких"
+    url: "/uslugi/diagnostika/mskt/kt-legkih/"
 ---
 
 ![Скидка на КТ легких 5%](/upload/iblock/752/fbvq41rd3f9ovyfn9xsd2bbw3l53pybx.webp)
