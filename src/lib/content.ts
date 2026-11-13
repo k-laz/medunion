@@ -36,10 +36,28 @@ export async function breadcrumbs(url: string) {
   return trail;
 }
 
+// Which doctors a service page shows comes from the old site, which also linked
+// diagnostics from the pages of doctors who only refer patients to them (two
+// neurologists on «МРТ головного мозга», a gastroenterologist on «УЗИ»). On a
+// diagnostic page, only doctors who do diagnostics are shown.
+// Diagnostic pages (by address) and who does that kind of diagnostics (by specialty).
+const DIAGNOSTICS: [RegExp, RegExp][] = [
+  [/\/(mrt|mrt-1-5-tesla|mskt|rentgen|kt-rebenku|detskiy-rentgen-rebenku|mrt-detyam)\//, /рентгенолог/i],
+  [/\/(ultrazvukovaya-diagnostika|uzi-detyam|ekho-serdtsa-detyam|neyrosonografiya[^/]*)\//, /ультразвук|узд|функциональн/i],
+  [/\/funktsionalnaya-diagnostika\//, /функциональн|ультразвук|аритмолог/i],
+  [/\/fgds[^/]*\//, /эндоскопист/i],
+  [/^\/uslugi\/diagnostika\//, /рентгенолог|ультразвук|узд|функциональн|эндоскопист|диагност/i],
+];
+/** Does this doctor belong on this service page? */
+export const doctorFits = (serviceUrl: string, specialty: string) => {
+  const rule = DIAGNOSTICS.find(([page]) => page.test(serviceUrl));
+  return !rule || rule[1].test(specialty);
+};
+
 /** Services that list this doctor. */
-export async function servicesOfDoctor(doctorId: string) {
+export async function servicesOfDoctor(doctorId: string, specialty = '') {
   const services = await getCollection('services');
-  return services.filter((s) => s.data.doctors.includes(doctorId));
+  return services.filter((s) => s.data.doctors.includes(doctorId) && doctorFits(s.data.url, specialty));
 }
 
 export const rub = (n: number) => n.toLocaleString('ru-RU') + ' ₽';

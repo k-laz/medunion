@@ -10,7 +10,7 @@ import DoctorCard from '../components/DoctorCard.astro';
 import { saleInfo as loadSaleInfo } from '../lib/sales';
 const saleInfo = await loadSaleInfo();
 import { articleService } from '../data/articles';
-import { childrenOf, shortName, doctorsByIds } from '../lib/content';
+import { childrenOf, shortName, doctorsByIds, doctorFits } from '../lib/content';
 import { currentPrices } from '../lib/prices';
 
 interface Props { entry: CollectionEntry<'articles'> | CollectionEntry<'pages'> }
@@ -40,7 +40,7 @@ if (isArticle) {
   if (service) {
     const subtree = services.filter((s) => s.data.url.startsWith(service!.data.url));
     servicePrices = currentPrices(subtree.flatMap((s) => s.data.prices));
-    doctors = (await doctorsByIds(subtree.flatMap((s) => s.data.doctors))).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru')).slice(0, 3);
+    doctors = (await doctorsByIds(subtree.flatMap((s) => s.data.doctors))).filter((x) => doctorFits(service!.data.url, x.data.specialty)).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru')).slice(0, 3);
   }
   const same = (await getCollection('articles', (a) => a.data.kind === 'article' && 'category' in a.data && a.data.category === category))
     .sort((a, b) => a.data.h1.localeCompare(b.data.h1, 'ru'));

@@ -6,7 +6,7 @@ import PriceList from '../components/PriceList.astro';
 import { currentPrices } from '../lib/prices';
 import DoctorCard from '../components/DoctorCard.astro';
 import SearchBox from '../components/SearchBox.astro';
-import { childrenOf, tileLabel, shortTeaser, leadText, shortName, doctorsByIds } from '../lib/content';
+import { childrenOf, tileLabel, shortTeaser, leadText, shortName, doctorsByIds, doctorFits } from '../lib/content';
 import { integrations, phones, bookingPage } from '../data/site';
 import { saleInfo as loadSaleInfo } from '../lib/sales';
 import type { SaleInfo } from '../data/sales';
@@ -20,7 +20,7 @@ const prices = currentPrices(d.prices);
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 // (a doctor hidden at /admin/ is not in the collection: skip)
-const doctors = await doctorsByIds(d.doctors);
+const doctors = (await doctorsByIds(d.doctors)).filter((x) => doctorFits(d.url, x.data.specialty));
 const allServices = await getCollection('services');
 const children = childrenOf(d.url, allServices);
 const related = d.related.map((u) => allServices.find((x) => x.data.url === u)).filter((x) => x !== undefined);

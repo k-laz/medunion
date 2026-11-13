@@ -19,7 +19,7 @@ const d = entry.data;
 const photo = await photoFor(d.url, d.photo);
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
-const services = await servicesOfDoctor(entry.id);
+const services = await servicesOfDoctor(entry.id, d.specialty);
 const reviews = await getCollection('reviews', (r) => r.data.doctor === entry.id);
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
