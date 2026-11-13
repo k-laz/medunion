@@ -20,6 +20,23 @@ const photo = await photoFor(d.url, d.photo);
 const { Content } = await render(entry);
 const hasText = (entry.body ?? '').trim().length > 0;
 const services = await servicesOfDoctor(entry.id, d.specialty);
+// Направления: a section stands for the pages inside it (a radiologist listed on
+// «МРТ 1,5 Тесла» and on 20 exams in it shows one chip); more than 8 fold away.
+// Four or more pages of one section also become that section («Клиника блокады боли»).
+const allServices = await getCollection('services');
+const parentOf = (u: string) => u.replace(/[^/]+\/$/, '');
+const counts = new Map<string, number>();
+for (const s of services) counts.set(parentOf(s.data.url), (counts.get(parentOf(s.data.url)) ?? 0) + 1);
+const grouped = [...new Map(services.map((s) => {
+  const up = parentOf(s.data.url);
+  const section = (counts.get(up) ?? 0) >= 4 && up !== '/uslugi/' ? allServices.find((x) => x.data.url === up) : undefined;
+  const e = section ?? s;
+  return [e.data.url, e] as const;
+})).values()];
+const directions = grouped
+  .filter((s) => !grouped.some((o) => o !== s && s.data.url.startsWith(o.data.url)))
+  .sort((a, b) => a.data.url.localeCompare(b.data.url));
+const DIRECTIONS_SHOWN = 8;
 const reviews = await getCollection('reviews', (r) => r.data.doctor === entry.id);
 const pages: Record<string, string> = {
   kurchatova: '/contacts/klinika-na-kurchatova/',
@@ -116,9 +133,12 @@ const anchors = [
       )}
       {d.specialization && <p class="doctor-where"><span class="muted">Специализация:</span> {d.specialization}</p>}
       {services.length > 0 && (
-        <div class="doctor-depts">
+        <div class="doctor-depts" data-more-box>
           <span class="muted">Направления</span>
-          <div class="chips">{services.map((s) => <a class="chip" href={s.data.url}>{shortName(s.data.url, s.data.h1)}</a>)}</div>
+          <div class="chips">
+            {directions.map((s, i) => <a class:list={['chip', { 'more-item': i >= DIRECTIONS_SHOWN }]} href={s.data.url}>{shortName(s.data.url, s.data.h1)}</a>)}
+            {directions.length > DIRECTIONS_SHOWN && <button class="chip chip-more" type="button" data-more>Ещё {directions.length - DIRECTIONS_SHOWN}</button>}
+          </div>
         </div>
       )}
     </div>
@@ -203,6 +223,11 @@ const anchors = [
 <div class="page-body"></div>
 
 <script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-more-box]')) {
+    const btn = box.querySelector<HTMLButtonElement>('[data-more]');
+    if (!btn) { box.classList.add('is-open'); continue; }
+    btn.addEventListener('click', () => { box.classList.add('is-open'); btn.remove(); });
+  }
   for (const box of document.querySelectorAll<HTMLElement>('[data-courses]')) {
     const btn = box.querySelector<HTMLButtonElement>('.courses-toggle');
     if (!btn) { box.classList.add('is-open'); continue; }
