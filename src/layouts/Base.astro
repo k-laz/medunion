@@ -16,6 +16,7 @@ import Footer from '../components/Footer.astro';
 import Integrations from '../components/Integrations.astro';
 import CookieNotice from '../components/CookieNotice.astro';
 import { isProduction, integrations } from '../data/site';
+import { isSharedCopy } from '../data/city';
 
 interface Props {
   title: string;
@@ -35,7 +36,7 @@ const canonical = new URL(url, Astro.site).href;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {(!isProduction || noindex) && <meta name="robots" content="noindex, nofollow" />}
+    {(!isProduction || noindex) ? <meta name="robots" content="noindex, nofollow" /> : isSharedCopy(url) && <meta name="robots" content="noindex, follow" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

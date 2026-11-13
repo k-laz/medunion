@@ -22,7 +22,7 @@ export async function getStaticPaths() {
     for (const entry of await getCollection(kind)) {
       const url = entry.data.url;
       if (url === '/') continue; // the home page has its own file
-      if (!inThisSite(url, entry.data.clinic)) continue; // Kansk build: shared pages stay on medunion.group
+      if (!inThisSite(url, entry.data.clinic)) continue; // Kansk build: no Krasnoyarsk clinic pages
       if (seen.has(url)) throw new Error(`Two files claim ${url}: ${seen.get(url)} and ${kind}/${entry.id}`);
       seen.set(url, `${kind}/${entry.id}`);
       paths.push({ params: { path: strip(url) }, props: { kind, entry } });

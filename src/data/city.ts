@@ -1,10 +1,13 @@
 // Which city this build is for. The same code builds two sites:
 //   npm run build          medunion.group           Krasnoyarsk (both clinics)
 //   npm run build:kansk    kansk.medunion.group     Kansk (only city pages)
-// The Kansk site has only what is particular to Kansk: services, doctors,
-// prices, offers, contacts, booking. Shared pages (articles, news, patient
-// information, about the company, reviews) live once on medunion.group, and
-// links to them point there (scripts/rehost.mjs).
+// The Kansk site has its own services, doctors, prices, offers, contacts and
+// booking. Shared pages (articles, news, patient information, about the
+// company, reviews) are on both sites so a visitor stays on their city's site;
+// on the Kansk site they are hidden from search (noindex, not in the sitemap),
+// so they rank only on medunion.group. Pages the Kansk site does not have
+// (Krasnoyarsk clinics and doctors, Krasnoyarsk-only services) link to
+// medunion.group (scripts/rehost.mjs).
 import { clinics, phones, type ClinicKey } from './site';
 import shared from './shared-sections.json';
 
@@ -22,13 +25,14 @@ export const cities: Record<City, { name: string; in: string; origin: string; cl
 };
 export const city = cities[CITY];
 
-// First parts of addresses that only the main site has.
-// (also used by scripts/rehost.mjs)
+// First parts of addresses of the shared pages.
+// (also used by scripts/rehost.mjs and astro.config.mjs)
 export const SHARED_SECTIONS: string[] = shared;
-/** Is this page part of this build? (The Kansk build leaves out shared pages and Krasnoyarsk clinic pages.) */
+/** A shared page on the Kansk site: shown, but left out of search. */
+export const isSharedCopy = (url: string) => isKansk && SHARED_SECTIONS.includes(url.split('/')[1]);
+/** Is this page part of this build? (The Kansk build leaves out the Krasnoyarsk clinic pages.) */
 export const inThisSite = (url: string, clinic?: string) => {
   if (!isKansk) return true;
-  if (SHARED_SECTIONS.includes(url.split('/')[1])) return false;
   if (clinic && !city.clinics.includes(clinic as ClinicKey)) return false;
   return true;
 };

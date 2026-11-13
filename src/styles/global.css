@@ -63,6 +63,7 @@ p { margin: 0 0 1rem; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
 .muted { color: var(--muted); }
+.city-note { color: var(--muted); font-weight: 400; white-space: nowrap; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: 16px; top: 16px; background: var(--paper); padding: 8px 12px; z-index: 100; }

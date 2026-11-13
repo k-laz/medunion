@@ -1,10 +1,9 @@
-// After the Kansk build (CITY=kansk): makes it a site of city pages only.
-//   - removes the shared sections (articles, news, patient info, reviews ...)
-//     and the price editor, which live once on medunion.group;
+// After the Kansk build (CITY=kansk):
+//   - removes the price editor, which lives on medunion.group;
 //   - every link to a page this site does not have now points to the same
-//     address on the main site (MAIN_ORIGIN), e.g. /articles/... or the
-//     Krasnoyarsk clinic pages;
-//   - drops those addresses from the sitemap.
+//     address on the main site (MAIN_ORIGIN), e.g. the Krasnoyarsk clinic
+//     pages and doctors, КТ;
+//   - drops those addresses and the shared pages from the sitemap.
 //
 //   - writes dist-kansk.redirects.conf: deploy/redirects-kansk.nginx.conf with
 //     every target this site does not have pointed at the main site.
@@ -18,7 +17,7 @@ const dir = process.argv[2] || 'dist-kansk';
 const MAIN = (process.env.MAIN_ORIGIN || 'https://medunion.group').replace(/\/$/, '');
 const shared = JSON.parse(await readFile(new URL('../src/data/shared-sections.json', import.meta.url), 'utf8'));
 
-for (const s of [...shared, 'admin']) await rm(join(dir, s), { recursive: true, force: true });
+await rm(join(dir, 'admin'), { recursive: true, force: true }); // prices are edited on the main site's /admin/
 
 async function walk(d) {
   const out = [];
@@ -47,10 +46,13 @@ for (const f of files) {
   let s = before;
   if (f.endsWith('.html')) {
     s = s.replace(/\bhref="(\/(?!\/)[^"]*)"/g, (m, p) => (p === '/' || !elsewhere(p) ? m : (links++, `href="${MAIN}${p}"`)));
+    // A service this site does not have is done in Krasnoyarsk: say so on the link.
+    s = s.replace(/(<a\b[^>]*\bhref="https?:\/\/[^"/]+\/(?:uslugi|ceny)\/[^"]*"[^>]*>)([\s\S]*?)<\/a>/g, (m, open, text) =>
+      open.startsWith(`<a`) && open.includes(MAIN) && !text.includes('city-note') ? `${open}${text}<span class="city-note"> (в Красноярске)</span></a>` : m);
   } else if (f.endsWith('search.json')) {
     s = s.replace(/"u":"(\/[^"]*)"/g, (m, p) => (elsewhere(p) ? `"u":"${MAIN}${p}"` : m));
   } else if (/sitemap-\d+\.xml$/.test(f)) {
-    s = s.replace(/<url><loc>https?:\/\/[^/<]+(\/[^<]*)<\/loc>.*?<\/url>/g, (m, p) => (elsewhere(p) ? '' : m));
+    s = s.replace(/<url><loc>https?:\/\/[^/<]+(\/[^<]*)<\/loc>.*?<\/url>/g, (m, p) => (elsewhere(p) || shared.includes(p.split('/')[1]) ? '' : m));
   }
   if (s !== before) { await writeFile(f, s); changed++; }
 }
