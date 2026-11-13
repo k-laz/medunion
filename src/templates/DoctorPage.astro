@@ -10,7 +10,7 @@ import DoctorSchedule from '../components/DoctorSchedule.astro';
 import ReviewList from '../components/ReviewList.astro';
 import DoctorCard from '../components/DoctorCard.astro';
 import { servicesOfDoctor, initials, years, rub, shortName, photoFor } from '../lib/content';
-import { clinics, phones, reviewsPage, reviewFormPage } from '../data/site';
+import { clinics, phones, reviewsPage, reviewFormPage, bookingPage, showSchedule } from '../data/site';
 import { currentPrices } from '../lib/prices';
 
 interface Props { entry: CollectionEntry<'doctors'> }
@@ -88,7 +88,7 @@ const anchors = [
       {photo ? <img src={photo} alt={d.name} width="640" height="800" /> : <span aria-hidden="true">{initials(d.name)}</span>}
     </div>
     <div class="doctor-side-actions">
-      <a class="btn btn-primary btn-wide" href="#schedule">Записаться на приём</a>
+      <a class="btn btn-primary btn-wide" href={showSchedule ? '#schedule' : bookingPage}>Записаться на приём</a>
       <a class="btn btn-quiet btn-wide" href={`${reviewFormPage}?doctor=${encodeURIComponent(d.url)}`}>Оставить отзыв</a>
       <a class="doctor-side-phone" href={`tel:${city.phone.tel}`}>{city.phone.display}</a>
     </div>
@@ -123,7 +123,7 @@ const anchors = [
       )}
     </div>
 
-    <DoctorSchedule doctorUrl={d.url} clinicKeys={d.clinics} />
+    {showSchedule && <DoctorSchedule doctorUrl={d.url} clinicKeys={d.clinics} />}
 
     {hasText && (
       <section class="block" id="about">

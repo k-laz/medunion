@@ -131,6 +131,9 @@ export const integrations = {
 // It talks to the МИС «Ариадна» and receives reviews; the МИС login lives
 // only in its settings on the server. Contract: docs/server-api.md
 export const apiBase = '/api';
+// Doctor pages: the "Расписание и запись" block with free times from the МИС.
+// Off until the МИС is connected (docs/mis-api.md); then set to true.
+export const showSchedule = false;
 
 // Every "Записаться" button leads here.
 export const bookingPage = '/appointment/';
