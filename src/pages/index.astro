@@ -34,7 +34,6 @@ const topSections = childrenOf('/uslugi/', services).filter((s) => s.data.url !=
 const directions = [...specialties, ...topSections]
   .map((s) => ({ url: s.data.url, label: shortName(s.data.url, s.data.h1) }))
   .sort((a, b) => a.label.localeCompare(b.label, 'ru'));
-const firstCount = 15;
 
 const features = [
   { url: '/uslugi/diagnostika/mrt/', title: 'МРТ открытого типа', text: 'Исследование без замкнутого тоннеля. Есть и высокопольный томограф 1,5 Тесла.', tone: 'blue' },
@@ -125,16 +124,8 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
         <a class="link-more" href="/uslugi/">Все услуги</a>
       </div>
       <ul class="dir-list">
-        {directions.slice(0, firstCount).map((s) => <li><a href={s.url}>{s.label}</a></li>)}
+        {directions.map((s) => <li><a href={s.url}>{s.label}</a></li>)}
       </ul>
-      {directions.length > firstCount && (
-        <details class="dir-more">
-          <summary><span class="plus" aria-hidden="true"></span><span class="dir-more-open">Показать все направления</span><span class="dir-more-close">Свернуть</span></summary>
-          <ul class="dir-list">
-            {directions.slice(firstCount).map((s) => <li><a href={s.url}>{s.label}</a></li>)}
-          </ul>
-        </details>
-      )}
     </section>
 
     {features.length > 0 && (

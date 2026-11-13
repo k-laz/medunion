@@ -259,19 +259,6 @@ p { margin: 0 0 1rem; }
 .dir-list li::before { content: ''; position: absolute; left: 0; top: 0.95em; width: 6px; height: 6px; border-radius: 50%; background: var(--pink); }
 .dir-list a { color: var(--ink); text-decoration: none; }
 .dir-list a:hover { color: var(--brand); text-decoration: underline; }
-.dir-more { margin-top: 0; }
-.dir-more summary {
-  list-style: none; display: flex; align-items: center; justify-content: center; gap: 12px;
-  margin-top: 16px; padding-top: 20px; border-top: 1px solid var(--line); cursor: pointer; font-weight: 500;
-}
-.dir-more summary::-webkit-details-marker { display: none; }
-.plus { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); position: relative; }
-.plus::before, .plus::after { content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 2px; background: var(--ink); transform: translate(-50%, -50%); }
-.plus::after { transform: translate(-50%, -50%) rotate(90deg); }
-.dir-more[open] .plus::after { display: none; }
-.dir-more-close, .dir-more[open] .dir-more-open { display: none; }
-.dir-more[open] .dir-more-close { display: inline; }
-.dir-more[open] .dir-list { margin-top: 16px; }
 
 /* Feature cards */
 .feature-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
