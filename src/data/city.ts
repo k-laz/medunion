@@ -32,3 +32,15 @@ export const inThisSite = (url: string, clinic?: string) => {
   if (clinic && !city.clinics.includes(clinic as ClinicKey)) return false;
   return true;
 };
+
+// The Kansk site's titles and headings name no city: the old Kansk copy mixes
+// «в Красноярске» and «в Канске», and the subdomain already tells Yandex the
+// region. Applied when the content is read (src/content.config.ts), so a new
+// copy of the old site keeps it. Clinic pages keep their address.
+const CITY_WORDS = /(\s+сделать)?\s+(?:в|во)\s+(?:Красноярске|Канске)(?:\s+и\s+(?:Красноярске|Канске))?|\s+(?:Красноярске|Канске|Красноярск|Канск)(?=$|[\s|:.,;"«»—–-])/g;
+export const dropCity = (s: string) =>
+  s.replace(CITY_WORDS, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([:.,;])/g, '$1')
+    .replace(/(\s*[|—–-])+\s*$/, '')
+    .trim();

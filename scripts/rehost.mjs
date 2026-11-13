@@ -66,11 +66,24 @@ const failed = new Set(
   (await readFile(new URL('../import-kansk/report.csv', import.meta.url), 'utf8').catch(() => ''))
     .split('\n').slice(1).map((l) => l.split('","')).filter((c) => c[2] && c[2] !== '200').map((c) => c[0].replace(/^"/, '')),
 );
+// 500 = a service the old site did not assign to Kansk (404 = gone everywhere).
+const notInKansk = new Set(
+  (await readFile(new URL('../import-kansk/report.csv', import.meta.url), 'utf8').catch(() => ''))
+    .split('\n').slice(1).map((l) => l.split('","')).filter((c) => c[2] === '500').map((c) => c[0].replace(/^"/, '')),
+);
 const mainDist = new URL('../dist/', import.meta.url);
 const onMain = (p) => existsSync(new URL('.' + decodeURI(p) + 'index.html', mainDist));
+// ...or, for a service done only in Krasnoyarsk (КТ, МРТ 1,5 Т, ФГС, массаж;
+// see KRASNOYARSK_ONLY in src/content.config.ts), where the main site sends
+// that address.
+const krasnoyarskOnly = /\/(mskt|kt-rebenku|mrt-1-5-tesla|fgds-fgs[^/]*|massazh)\//;
+const mainMoved = new Map(
+  [...(await readFile(new URL('../deploy/redirects.nginx.conf', import.meta.url), 'utf8').catch(() => '')).matchAll(/location = "([^"]+)" \{ return 301 (\/[^;]*); \}/g)].map((m) => [m[1], m[2]]),
+);
 let toSame = 0;
 const out = red.replace(/location = "([^"]+)" \{ return 301 (\/[^;]*); \}/g, (m, from, to) => {
   if (failed.has(from) && onMain(from)) { toSame++; return `location = "${from}" { return 301 ${MAIN}${from}; }`; }
+  if (notInKansk.has(from) && krasnoyarskOnly.test(mainMoved.get(from) ?? '') && onMain(mainMoved.get(from))) { moved++; return `location = "${from}" { return 301 ${MAIN}${mainMoved.get(from)}; }`; }
   if (elsewhere(to)) { moved++; return `location = "${from}" { return 301 ${MAIN}${to}; }`; }
   return m;
 });

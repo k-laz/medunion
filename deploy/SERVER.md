@@ -110,14 +110,17 @@ certbot renews the certificate by itself.
 - Bitrix24: confirm calls and the chat button still create leads.
 - Keep the old server running (on another address) for a month in case something was missed.
 
-## 5. The Kansk site (kansk.medunion.group)
+## 6. The Kansk site (kansk.medunion.group)
 
 The same code builds a second site with only the Kansk city pages
 (`npm run build:kansk`, see `src/data/city.ts`). The deploy uploads it to
 `/var/www/medunion/kansk` and its redirects to `/var/www/medunion/redirects-kansk.conf`
 on every push; nothing serves it until its nginx config is installed. Pages it does
 not have (articles, news, patient information, Krasnoyarsk-only services) redirect
-to the same address on medunion.group.
+to the same address on medunion.group. Krasnoyarsk-only services (КТ, МРТ 1,5 Т,
+ФГС, массаж, confirmed by the clinic 2026-11-12) are listed in `KRASNOYARSK_ONLY` in
+`src/content.config.ts`; the Kansk site's titles and headings carry no city name
+(`dropCity` in `src/data/city.ts`).
 
 On the Kansk switch day (after the main domain has moved):
 

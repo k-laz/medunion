@@ -1,6 +1,7 @@
 import { defineCollection, reference } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { dropCity } from './data/city';
 
 // Every page is a Markdown file. The fields at the top of the file
 // (between the --- lines) are checked here, so a page with a missing
@@ -13,9 +14,26 @@ import { z } from 'astro/zod';
 // Entry id = file path without ".md", so references are easy to read,
 // e.g. "imported/vrachi/vrachi-ginekologi/kolova-lyudmila-mikhaylovna".
 // The Kansk build reads its own copy of the city pages (src/content-kansk/).
-const ROOT = process.env.CITY === 'kansk' ? './src/content-kansk' : './src/content';
+const KANSK = process.env.CITY === 'kansk';
+const ROOT = KANSK ? './src/content-kansk' : './src/content';
+// Services done only in Krasnoyarsk (the clinic confirmed 2026-11-12): left out
+// of the Kansk build, so its old addresses go to the same page on medunion.group
+// (the nginx fallback in deploy/nginx/kansk.medunion.group.conf) and links to
+// them point there (scripts/rehost.mjs).
+const KRASNOYARSK_ONLY = KANSK ? [
+  '**/uslugi/diagnostika/mskt.md', '**/uslugi/diagnostika/mskt/**', // КТ
+  '**/uslugi/diagnostika/mrt-1-5-tesla.md', // МРТ 1,5 Т (Канск: открытый МРТ)
+  '**/ceny/mskt.md', '**/ceny/mrt-magnitno-rezonansnaya-tomografiya-1,5tesla.md',
+  '**/ceny/fgs.md', '**/ceny/massazh.md', // ФГС, массаж
+  '**/sales/*-kt-*.md', // акции на КТ
+] : [];
 const files = (base: string) =>
-  glob({ pattern: '**/*.md', base, generateId: ({ entry }) => entry.replace(/\.md$/, '') });
+  glob({ pattern: ['**/*.md', ...KRASNOYARSK_ONLY.map((p) => '!' + p)], base, generateId: ({ entry }) => entry.replace(/\.md$/, '') });
+
+// Kansk build: no city in titles and headings (dropCity in src/data/city.ts).
+// Clinic pages keep theirs, it is part of the address.
+const cityless = <T extends z.ZodType<{ title: string; h1?: string; layout?: string }>>(schema: T) =>
+  KANSK ? schema.transform((d) => (d.layout === 'clinic' ? d : { ...d, title: dropCity(d.title), ...(d.h1 !== undefined && { h1: dropCity(d.h1) }) })) : schema;
 
 const clinic = z.enum(['kurchatova', 'instrumentalnaya', 'kansk']);
 const price = z.object({ name: z.string(), price: z.number().positive() });
@@ -31,7 +49,7 @@ const seo = {
 
 const services = defineCollection({
   loader: files(`${ROOT}/services`),
-  schema: z.object({
+  schema: cityless(z.object({
     ...seo,
     h1: z.string(),
     lead: z.string().optional(),
@@ -45,12 +63,12 @@ const services = defineCollection({
     clinics: z.array(clinic).default([]),
     doctors: z.array(reference('doctors')).default([]),
     faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
-  }),
+  })),
 });
 
 const doctors = defineCollection({
   loader: files(`${ROOT}/doctors`),
-  schema: z.object({
+  schema: cityless(z.object({
     ...seo,
     name: z.string(),
     specialty: z.string(),
@@ -63,12 +81,12 @@ const doctors = defineCollection({
     clinics: z.array(clinic).default([]),
     education: z.array(z.string()).default([]),
     prices: z.array(price).default([]),
-  }),
+  })),
 });
 
 const articles = defineCollection({
   loader: files(`${ROOT}/articles`),
-  schema: z.object({
+  schema: cityless(z.object({
     ...seo,
     h1: z.string(),
     kind: z.enum(['article', 'news', 'sale']),
@@ -76,38 +94,38 @@ const articles = defineCollection({
     period: z.string().optional(), // offers: "с 01.01.2025, бессрочно"
     date: z.coerce.date().optional(), // news
     category: z.string().optional(),
-  }),
+  })),
 });
 
 const prices = defineCollection({
   loader: files(`${ROOT}/prices`),
-  schema: z.object({
+  schema: cityless(z.object({
     ...seo,
     h1: z.string(),
     items: z.array(price).default([]),
-  }),
+  })),
 });
 
 // Section pages whose list is built automatically (all doctors, all articles...).
 const listings = defineCollection({
   loader: files(`${ROOT}/listings`),
-  schema: z.object({
+  schema: cityless(z.object({
     ...seo,
     h1: z.string(),
     of: z.enum(['doctors', 'articles', 'news', 'sales', 'prices']),
     // Doctor lists: addresses of the doctors shown (otherwise: doctors under this address)
     members: z.array(z.string()).optional(),
-  }),
+  })),
 });
 
 const pages = defineCollection({
   loader: files(`${ROOT}/pages`),
-  schema: z.object({
+  schema: cityless(z.object({
     ...seo,
     h1: z.string(),
     layout: z.enum(['contacts', 'clinic']).optional(),
     clinic: clinic.optional(),
-  }),
+  })),
 });
 
 // Patient reviews. One list in reviews.json, newest first. A review that
