@@ -133,7 +133,15 @@ collections:
         widget: string
         required: false
         hint: 'Для текстового баннера. Для баннера с картинкой это просто название в списке.'
-      - { name: highlight, label: 'Крупная надпись слева', widget: string, required: false, hint: 'Необязательно. Например: «15 лет», «−20%».' }
+      - { name: highlight, label: 'Крупная надпись слева', widget: string, required: false, hint: 'Необязательно. Например: «15 лет», «−20%». Число в начале будет крупным.' }
+      - name: theme
+        label: Оформление текстового баннера
+        widget: select
+        default: bright
+        options:
+          - { label: 'Яркий: белый текст на фирменном градиенте', value: bright }
+          - { label: 'Светлый: тёмный текст на бледно-розовом', value: light }
+      - { name: photo, label: 'Фото справа', widget: image, required: false, hint: 'Необязательно, для текстового баннера: врач, клиника, оборудование. Вертикальное или квадратное, от 800 пикселей. На телефоне не показывается.' }
       - { name: text, label: Текст, widget: text, required: false }
       - { name: button, label: Надпись на кнопке, widget: string, required: false, hint: 'По умолчанию «Подробнее».' }
       - { name: link, label: Ссылка, widget: string, required: false, hint: 'Куда ведёт баннер: /sales/... или полный адрес https://...' }

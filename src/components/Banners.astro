@@ -32,8 +32,14 @@ const slides = await Promise.all(
   list.map(async (b) => {
     const desk = find(b.image);
     const mob = find(b.image_mobile);
+    const photo = find(b.photo);
+    // "15 лет" -> a big "15" and a small "лет"; anything else ("−20%") as is
+    const hl = b.highlight?.trim().match(/^(\d+)\s+(\S.*)$/);
     return {
       ...b,
+      hlBig: hl ? hl[1] : b.highlight,
+      hlSmall: hl?.[2],
+      photoImg: photo && (await getImage({ src: photo, width: Math.min(720, photo.width), format: 'webp' })),
       desk: desk && { meta: desk, ...(await srcset(desk, [960, 1440, 1920, 2400])) },
       mob: mob && { meta: mob, ...(await srcset(mob, [540, 1080])) },
     };
@@ -55,24 +61,35 @@ const slides = await Promise.all(
               </picture>
             </a>
           ) : (
-            <div class="promo-text">
-              {b.highlight && <p class="promo-highlight">{b.highlight}</p>}
+            <div class:list={['promo-text', `is-${b.theme}`, { 'has-photo': b.photoImg }]}>
+              {b.hlBig && (
+                <p class="promo-highlight">
+                  <span class="promo-hl-big">{b.hlBig}</span>
+                  {b.hlSmall && <span class="promo-hl-small">{b.hlSmall}</span>}
+                </p>
+              )}
               <div class="promo-body">
                 <h2 class="promo-title">{b.title}</h2>
                 {b.text && <p>{b.text}</p>}
-                {b.link && <a class="btn btn-primary" href={b.link}>{b.button || 'Подробнее'}</a>}
+                {b.link && (
+                  <a class:list={['btn', b.theme === 'bright' ? 'btn-light' : 'btn-primary']} href={b.link}>
+                    {b.button || 'Подробнее'}
+                    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </a>
+                )}
               </div>
+              {b.photoImg && <img class="promo-photo" src={b.photoImg.src} width={b.photoImg.attributes.width} height={b.photoImg.attributes.height} alt="" loading="lazy" />}
             </div>
           )}
         </div>
       ))}
     </div>
     {slides.length > 1 && (
-      <div class="promo-controls">
-        <button class="promo-arrow" type="button" data-dir="-1" aria-label="Предыдущий"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>
+      <>
+        <button class="promo-arrow promo-prev" type="button" data-dir="-1" aria-label="Предыдущий"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>
+        <button class="promo-arrow promo-next" type="button" data-dir="1" aria-label="Следующий"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>
         <div class="promo-dots">{slides.map((_, i) => <button type="button" aria-label={`Баннер ${i + 1}`} data-i={i} />)}</div>
-        <button class="promo-arrow" type="button" data-dir="1" aria-label="Следующий"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></button>
-      </div>
+      </>
     )}
   </section>
 )}
@@ -84,8 +101,13 @@ const slides = await Promise.all(
     if (!dots.length) continue;
     const current = () => Math.round(track.scrollLeft / track.clientWidth);
     const go = (i: number) => track.scrollTo({ left: Math.max(0, Math.min(dots.length - 1, i)) * track.clientWidth, behavior: 'smooth' });
-    const mark = () => dots.forEach((d, i) => d.setAttribute('aria-current', String(i === current())));
-    box.querySelectorAll<HTMLButtonElement>('.promo-arrow').forEach((b) => b.addEventListener('click', () => go(current() + Number(b.dataset.dir))));
+    const arrows = [...box.querySelectorAll<HTMLButtonElement>('.promo-arrow')];
+    const mark = () => {
+      const i = current();
+      dots.forEach((d, n) => d.setAttribute('aria-current', String(n === i)));
+      arrows.forEach((a) => (a.disabled = a.dataset.dir === '-1' ? i === 0 : i === dots.length - 1));
+    };
+    arrows.forEach((b) => b.addEventListener('click', () => go(current() + Number(b.dataset.dir))));
     dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
     track.addEventListener('scroll', () => requestAnimationFrame(mark), { passive: true });
     mark();

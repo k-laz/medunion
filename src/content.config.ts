@@ -159,6 +159,10 @@ const banners = defineCollection({
       city: z.enum(['both', 'krasnoyarsk', 'kansk']).default('both'),
       title: z.string().optional(),
       highlight: z.string().optional(),
+      // Text banners: 'bright' = white on the brand gradient, 'light' = on pale pink
+      theme: z.enum(['bright', 'light']).default('bright'),
+      // Text banners: an optional photo on the right (src/assets/banners/)
+      photo: z.string().optional(),
       text: z.string().optional(),
       button: z.string().optional(),
       link: z.string().optional(),
