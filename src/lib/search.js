@@ -33,9 +33,9 @@ const SYNONYMS = {
   ухо: ['лор', 'оторин'], уха: ['лор', 'оторин'], уши: ['лор', 'оторин'], ушей: ['лор', 'оторин'],
   горл: ['лор', 'оторин'], нос: ['лор', 'оторин', 'пазух'], носа: ['лор', 'оторин', 'пазух'],
   лор: ['оторин'],
-  анализ: ['лаборат'], кров: ['лаборат', 'анализ'],
+  анализ: ['лаборат'], анали: ['лаборат', 'анализ'], кров: ['лаборат', 'анализ'],
   берем: ['гинек', 'берем'],
-  дет: ['педиат', 'детск'], ребе: ['педиат', 'детск'], реб: ['педиат', 'детск'],
+  дет: ['педиат', 'детск', 'ребе'], ребе: ['педиат', 'детск', 'дет'], реб: ['педиат', 'детск', 'дет'],
   колен: ['колен'], сустав: ['сустав'],
   головн: ['голов'], голов: ['головн'],
   мрт: ['мрт', 'магнитн'], кт: ['кт', 'мскт', 'компьют'],
@@ -43,11 +43,26 @@ const SYNONYMS = {
   фгс: ['фгс', 'фгдс', 'гастроск'], гастроскоп: ['фгс', 'фгдс'],
 };
 
+const CHILD = /(^|[^а-я])(дет|ребен|ребе|подрост)/;
+
 /** All stems that count as a match for one query word. @param {string} w */
 function alternatives(w) {
   const s = stem(w);
   const extra = SYNONYMS[w] || SYNONYMS[s] || SYNONYMS[w.slice(0, 5)] || SYNONYMS[w.slice(0, 4)] || [];
   return [s, ...extra];
+}
+
+/** Addresses of pages that have pages inside them. @param {{u: string}[]} items */
+const sectionCache = new WeakMap();
+function sectionsOf(items) {
+  let set = sectionCache.get(items);
+  if (!set) {
+    set = new Set();
+    const urls = items.map((i) => i.u);
+    for (const u of urls) if (urls.some((v) => v !== u && v.startsWith(u))) set.add(u);
+    sectionCache.set(items, set);
+  }
+  return set;
 }
 
 /**
@@ -59,19 +74,27 @@ export function search(items, query, limit = 8) {
   const q = words(query);
   if (!q.length || norm(query).trim().length < 2) return [];
   const alts = q.map(alternatives);
+  const sections = sectionsOf(items);
   const scored = [];
   for (const item of items) {
     const fields = [words(item.t), words(item.k), words(item.d || '')];
     let score = 0;
     let all = true;
+    let inTitle = 0;
     for (const a of alts) {
       const hit = (ws) => ws.some((w) => a.some((s) => w.startsWith(s)));
       const best = hit(fields[0]) ? 3 : hit(fields[1]) ? 2 : hit(fields[2]) ? 1 : 0;
       if (!best) { all = false; break; }
+      if (best === 3) inTitle++;
       score += best;
     }
     if (!all) continue;
-    if (norm(item.t).startsWith(q[0])) score += 2;
+    // A section whose title has every query word comes before the pages inside
+    // it: "МРТ" finds the МРТ sections before "МРТ кисти", "УЗИ" the УЗИ section.
+    if (inTitle === q.length && sections.has(item.u)) score += 2.5;
+    // Children's pages after the adult ones, unless the query is about a child
+    if (CHILD.test(norm(item.t)) && !q.some((w) => CHILD.test(w))) score -= 1.5;
+    if (alts[0].some((s) => norm(item.t).startsWith(s))) score += 2;
     if (item.k === 'Цены') score -= 0.5; // the service page first, its price page after
     scored.push({ item, score });
   }
