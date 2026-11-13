@@ -1,9 +1,10 @@
+enabled: true
+city: both
+image: /src/assets/banners/2026-11-medunion-15-let.jpg
+image_mobile: /src/assets/banners/2026-11-medunion-15-let-mobile.jpg
+alt: 15 лет. Медюнион с 2011 года. 22 ноября 2011 года мы открыли первые клиники в Красноярске. Спасибо, что доверяете нам своё здоровье.
 title: Медюнион с 2011 года
-highlight: 15 лет
-text: 22 ноября 2011 года мы открыли первые клиники в Красноярске. Спасибо, что доверяете нам своё здоровье.
-button: О клинике
 link: /company/
 start: 2026-11-11
 end: 2026-11-30
 order: 1
-enabled: true
