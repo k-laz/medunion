@@ -322,6 +322,7 @@ collections:
       - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
       - { name: h1, label: Заголовок, widget: string }
       - { name: date, label: Дата, widget: datetime, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
+      - { name: image, label: Картинка для карточки, widget: image, required: false, hint: 'Показывается на главной. Любая картинка или афиша, сайт сам впишет её в карточку целиком. Если не загружать, возьмётся первая картинка из текста.' }
       - { name: body, label: Текст, widget: markdown }
       - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из заголовка.' }
       - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало текста.' }
@@ -367,6 +368,7 @@ collections:
         fields:
           - { name: label, label: Название, widget: string }
           - { name: url, label: Адрес, widget: string, pattern: ['^/.*/$', 'Адрес начинается и кончается на /'] }
+      - { name: image, label: Картинка для карточки, widget: image, required: false, hint: 'Показывается на главной. Любая картинка или афиша, сайт сам впишет её в карточку целиком. Если не загружать, возьмётся первая картинка из текста.' }
       - { name: body, label: Условия акции, widget: markdown }
       - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из заголовка.' }
       - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало текста.' }

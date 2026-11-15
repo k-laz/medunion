@@ -169,6 +169,8 @@ const articles = defineCollection({
     kind: z.enum(['article', 'news', 'sale']),
     date: z.coerce.date().optional(), // news
     category: z.string().optional(), // articles: the section under /articles/
+    // News and offers: the picture on their card (home page); else the first picture in the text
+    image: z.string().optional(),
     // Offers
     discount: z.string().optional(), // "5%"
     period: z.string().optional(), // "с 01.01.2025, бессрочно"

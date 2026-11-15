@@ -1,5 +1,7 @@
 ---
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { coverSource, thumbFor } from '../lib/covers.mjs';
+import { validity } from '../data/sales';
 import { join } from 'node:path';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
@@ -49,8 +51,24 @@ const doctors = (await getCollection('doctors'))
   .map((x) => x.d);
 
 const articles = await getCollection('articles');
-const sales = articles.filter((a) => a.data.kind === 'sale').slice(0, 4);
-const news = articles.filter((a) => a.data.kind === 'news').sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)).slice(0, 4);
+// Offers and news as cards with a picture (src/lib/covers.mjs); special offers
+// before the standing social discounts, news newest first.
+const card = (a: (typeof articles)[number]) => {
+  const src = coverSource(a.data.image, a.body);
+  const thumb = src && thumbFor(src);
+  return { url: a.data.url, title: a.data.card_title ?? a.data.h1, thumb: thumb && existsSync(join('public', thumb)) ? thumb : undefined };
+};
+const sales = articles
+  .filter((a) => a.data.kind === 'sale')
+  .map((a) => ({ ...card(a), social: a.data.group === 'social', badge: a.data.badge ?? (a.data.discount ? `−${a.data.discount}` : undefined), until: validity(a.data.period) }))
+  // special offers first; those with a picture before those without
+  .sort((a, b) => Number(a.social) - Number(b.social) || Number(!a.thumb) - Number(!b.thumb))
+  .slice(0, 4);
+const news = articles
+  .filter((a) => a.data.kind === 'news')
+  .sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0))
+  .slice(0, 4)
+  .map((a) => ({ ...card(a), date: a.data.date?.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).replace(/\s?г\.$/, '') }));
 
 // Numbers, awards, clinics with their ratings, and the latest reviews
 const age = yearsSince(founded);
@@ -204,26 +222,53 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
       </section>
     )}
 
-    <div class="block two-col">
-      {sales.length > 0 && (
-        <section>
-          <div class="block-head">
-            <h2>Акции</h2>
-            <a class="link-more" href="/sales/">Все акции</a>
-          </div>
-          <ul class="tile-grid tile-grid-1">{sales.map((s) => <li><a class="tile" href={s.data.url}><span>{s.data.h1}</span><Fragment set:html={arrow} /></a></li>)}</ul>
-        </section>
-      )}
-      {news.length > 0 && (
-        <section>
-          <div class="block-head">
-            <h2>Новости</h2>
-            <a class="link-more" href="/news/">Все новости</a>
-          </div>
-          <ul class="tile-grid tile-grid-1">{news.map((n) => <li><a class="tile" href={n.data.url}><span>{n.data.h1}</span><Fragment set:html={arrow} /></a></li>)}</ul>
-        </section>
-      )}
-    </div>
+    {sales.length > 0 && (
+      <section class="block">
+        <div class="block-head">
+          <h2>Акции</h2>
+          <a class="link-more" href="/sales/">Все акции</a>
+        </div>
+        <ul class="post-cards">
+          {sales.map((p) => (
+            <li>
+              <a class="post-card" href={p.url}>
+                <span class:list={['post-card-pic', { 'is-empty': !p.thumb }]}>
+                  {p.thumb ? <img src={p.thumb} alt="" width="720" height="450" loading="lazy" /> : <span class="post-card-badge-big">{p.badge ?? '%'}</span>}
+                </span>
+                <span class="post-card-body">
+                  {p.badge && p.thumb && <span class="post-card-badge">{p.badge}</span>}
+                  <strong>{p.title}</strong>
+                  {p.until && <span class="muted">{p.until}</span>}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    {news.length > 0 && (
+      <section class="block">
+        <div class="block-head">
+          <h2>Новости</h2>
+          <a class="link-more" href="/news/">Все новости</a>
+        </div>
+        <ul class="post-cards">
+          {news.map((p) => (
+            <li>
+              <a class="post-card" href={p.url}>
+                <span class:list={['post-card-pic', { 'is-plain': !p.thumb }]}>
+                  {p.thumb ? <img src={p.thumb} alt="" width="720" height="450" loading="lazy" /> : <img class="post-card-logo" src="/logo-medunion.png" alt="" />}
+                </span>
+                <span class="post-card-body">
+                  {p.date && <span class="muted">{p.date}</span>}
+                  <strong>{p.title}</strong>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <div class="page-body"></div>
   </div>
