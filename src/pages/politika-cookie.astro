@@ -1,0 +1,44 @@
+---
+// How the site uses cookies and which services set them (part of the privacy
+// documents under 152-ФЗ). Text drafted 2026-11-14 for the clinic's lawyer to check.
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { legal, consentPage } from '../data/site';
+const url = '/politika-cookie/';
+---
+
+<Base title="Как мы используем cookie | Медюнион" description="Какие файлы cookie используют сайты Медюнион, для чего и как отказаться от необязательных cookie." url={url}>
+  <PageHead url={url} h1="Как мы используем cookie" compact />
+  <div class="wrap page-body">
+    <article class="prose block">
+      <p>
+        Cookie: небольшие файлы, которые сайт сохраняет в браузере. Сайты medunion.group и kansk.medunion.group
+        ({legal.name}, ИНН {legal.inn}) используют их только для целей, описанных ниже.
+      </p>
+
+      <h2>Необходимые</h2>
+      <p>
+        Работают всегда. Сайт запоминает в браузере ваш выбор в уведомлении о cookie (запись <code>cookie-consent</code> в хранилище браузера), чтобы не спрашивать снова. Других необходимых cookie у сайта нет.
+      </p>
+
+      <h2>Статистика, реклама и чат</h2>
+      <p>Подключаются только после того, как вы нажмёте «Принять» и тем самым дадите <a href={consentPage}>согласие на обработку персональных данных</a>.</p>
+      <table>
+        <thead><tr><th>Сервис</th><th>Для чего</th><th>Cookie и срок хранения</th></tr></thead>
+        <tbody>
+          <tr><td>Яндекс Метрика (ООО «ЯНДЕКС»)</td><td>статистика посещений, карта кликов, Вебвизор</td><td><code>_ym_uid</code>, <code>_ym_d</code> до 1 года; <code>_ym_isad</code> до 2 суток; <code>_ym_visorc</code> до 30 минут</td></tr>
+          <tr><td>Top.Mail.Ru (ООО «ВК»)</td><td>оценка рекламы во ВКонтакте</td><td>cookie сервиса, до 1 года</td></tr>
+          <tr><td>Битрикс24</td><td>онлайн-чат, обратный звонок, учёт звонков с сайта</td><td>cookie сервиса, на время сеанса и до 1 года</td></tr>
+          <tr><td>Daily Grow</td><td>кнопки связи через мессенджеры</td><td>cookie сервиса</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Как отказаться</h2>
+      <p>
+        Внизу любой страницы есть ссылка «Настройки cookie». Выберите «Только необходимые»: сервисы из таблицы
+        отключатся, а их cookie будут удалены. Удалить cookie можно и в настройках браузера.
+      </p>
+      <p>Вопросы об обработке данных: <a href="mailto:info-med@medunion.group">info-med@medunion.group</a>.</p>
+    </article>
+  </div>
+</Base>

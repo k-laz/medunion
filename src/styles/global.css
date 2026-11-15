@@ -660,14 +660,15 @@ html.a11y [data-a11y-toggle] { color: var(--brand); font-weight: 600; }
 
 /* Cookie notice */
 .cookie {
-  position: fixed; z-index: 55; left: 16px; bottom: 16px; max-width: 520px;
-  display: flex; align-items: center; gap: 16px; padding: 16px 18px;
+  position: fixed; z-index: 55; left: 16px; bottom: 16px; max-width: 560px;
+  display: grid; gap: 12px; padding: 16px 18px;
   background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
   box-shadow: 0 12px 32px rgba(27,35,51,.14); font-size: var(--step--1);
 }
 .cookie[hidden] { display: none; }
 .cookie p { margin: 0; }
 .cookie .btn { min-height: 40px; padding: 0 18px; flex: none; }
+.cookie-actions { display: flex; flex-wrap: wrap; gap: 8px; flex: none; }
 @media (max-width: 760px) { .cookie { left: 8px; right: 8px; bottom: 84px; max-width: none; } }
 
 .footer-cta-label { color: rgba(255,255,255,.6); }

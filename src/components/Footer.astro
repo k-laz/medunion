@@ -1,6 +1,6 @@
 ---
 import { city } from '../data/city';
-import { clinics, phones, integrations, legal, bookingPage } from '../data/site';
+import { clinics, phones, integrations, legal, bookingPage, consentPage, cookiePage } from '../data/site';
 import Social from './Social.astro';
 const year = new Date().getFullYear();
 const bookingUrl = bookingPage; // our /appointment/ page
@@ -55,6 +55,9 @@ const pages: Record<string, string> = {
         <a href="/pacientam/pravila-predostavleniya-platnyh-medicinskih-uslug/">Правила платных услуг</a>
         <a href="/pacientam/obsluzhivanie-oms-dms/">ОМС и ДМС</a>
         <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a>
+        <a href={consentPage}>Согласие на обработку персональных данных</a>
+        <a href={cookiePage}>Cookie</a>
+        <a href="#" data-cookie-settings>Настройки cookie</a>
       </nav>
       <p class="warning">Имеются противопоказания. Необходима консультация специалиста.</p>
       <p class="muted">{legal.name}, ИНН {legal.inn}. {legal.license}. <a href="/company/svedeniya-o-medicinskoj-organizacii/">Сведения о медицинской организации</a></p>

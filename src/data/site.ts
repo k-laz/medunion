@@ -107,6 +107,11 @@ export const reviewFormOn = false;
 
 // Legal details shown in the footer. Copied from the "Сведения о медицинской
 // организации" page of the old site; check against the current license.
+// 152-ФЗ: the visitor's consent (a separate document since 1.09.2025) and how
+// the site uses cookies. Both pages are src/pages/*.astro.
+export const consentPage = '/soglasie-na-obrabotku-personalnyh-dannyh/';
+export const cookiePage = '/politika-cookie/';
+
 export const legal = {
   name: 'ООО «МЕДЮНИОН»',
   inn: '2464239120',

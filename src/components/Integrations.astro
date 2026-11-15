@@ -1,8 +1,11 @@
 ---
-// Metrica, Top.Mail.Ru, Bitrix24 CRM and the messenger widget. They only
-// load on the production build, and only when the site is opened on the real
-// domain: the same build on the server's bare IP (for testing) must not count
-// visits or send chats to the clinic's operators.
+// Metrica, Top.Mail.Ru, Bitrix24 CRM and the messenger widget. They set
+// cookies, so under 152-ФЗ they load only after the visitor presses «Принять»
+// in the cookie banner (CookieNotice.astro; the choice is kept on the device as
+// localStorage 'cookie-consent' = 'all' | 'necessary'). They also load only on
+// the production build and only on the real domain: the same build on the
+// server's bare IP (for testing) must not count visits or send chats to the
+// clinic's operators.
 import { integrations, isProduction } from '../data/site';
 const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
 ---
@@ -10,7 +13,9 @@ const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
 {isProduction && (
   <>
     <script is:inline define:vars={{ metrikaId, b24: [bitrix24.callTracker, bitrix24.siteButton], dailyGrowWidgetId, topMailRuId }}>
-      if (/(^|\.)medunion\.group$/.test(location.hostname)) {
+      var load = function () {
+        if (window.__mdLoaded || !/(^|\.)medunion\.group$/.test(location.hostname)) return;
+        window.__mdLoaded = true;
         // Yandex Metrica
         (function (m, e, t, r, i, k, a) {
           m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
@@ -33,7 +38,11 @@ const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
         var _tmr = window._tmr || (window._tmr = []);
         _tmr.push({ id: topMailRuId, type: 'pageView', start: new Date().getTime() });
         if (!document.getElementById('tmr-code')) { var ts = document.createElement('script'); ts.async = true; ts.id = 'tmr-code'; ts.src = 'https://top-fwz1.mail.ru/js/code.js'; document.head.appendChild(ts); }
-      }
+      };
+      var consent = null;
+      try { consent = localStorage.getItem('cookie-consent'); } catch (e) {}
+      if (consent === 'all') load();
+      document.addEventListener('cookie-consent', function (e) { if (e.detail === 'all') load(); });
     </script>
   </>
 )}

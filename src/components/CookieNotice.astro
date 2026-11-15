@@ -1,22 +1,49 @@
 ---
-// Cookie notice (Metrica and the other counters use cookies). Shown once;
-// the choice is remembered on this device.
+// Cookie consent (152-ФЗ). Яндекс Метрика, Top.Mail.Ru, Битрикс24 and the
+// messenger widget set cookies, so they wait for «Принять» (Integrations.astro).
+// «Только необходимые» keeps them off. The choice is kept on this device; the
+// «Настройки cookie» link in the footer brings the banner back to change it.
+import { consentPage, cookiePage } from '../data/site';
 ---
 
-<div class="cookie" role="region" aria-label="Уведомление о cookie" hidden data-cookie>
-  <p>Мы используем файлы cookie и Яндекс Метрику, чтобы сайт работал удобнее. Подробнее в <a href="/politika-konfidencialnosti/">политике конфиденциальности</a>.</p>
-  <button class="btn btn-primary" type="button" data-cookie-ok>Хорошо</button>
+<div class="cookie" role="region" aria-label="Согласие на cookie" hidden data-cookie>
+  <p>
+    Мы используем cookie: необходимые для работы сайта и, с вашего согласия, для Яндекс Метрики, статистики рекламы и онлайн‑чата.
+    Нажимая «Принять», вы даёте <a href={consentPage}>согласие на обработку персональных данных</a>. Подробнее: <a href={cookiePage}>как мы используем cookie</a>.
+  </p>
+  <div class="cookie-actions">
+    <button class="btn btn-primary" type="button" data-cookie-choice="all">Принять</button>
+    <button class="btn btn-quiet" type="button" data-cookie-choice="necessary">Только необходимые</button>
+  </div>
 </div>
 
 <script>
   const box = document.querySelector<HTMLElement>('[data-cookie]');
   if (box) {
-    let seen = false;
-    try { seen = !!localStorage.getItem('cookie-ok'); } catch {}
-    if (!seen) box.hidden = false;
-    box.querySelector('[data-cookie-ok]')!.addEventListener('click', () => {
-      try { localStorage.setItem('cookie-ok', '1'); } catch {}
-      box.hidden = true;
-    });
+    let choice: string | null = null;
+    try { choice = localStorage.getItem('cookie-consent'); } catch {}
+    if (!choice) box.hidden = false;
+    const forget = () => {
+      // Cookies the counters left before consent was withdrawn: _ym* (Метрика), tmr_* (Top.Mail.Ru), b24* (Битрикс24)
+      for (const c of document.cookie.split(';')) {
+        const name = c.split('=')[0].trim();
+        if (!/^(_ym|_tmr|tmr_|b24|BITRIX)/i.test(name)) continue;
+        for (const domain of ['', location.hostname, '.' + location.hostname.split('.').slice(-2).join('.')])
+          document.cookie = `${name}=; Max-Age=0; path=/${domain ? '; domain=' + domain : ''}`;
+      }
+    };
+    for (const b of box.querySelectorAll<HTMLButtonElement>('[data-cookie-choice]')) {
+      b.addEventListener('click', () => {
+        const value = b.dataset.cookieChoice!;
+        let before: string | null = null;
+        try { before = localStorage.getItem('cookie-consent'); localStorage.setItem('cookie-consent', value); } catch {}
+        box.hidden = true;
+        if (value === 'all') document.dispatchEvent(new CustomEvent('cookie-consent', { detail: 'all' }));
+        else if (before === 'all') { forget(); location.reload(); } // stop counters that already run
+      });
+    }
+    for (const link of document.querySelectorAll<HTMLElement>('[data-cookie-settings]')) {
+      link.addEventListener('click', (e) => { e.preventDefault(); box.hidden = false; box.querySelector<HTMLButtonElement>('button')?.focus(); });
+    }
   }
 </script>
