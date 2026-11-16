@@ -19,8 +19,10 @@ to `main`; the deploy workflow rebuilds the site and the new price is live in
   and GitHub e-mails the repository owner about the failed run.
 - The editor is Sveltia CMS, kept in `public/admin/` with its translations and
   fonts (no outside CDN). Update it with `bash scripts/update-admin.sh <version>`.
-  Settings: `public/admin/config.yml`. Editable: prices (per city), home page
-  banners, doctors (per city), articles, news, offers (per city).
+  Settings: `public/admin/config.template.yml`; `scripts/admin-config.mjs` writes
+  `public/admin/config.yml` from it before each build, filling the drop-downs
+  (price names, doctors, service sections) from the site's files. Editable:
+  prices, services, doctors, offers (each per city), home page banners, articles, news.
 
 ## Doctors, articles, news, offers
 
@@ -71,6 +73,18 @@ and any change can be undone by reverting that commit.
 Чтобы добавить услугу, нажмите «Добавить услугу» внизу раздела. Чтобы убрать
 услугу с сайта, удалите строку. Если новая цена не появилась через 5 минут,
 сообщите Кириллу.
+
+## Услуги
+
+«Услуги Красноярск» и «Услуги Канск» в /admin/.
+
+- **Новая услуга**: «Новая услуга», название, **раздел** (где будет страница, например
+  «Ультразвуковая диагностика»), описание. Цены выбираются из прайса, врачи из списка.
+  Адрес страницы и тексты для Яндекса сайт сделает сам; услуга появится в своём разделе.
+- **Цены на странице**: строки прайса. Цена подставится сама и будет меняться вместе с прайсом.
+  Новая строка прайса появляется в этом списке через 1–2 минуты после того, как её добавили в «Цены».
+- **Врачи**: новый врач появляется в списке через 1–2 минуты после того, как его сохранили.
+- **Убрать услугу**: «Скрыть с сайта». Адрес будет вести в раздел выше.
 
 ## Врачи
 

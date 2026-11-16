@@ -3,6 +3,11 @@
 # rebuilds itself in about a minute. Instructions: docs/admin.md
 # Commits are marked [админка]: the old-site converter then keeps those files
 # as they are (scripts/convert-import.mjs).
+#
+# This is the template: scripts/admin-config.mjs writes public/admin/config.yml
+# from it before every build, filling the __LISTS__ (price names, doctors,
+# service sections) from the site's own files, so new doctors and prices show up
+# in the editor's drop-downs after the next build. Edit this file, not config.yml.
 backend:
   name: github
   repo: k-laz/medunion
@@ -390,3 +395,137 @@ collections:
     summary: '{{h1}}'
     sortable_fields: [h1]
     fields: *sale_fields
+
+  - name: services
+    label: Услуги Красноярск
+    label_singular: Услуга
+    description: >-
+      Услуги на сайте Красноярска (medunion.group). Найдите услугу поиском вверху или в дереве разделов слева.
+    folder: src/content/services
+    nested: { depth: 6, subfolders: false }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: h1
+    summary: '{{h1}}'
+    sortable_fields: [h1]
+    fields:
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел выше, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: h1, label: Название услуги, widget: string }
+      - name: section
+        label: Раздел (для новой услуги)
+        widget: select
+        required: false
+        hint: 'Где будет новая страница. У существующих услуг адрес не меняется, это поле им не нужно.'
+        options: __SECTIONS_KRASNOYARSK__
+      - { name: lead, label: Коротко под названием, widget: text, required: false, hint: 'Одно-два предложения вверху страницы.' }
+      - { name: teaser, label: Строка на плитке раздела, widget: string, required: false, hint: 'Короткое описание на странице раздела, где перечислены услуги.' }
+      - { name: body, label: Описание, widget: markdown, required: false }
+      - name: prices
+        label: Цены на странице
+        label_singular: строку прайса
+        widget: list
+        required: false
+        summary: '{{fields.name}}'
+        hint: 'Выберите строки прайса. Цена подставится сама и будет меняться вместе с прайсом.'
+        fields:
+          - { name: name, label: Строка прайса, widget: select, options: __PRICES_KRASNOYARSK__ }
+      - name: clinics
+        label: Где делают
+        widget: select
+        multiple: true
+        required: false
+        hint: 'Если ничего не выбрать, считается, что во всех клиниках города.'
+        options:
+          - { label: 'Красноярск, Курчатова, 17', value: kurchatova }
+          - { label: 'Красноярск, Инструментальная, 12/35', value: instrumentalnaya }
+          - { label: 'Канск, Урицкого, 8', value: kansk }
+      - name: doctors
+        label: Врачи
+        widget: select
+        multiple: true
+        required: false
+        hint: 'Врачи, которые оказывают эту услугу. Новый врач появится в списке после того, как сайт пересоберётся (1–2 минуты после сохранения врача).'
+        options: __DOCTORS_KRASNOYARSK__
+      - name: faq
+        label: Вопросы и ответы
+        label_singular: вопрос
+        widget: list
+        required: false
+        summary: '{{fields.q}}'
+        fields:
+          - { name: q, label: Вопрос, widget: string }
+          - { name: a, label: Ответ, widget: text }
+      - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из названия.' }
+      - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало описания.' }
+      - { name: url, widget: hidden }
+      - { name: related, widget: hidden }
+      - { name: pricesCheckedOn, widget: hidden }
+
+  - name: services-kansk
+    label: Услуги Канск
+    label_singular: Услуга (Канск)
+    description: >-
+      Услуги на сайте Канска (kansk.medunion.group), отдельные от красноярских.
+    folder: src/content-kansk/services
+    nested: { depth: 6, subfolders: false }
+    extension: md
+    format: frontmatter
+    create: true
+    delete: false
+    identifier_field: h1
+    summary: '{{h1}}'
+    sortable_fields: [h1]
+    fields:
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел выше, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: h1, label: Название услуги, widget: string }
+      - name: section
+        label: Раздел (для новой услуги)
+        widget: select
+        required: false
+        hint: 'Где будет новая страница. У существующих услуг адрес не меняется, это поле им не нужно.'
+        options: __SECTIONS_KANSK__
+      - { name: lead, label: Коротко под названием, widget: text, required: false, hint: 'Одно-два предложения вверху страницы.' }
+      - { name: teaser, label: Строка на плитке раздела, widget: string, required: false, hint: 'Короткое описание на странице раздела, где перечислены услуги.' }
+      - { name: body, label: Описание, widget: markdown, required: false }
+      - name: prices
+        label: Цены на странице
+        label_singular: строку прайса
+        widget: list
+        required: false
+        summary: '{{fields.name}}'
+        hint: 'Выберите строки прайса. Цена подставится сама и будет меняться вместе с прайсом.'
+        fields:
+          - { name: name, label: Строка прайса, widget: select, options: __PRICES_KANSK__ }
+      - name: clinics
+        label: Где делают
+        widget: select
+        multiple: true
+        required: false
+        hint: 'Если ничего не выбрать, считается, что во всех клиниках города.'
+        options:
+          - { label: 'Красноярск, Курчатова, 17', value: kurchatova }
+          - { label: 'Красноярск, Инструментальная, 12/35', value: instrumentalnaya }
+          - { label: 'Канск, Урицкого, 8', value: kansk }
+      - name: doctors
+        label: Врачи
+        widget: select
+        multiple: true
+        required: false
+        hint: 'Врачи, которые оказывают эту услугу. Новый врач появится в списке после того, как сайт пересоберётся (1–2 минуты после сохранения врача).'
+        options: __DOCTORS_KANSK__
+      - name: faq
+        label: Вопросы и ответы
+        label_singular: вопрос
+        widget: list
+        required: false
+        summary: '{{fields.q}}'
+        fields:
+          - { name: q, label: Вопрос, widget: string }
+          - { name: a, label: Ответ, widget: text }
+      - { name: title, label: Заголовок для Яндекса, widget: string, required: false, hint: 'Синяя ссылка в поиске Яндекса, до 80 знаков. Можно не заполнять: возьмётся из названия.' }
+      - { name: description, label: Описание для Яндекса, widget: text, required: false, hint: 'Серый текст под ссылкой в поиске, 50–200 знаков. Можно не заполнять: возьмётся начало описания.' }
+      - { name: url, widget: hidden }
+      - { name: related, widget: hidden }
+      - { name: pricesCheckedOn, widget: hidden }

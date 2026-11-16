@@ -31,7 +31,7 @@ const KRASNOYARSK_ONLY = KANSK ? [
 const files = (base: string) =>
   glob({ pattern: ['**/*.md', ...KRASNOYARSK_ONLY.map((p) => '!' + p)], base, generateId: ({ entry }) => entry.replace(/\.md$/, '') });
 
-// Doctors, articles, news and offers are also edited at /admin/ (docs/admin.md).
+// Services, doctors, articles, news and offers are also edited at /admin/ (docs/admin.md).
 // There a new entry needs no address or SEO texts: they are made here, when the
 // site is built. The address comes from the file name, which the editor sets once
 // when the entry is created, so it stays put when the heading is edited later.
@@ -43,6 +43,7 @@ const cut = (s: string, n: number) => (s.length <= n ? s : s.slice(0, s.lastInde
 const newAddress = (id: string, d: Record<string, any>) => {
   const name = slug(id.split('/').pop()!);
   if (d.name !== undefined) return `/vrachi/vrachi-medyunion/${name}/`;
+  if (d.kind === undefined) return `${d.section || '/uslugi/'}${name}/`; // a service, in the section chosen at /admin/
   if (d.kind === 'news') return `/news/${name}/`;
   if (d.kind === 'sale') return `/sales/${name}/`;
   return d.category ? `/articles/${d.category}/${name}/` : `/articles/${name}/`;
@@ -102,9 +103,11 @@ const seoEditable = {
 };
 
 const services = defineCollection({
-  loader: files(`${ROOT}/services`),
+  loader: editable(files(`${ROOT}/services`)),
   schema: cityless(z.object({
-    ...seo,
+    ...seoEditable,
+    // A new service from /admin/: the section it goes in (its address is made from this)
+    section: z.string().regex(/^\/uslugi\/(.*\/)?$/).optional(),
     h1: z.string(),
     lead: z.string().optional(),
     // One line shown on this page's tile in its parent section

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/thumbs.mjs && astro build && node scripts/hidden-redirects.mjs dist deploy/redirects.nginx.conf dist.redirects.conf src/content",
+    "build": "node scripts/thumbs.mjs && node scripts/admin-config.mjs && astro build && node scripts/hidden-redirects.mjs dist deploy/redirects.nginx.conf dist.redirects.conf src/content",
     "preview": "astro preview",
     "import": "node scripts/import-bitrix.mjs",
     "convert": "node scripts/convert-import.mjs",

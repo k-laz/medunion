@@ -7,3 +7,4 @@ dist-kansk/
 dist-kansk.redirects.conf
 dist.redirects.conf
 public/thumbs/
+public/admin/config.yml
