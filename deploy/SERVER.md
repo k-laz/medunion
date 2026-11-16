@@ -101,7 +101,16 @@ ln -s /etc/nginx/sites-available/medunion.group /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 ```
 
-certbot renews the certificate by itself.
+certbot renews the certificate by itself (a systemd timer, twice a day; it renews
+30 days before expiry). nginx only picks up a renewed certificate after a reload,
+so add a hook once:
+
+```bash
+printf '#!/bin/sh\nsystemctl reload nginx\n' | sudo tee /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+sudo certbot renew --dry-run          # must end with "Congratulations, all simulated renewals succeeded"
+systemctl list-timers | grep certbot  # the renewal timer is there
+```
 
 ## 5. After the switch
 
