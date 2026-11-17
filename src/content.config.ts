@@ -71,6 +71,14 @@ const editable = (loader: Loader): Loader => ({
     }),
 });
 
+// The editor writes a field left empty as '' (or null): treat that as not given,
+// so an empty «Раздел», «Стаж» or picture never fails the build.
+const blankless = <T extends z.ZodType>(schema: T) =>
+  z.preprocess(
+    (v) => (v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).filter(([, x]) => x !== '' && x !== null)) : v),
+    schema,
+  );
+
 // Kansk build: no city in titles and headings (dropCity in src/data/city.ts).
 // Clinic pages keep theirs, it is part of the address.
 const cityless = <T extends z.ZodType<{ title: string; h1?: string; layout?: string }>>(schema: T) =>
@@ -104,7 +112,7 @@ const seoEditable = {
 
 const services = defineCollection({
   loader: editable(files(`${ROOT}/services`)),
-  schema: cityless(z.object({
+  schema: cityless(blankless(z.object({
     ...seoEditable,
     // A new service from /admin/: the section it goes in (its address is made from this)
     section: z.string().regex(/^\/uslugi\/(.*\/)?$/).optional(),
@@ -120,12 +128,12 @@ const services = defineCollection({
     clinics: z.array(clinic).default([]),
     doctors: z.array(doctorRef).default([]),
     faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
-  })),
+  }))),
 });
 
 const doctors = defineCollection({
   loader: editable(files(`${ROOT}/doctors`)),
-  schema: cityless(z.object({
+  schema: cityless(blankless(z.object({
     ...seoEditable,
     name: z.string(),
     specialty: z.string(),
@@ -142,7 +150,7 @@ const doctors = defineCollection({
     groups: z.array(z.string()).default([]),
     education: z.array(z.string()).default([]),
     prices: z.array(price).default([]),
-  })),
+  }))),
 });
 
 // Articles and news are the same on both sites: the Kansk build reads them from
@@ -166,7 +174,7 @@ const articleFiles = KANSK
 const link = z.object({ label: z.string(), url: z.string() });
 const articles = defineCollection({
   loader: editable(articleFiles),
-  schema: cityless(z.object({
+  schema: cityless(blankless(z.object({
     ...seoEditable,
     h1: z.string(),
     kind: z.enum(['article', 'news', 'sale']),
@@ -182,7 +190,7 @@ const articles = defineCollection({
     badge: z.string().optional(), // instead of the discount, e.g. "5 500 ₽"
     card_title: z.string().optional(), // shorter title for the card
     links: z.array(link).default([]), // what the offer is about; it also shows on those service pages
-  })),
+  }))),
 });
 
 const prices = defineCollection({
