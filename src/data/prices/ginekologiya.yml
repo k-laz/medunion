@@ -59,8 +59,6 @@ items:
   - id: detskiy-ginekolog-povtornyy-priem-v-techenie-mesyatsa
     name: Детский гинеколог, повторный приём в течение месяца
     price: 2400
-  - name: Тестировние гинеколог
-    price: 2000
 also:
   - konsultatsiya-ginekologa-endokrinologa
   - konsultatsiya-detskogo-ginekologa-pervichnaya-s-0-let
