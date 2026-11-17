@@ -37,8 +37,14 @@ to `main`; the deploy workflow rebuilds the site and the new price is live in
   `/articles/<topic>/<name>/`, `/news/<name>/`, `/sales/<name>/`) and does not change
   when the heading is edited. Empty Yandex title and description are made from the
   name or heading and the text (`editable` in `src/content.config.ts`).
-- Nothing is deleted: «Скрыть с сайта» (`hidden: true`) leaves the page out and
+- «Скрыть с сайта» (`hidden: true`) leaves the page out and
   `scripts/hidden-redirects.mjs` redirects its address to the section above it.
+  Deleting works too: an address that was live on the old site and has no page
+  any more is redirected the same way (`--old import/report.csv`), and the
+  converter does not bring a page deleted at /admin/ back.
+- A new service needs «Раздел»; without it the build skips it (with a warning).
+  In the editor's folder tree new entries sit at the top level, whatever section
+  their page is in.
 - Doctor photos uploaded here go to `src/assets/doctors/` and are cut to 640x800
   from the top at build. Photos cropped to the face by hand stay in `public/doctors/`.
 - A doctor's prices are only service names; the price shown comes from the price list.
@@ -84,7 +90,9 @@ and any change can be undone by reverting that commit.
 - **Цены на странице**: строки прайса. Цена подставится сама и будет меняться вместе с прайсом.
   Новая строка прайса появляется в этом списке через 1–2 минуты после того, как её добавили в «Цены».
 - **Врачи**: новый врач появляется в списке через 1–2 минуты после того, как его сохранили.
-- **Убрать услугу**: «Скрыть с сайта». Адрес будет вести в раздел выше.
+- **Раздел** обязателен для новой услуги. В списке слева новая услуга лежит в самом верху,
+  а не в папке раздела: так и должно быть, на сайте она будет внутри выбранного раздела.
+- **Убрать услугу**: «Скрыть с сайта» или «Удалить». Адрес старой страницы будет вести в раздел выше.
 
 ## Врачи
 

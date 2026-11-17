@@ -43,7 +43,7 @@ const cut = (s: string, n: number) => (s.length <= n ? s : s.slice(0, s.lastInde
 const newAddress = (id: string, d: Record<string, any>) => {
   const name = slug(id.split('/').pop()!);
   if (d.name !== undefined) return `/vrachi/vrachi-medyunion/${name}/`;
-  if (d.kind === undefined) return `${d.section || '/uslugi/'}${name}/`; // a service, in the section chosen at /admin/
+  if (d.kind === undefined) return `${d.section}${name}/`; // a service, in the section chosen at /admin/
   if (d.kind === 'news') return `/news/${name}/`;
   if (d.kind === 'sale') return `/sales/${name}/`;
   return d.category ? `/articles/${d.category}/${name}/` : `/articles/${name}/`;
@@ -60,6 +60,12 @@ const editable = (loader: Loader): Loader => ({
           return (entry: Parameters<typeof store.set>[0]) => {
             const d = entry.data as Record<string, any>;
             if (d.hidden) { store.delete(entry.id); return false; }
+            // a new service saved without its section: not published until one is chosen
+            if (!d.url && d.h1 !== undefined && d.kind === undefined && d.name === undefined && !d.section) {
+              console.warn(`[content] «${d.h1}» (${entry.id}): no «Раздел» chosen at /admin/, not published yet`);
+              store.delete(entry.id);
+              return false;
+            }
             if (!d.url) d.url = newAddress(entry.id, d);
             const heading = d.name !== undefined ? `${d.name}, ${String(d.specialty).toLowerCase()}` : d.h1;
             if (!d.title) d.title = cut(`${heading} | Медюнион`, 80);

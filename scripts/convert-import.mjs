@@ -747,7 +747,8 @@ async function editedSinceImport() {
     for (const n of names) if (n.includes('/imported/')) files.add(n.trim());
   }
   const kept = new Map();
-  for (const f of files) if (existsSync(f)) kept.set(f, await readFile(f, 'utf8'));
+  // a file deleted at /admin/ stays deleted (null): the old site's copy is not brought back
+  for (const f of files) kept.set(f, existsSync(f) ? await readFile(f, 'utf8') : null);
   return kept;
 }
 
@@ -1038,8 +1039,12 @@ async function main() {
   console.log(`Pages with links fixed: ${relinked}`);
   console.log(`Redirects: ${redirects.size} (${REDIRECTS}.csv, ${REDIRECTS}.nginx.conf)`);
   console.log(`Kept as hand-written (not overwritten): ${[...manual].join(', ') || 'none'}`);
-  for (const [f, text] of edited) { await mkdir(dirname(f), { recursive: true }); await writeFile(f, text); }
-  console.log(`Kept as edited at /admin/ or by hand: ${edited.size} file(s)`);
+  for (const [f, text] of edited) {
+    if (text === null) { await rm(f, { force: true }); continue; }
+    await mkdir(dirname(f), { recursive: true });
+    await writeFile(f, text);
+  }
+  console.log(`Kept as edited at /admin/ or by hand: ${[...edited.values()].filter((t) => t !== null).length} file(s), deleted there: ${[...edited.values()].filter((t) => t === null).length}`);
 }
 
 main().catch((e) => {

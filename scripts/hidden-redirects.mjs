@@ -4,13 +4,20 @@
 // section above it that the site has (a doctor's specialty list, the article's
 // topic, /news/, /sales/), so links and search results keep working.
 //
-//   node scripts/hidden-redirects.mjs <dist> <redirects in> <redirects out> <content folder>...
-//   node scripts/hidden-redirects.mjs dist deploy/redirects.nginx.conf dist.redirects.conf src/content
+// With --old <report.csv> (the old site's address list from the importer), also
+// every address that worked on the old site and has neither a page nor a redirect
+// now (a page deleted at /admin/) goes to the nearest section above it.
+//
+//   node scripts/hidden-redirects.mjs <dist> <redirects in> <redirects out> [--old <report.csv>] <content folder>...
+//   node scripts/hidden-redirects.mjs dist deploy/redirects.nginx.conf dist.redirects.conf --old import/report.csv src/content
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const [dist, input, output, ...roots] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const oldAt = args.indexOf('--old');
+const oldReport = oldAt >= 0 ? args.splice(oldAt, 2)[1] : undefined;
+const [dist, input, output, ...roots] = args;
 if (!roots.length) throw new Error('usage: hidden-redirects.mjs <dist> <in> <out> <content folder>...');
 
 async function walk(d) {
@@ -24,7 +31,15 @@ async function walk(d) {
   return out;
 }
 
-const onSite = (url) => existsSync(join(dist, decodeURI(url), 'index.html'));
+const onSite = (url) => { try { return existsSync(join(dist, decodeURIComponent(url), 'index.html')); } catch { return existsSync(join(dist, url, 'index.html')); } };
+const sectionAbove = (url) => {
+  const parts = url.split('/').filter(Boolean);
+  for (let n = parts.length - 1; n > 0; n--) {
+    const up = `/${parts.slice(0, n).join('/')}/`;
+    if (onSite(up)) return up;
+  }
+  return '/';
+};
 const hidden = [];
 for (const root of roots) {
   for (const f of await walk(root)) {
@@ -32,21 +47,27 @@ for (const root of roots) {
     if (!/^hidden:\s*true\s*$/m.test(fm)) continue;
     const url = fm.match(/^url:\s*"?([^"\n]+)"?\s*$/m)?.[1]?.trim();
     if (!url || onSite(url)) continue; // no address yet (a new entry), or the page is there after all
-    const parts = url.split('/').filter(Boolean);
-    let to = '/';
-    for (let n = parts.length - 1; n > 0; n--) {
-      const up = `/${parts.slice(0, n).join('/')}/`;
-      if (onSite(up)) { to = up; break; }
-    }
-    hidden.push([url, to]);
+    hidden.push([url, sectionAbove(url)]);
   }
 }
 
 let conf = existsSync(input) ? await readFile(input, 'utf8') : '';
+// Old-site addresses that lost their page (deleted at /admin/)
+const gone = [];
+if (oldReport && existsSync(oldReport)) {
+  const listed = new Set([...conf.matchAll(/location = "([^"]+)"/g)].map((m) => m[1]));
+  for (const line of (await readFile(oldReport, 'utf8')).split('\n').slice(1)) {
+    const [url, , status] = line.split('","').map((c) => c.replace(/^"|"$/g, ''));
+    if (status !== '200' || !url?.startsWith('/') || !url.endsWith('/') || url === '/') continue;
+    if (onSite(url) || listed.has(url) || listed.has(encodeURI(url)) || hidden.some(([h]) => h === url)) continue;
+    gone.push([url, sectionAbove(url)]);
+  }
+}
+hidden.push(...gone);
 for (const [from, to] of hidden) {
   const line = `location = "${from}" { return 301 ${to}; }`;
   const re = new RegExp(`^location = "${from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}" .*$`, 'm');
   conf = re.test(conf) ? conf.replace(re, line) : conf.replace(/\n?$/, `\n${line}\n`);
 }
 await writeFile(output, conf);
-console.log(`Hidden pages: ${hidden.length} redirected (${output})`);
+console.log(`Hidden pages: ${hidden.length - gone.length} redirected, old addresses without a page: ${gone.length} redirected (${output})`);

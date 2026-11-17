@@ -175,14 +175,14 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: name
     summary: '{{name}} · {{specialty}}'
     sortable_fields: [name, specialty]
     media_folder: /src/assets/doctors
     public_folder: /src/assets/doctors
     fields: &doctor_fields
-      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалить тоже можно: тогда адрес страницы, если она была на старом сайте, будет вести в раздел выше.' }
       - { name: name, label: 'Фамилия, имя, отчество', widget: string }
       - { name: specialty, label: Специальность, widget: string, hint: 'Как на карточке врача, например «Кардиолог, терапевт».' }
       - { name: photo, label: Фото, widget: image, required: false, hint: 'Вертикальное фото, лицо в верхней части, от 800 пикселей в высоту. Сайт сам обрежет его до 4:5. Если фото не загружено, остаётся прежнее.' }
@@ -257,7 +257,7 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: name
     summary: '{{name}} · {{specialty}}'
     sortable_fields: [name, specialty]
@@ -275,12 +275,12 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: h1
     summary: '{{h1}}'
     sortable_fields: [h1, category]
     fields:
-      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалить тоже можно: тогда адрес страницы, если она была на старом сайте, будет вести в раздел выше.' }
       - { name: h1, label: Заголовок, widget: string }
       - name: category
         label: Тема
@@ -319,12 +319,12 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: h1
     summary: '{{date}} · {{h1}}'
     sortable_fields: [date, h1]
     fields:
-      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалить тоже можно: тогда адрес страницы, если она была на старом сайте, будет вести в раздел выше.' }
       - { name: h1, label: Заголовок, widget: string }
       - { name: date, label: Дата, widget: datetime, time_format: false, date_format: 'DD.MM.YYYY', format: 'YYYY-MM-DD', picker_utc: true }
       - { name: image, label: Картинка для карточки, widget: image, required: false, hint: 'Показывается на главной. Любая картинка или афиша, сайт сам впишет её в карточку целиком. Если не загружать, возьмётся первая картинка из текста.' }
@@ -344,12 +344,12 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: h1
     summary: '{{h1}}'
     sortable_fields: [h1]
     fields: &sale_fields
-      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Когда акция закончилась. Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Когда акция закончилась. Страница пропадёт с сайта, а её адрес будет вести в раздел, поэтому ссылки не сломаются. Удалить тоже можно: тогда адрес страницы, если она была на старом сайте, будет вести в раздел выше.' }
       - { name: h1, label: Заголовок, widget: string }
       - name: group
         label: Где показывать на странице «Акции»
@@ -390,7 +390,7 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: h1
     summary: '{{h1}}'
     sortable_fields: [h1]
@@ -406,18 +406,18 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: h1
     summary: '{{h1}}'
     sortable_fields: [h1]
     fields:
-      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел выше, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел выше, поэтому ссылки не сломаются. Удалить тоже можно: тогда адрес страницы, если она была на старом сайте, будет вести в раздел выше.' }
       - { name: h1, label: Название услуги, widget: string }
       - name: section
-        label: Раздел (для новой услуги)
+        label: Раздел (обязательно для новой услуги)
         widget: select
         required: false
-        hint: 'Где будет новая страница. У существующих услуг адрес не меняется, это поле им не нужно.'
+        hint: 'Где будет новая страница, например «Аллергология-иммунология». Без раздела новая услуга не появится на сайте. В списке слева новая услуга лежит в корне, но на сайте она будет внутри выбранного раздела. У существующих услуг адрес не меняется, им это поле не нужно.'
         options: __SECTIONS_KRASNOYARSK__
       - { name: lead, label: Коротко под названием, widget: text, required: false, hint: 'Одно-два предложения вверху страницы.' }
       - { name: teaser, label: Строка на плитке раздела, widget: string, required: false, hint: 'Короткое описание на странице раздела, где перечислены услуги.' }
@@ -473,18 +473,18 @@ collections:
     extension: md
     format: frontmatter
     create: true
-    delete: false
+    delete: true
     identifier_field: h1
     summary: '{{h1}}'
     sortable_fields: [h1]
     fields:
-      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел выше, поэтому ссылки не сломаются. Удалять записи нельзя, только скрывать.' }
+      - { name: hidden, label: Скрыть с сайта, widget: boolean, default: false, required: false, hint: 'Страница пропадёт с сайта, а её адрес будет вести в раздел выше, поэтому ссылки не сломаются. Удалить тоже можно: тогда адрес страницы, если она была на старом сайте, будет вести в раздел выше.' }
       - { name: h1, label: Название услуги, widget: string }
       - name: section
-        label: Раздел (для новой услуги)
+        label: Раздел (обязательно для новой услуги)
         widget: select
         required: false
-        hint: 'Где будет новая страница. У существующих услуг адрес не меняется, это поле им не нужно.'
+        hint: 'Где будет новая страница, например «Аллергология-иммунология». Без раздела новая услуга не появится на сайте. В списке слева новая услуга лежит в корне, но на сайте она будет внутри выбранного раздела. У существующих услуг адрес не меняется, им это поле не нужно.'
         options: __SECTIONS_KANSK__
       - { name: lead, label: Коротко под названием, widget: text, required: false, hint: 'Одно-два предложения вверху страницы.' }
       - { name: teaser, label: Строка на плитке раздела, widget: string, required: false, hint: 'Короткое описание на странице раздела, где перечислены услуги.' }
