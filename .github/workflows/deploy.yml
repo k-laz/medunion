@@ -32,6 +32,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Check the booking API
+        run: node --check deploy/api/server.mjs
+
       - name: Build (production)
         run: npm run build
         env:
@@ -68,6 +71,11 @@ jobs:
           # The Kansk site: ready on the server, served once its nginx config is installed
           rsync -az --delete -e "$SSH" dist-kansk/ "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/kansk/"
           rsync -az -e "$SSH" dist-kansk.redirects.conf "$DEPLOY_USER@$DEPLOY_HOST:/var/www/medunion/redirects-kansk.conf"
+          # The booking API, once deploy/setup-api.sh has been run on the server
+          if $SSH "$DEPLOY_USER@$DEPLOY_HOST" 'test -d /opt/medunion-api'; then
+            rsync -az -e "$SSH" deploy/api/server.mjs "$DEPLOY_USER@$DEPLOY_HOST:/opt/medunion-api/server.mjs"
+            $SSH "$DEPLOY_USER@$DEPLOY_HOST" 'sudo /usr/bin/systemctl restart medunion-api'
+          fi
           $SSH "$DEPLOY_USER@$DEPLOY_HOST" 'sudo /usr/sbin/nginx -t && sudo /usr/sbin/nginx -s reload'
     env:
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}

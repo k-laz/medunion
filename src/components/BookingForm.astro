@@ -1,0 +1,270 @@
+---
+// Online booking, live from the МИС «Ариадна» through our server
+// (deploy/api/server.mjs, /api/booking/...). Steps: specialty, doctor, clinic,
+// time, then the patient's details. Opened from a doctor's page
+// (?doctor=/vrachi/.../), that doctor is chosen already.
+// If the server can't be reached the form hides itself and the phone stays.
+import { getCollection } from 'astro:content';
+import { apiBase, consentPage } from '../data/site';
+import { city } from '../data/city';
+const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) => [d.data.url, d.data.name]));
+---
+
+<form class="review-form booking-form info-card" data-booking-form data-api={`${apiBase}/booking`} data-doctors={JSON.stringify(doctorNames)} data-phone={city.phone.display} data-tel={city.phone.tel} novalidate hidden>
+  <h2>Записаться онлайн</h2>
+
+  <div class="form-row">
+    <label>
+      <span>Специальность</span>
+      <select name="spec" required><option value="">Загружаем…</option></select>
+    </label>
+    <label>
+      <span>Врач</span>
+      <select name="doctor" required disabled><option value="">Сначала выберите специальность</option></select>
+    </label>
+  </div>
+  <label data-step="clinic" hidden>
+    <span>Клиника</span>
+    <select name="clinic" required></select>
+  </label>
+
+  <fieldset class="booking-slots" data-step="slots" hidden>
+    <legend>Свободное время</legend>
+    <div class="booking-days" role="tablist"></div>
+    <div class="booking-times"></div>
+    <p class="muted booking-empty" hidden></p>
+  </fieldset>
+
+  <div class="booking-patient" data-step="patient" hidden>
+    <p class="booking-chosen"></p>
+    <div class="form-row">
+      <label><span>Фамилия</span><input name="surname" autocomplete="family-name" maxlength="60" required /></label>
+      <label><span>Имя</span><input name="firstName" autocomplete="given-name" maxlength="60" required /></label>
+    </div>
+    <div class="form-row">
+      <label><span>Отчество <small class="muted">если есть</small></span><input name="secondName" autocomplete="additional-name" maxlength="60" /></label>
+      <label><span>Дата рождения</span><input name="birthDate" type="date" autocomplete="bday" required /></label>
+    </div>
+    <div class="form-row">
+      <label><span>Телефон</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="+7" required /></label>
+      <label><span>Электронная почта</span><input name="email" type="email" autocomplete="email" maxlength="120" required /></label>
+    </div>
+    <div class="booking-captcha">
+      <div class="booking-captcha-img" aria-hidden="true"></div>
+      <label><span>Код с картинки <button type="button" class="link-btn" data-new-captcha>другой код</button></span><input name="captchaValue" autocomplete="off" maxlength="20" required /></label>
+    </div>
+    <label class="check">
+      <input type="checkbox" name="consent" required />
+      <span>Согласен на <a href={consentPage} target="_blank">обработку персональных данных</a></span>
+    </label>
+    <button class="btn btn-primary" type="submit">Записаться</button>
+  </div>
+
+  <p class="form-status" role="status" hidden></p>
+</form>
+
+<script>
+  type Item = { id: string; name: string };
+  type Slot = { id: string; start: string; end: string };
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-booking-form]')) {
+    if (form.dataset.ready) continue;
+    form.dataset.ready = '1';
+    const api = form.dataset.api!;
+    const phone = `<a href="tel:${form.dataset.tel}">${form.dataset.phone}</a>`;
+    const $ = <T extends HTMLElement>(s: string) => form.querySelector<T>(s)!;
+    const spec = $<HTMLSelectElement>('[name=spec]');
+    const doctor = $<HTMLSelectElement>('[name=doctor]');
+    const clinic = $<HTMLSelectElement>('[name=clinic]');
+    const step = (name: string) => $(`[data-step=${name}]`);
+    const status = $('.form-status');
+    const days = $('.booking-days');
+    const times = $('.booking-times');
+    const empty = $('.booking-empty');
+    const chosen = $('.booking-chosen');
+    const captchaImg = $('.booking-captcha-img');
+    let slot: Slot | null = null;
+    let captchaId = '';
+
+    const say = (html: string, ok = false) => {
+      status.hidden = !html;
+      status.className = `form-status ${ok ? 'is-ok' : 'is-error'}`;
+      status.innerHTML = html;
+    };
+    async function get<T>(path: string, q: Record<string, string> = {}): Promise<T> {
+      const res = await fetch(`${api}/${path}?${new URLSearchParams(q)}`);
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.ok) throw new Error(body.error || 'Ошибка');
+      return body.data as T;
+    }
+    const fill = (select: HTMLSelectElement, items: Item[], placeholder: string) => {
+      select.innerHTML = '';
+      select.append(new Option(placeholder, ''));
+      for (const i of items) select.append(new Option(i.name, i.id));
+      select.disabled = false;
+    };
+    const hideFrom = (...names: string[]) => names.forEach((n) => (step(n).hidden = true));
+    const fail = (e: unknown) => say(`${(e as Error).message} Запишитесь по телефону ${phone}.`);
+
+    // "31.12.2026 09:30" -> { day: "31.12.2026", time: "09:30" }
+    const split = (s: string) => {
+      const m = s.match(/(\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2})\D+(\d{1,2}:\d{2})/);
+      if (!m) return { day: s, time: '' };
+      const day = m[1].includes('-') ? m[1].split('-').reverse().join('.') : m[1];
+      return { day, time: m[2].padStart(5, '0') };
+    };
+    const dayLabel = (d: string) => {
+      const [dd, mm, yyyy] = d.split('.').map(Number);
+      return new Date(yyyy, mm - 1, dd).toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
+    };
+
+    async function loadDoctors(preselect = '') {
+      hideFrom('clinic', 'slots', 'patient');
+      say('');
+      doctor.disabled = true;
+      if (!spec.value) return;
+      try {
+        fill(doctor, await get<Item[]>('doctors', { spec: spec.value }), 'Выберите врача');
+        if (preselect) { doctor.value = preselect; await loadClinics(); }
+      } catch (e) { fail(e); }
+    }
+    async function loadClinics() {
+      hideFrom('clinic', 'slots', 'patient');
+      say('');
+      if (!doctor.value) return;
+      try {
+        const list = await get<Item[]>('clinics', { spec: spec.value, doctor: doctor.value });
+        if (!list.length) return say(`У этого врача нет открытой записи онлайн. Запишитесь по телефону ${phone}.`);
+        fill(clinic, list, 'Выберите клинику');
+        step('clinic').hidden = false;
+        if (list.length === 1) { clinic.value = list[0].id; await loadSlots(); }
+      } catch (e) { fail(e); }
+    }
+    async function loadSlots() {
+      hideFrom('slots', 'patient');
+      say('');
+      slot = null;
+      if (!clinic.value) return;
+      try {
+        const list = await get<Slot[]>('slots', { spec: spec.value, doctor: doctor.value, clinic: clinic.value });
+        days.innerHTML = '';
+        times.innerHTML = '';
+        step('slots').hidden = false;
+        empty.hidden = list.length > 0;
+        empty.innerHTML = `Свободного времени на ближайший месяц нет. Позвоните ${phone}: администратор предложит варианты.`;
+        const byDay = new Map<string, Slot[]>();
+        for (const s of list) { const d = split(s.start).day; byDay.set(d, [...(byDay.get(d) || []), s]); }
+        const showDay = (d: string) => {
+          days.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.day === d)));
+          times.innerHTML = '';
+          for (const s of byDay.get(d)!) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'chip';
+            b.textContent = split(s.start).time;
+            b.addEventListener('click', () => choose(s, b));
+            times.append(b);
+          }
+        };
+        for (const d of byDay.keys()) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'chip';
+          b.role = 'tab';
+          b.dataset.day = d;
+          b.textContent = dayLabel(d);
+          b.addEventListener('click', () => showDay(d));
+          days.append(b);
+        }
+        if (byDay.size) showDay([...byDay.keys()][0]);
+      } catch (e) { fail(e); }
+    }
+    function choose(s: Slot, button: HTMLButtonElement) {
+      slot = s;
+      times.querySelectorAll('button').forEach((b) => b.classList.toggle('is-active', b === button));
+      const { day, time } = split(s.start);
+      chosen.innerHTML = `<strong>${doctor.selectedOptions[0].text}</strong>, ${spec.selectedOptions[0].text.toLowerCase()}<br>${dayLabel(day)}, ${time}, ${clinic.selectedOptions[0].text}`;
+      step('patient').hidden = false;
+      say('');
+      if (!captchaId) newCaptcha();
+      step('patient').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    async function newCaptcha() {
+      try {
+        const c = await get<{ id: string; svg: string }>('captcha');
+        captchaId = c.id;
+        // The МИС sends a picture as SVG markup; shown as an image so nothing in it runs
+        captchaImg.innerHTML = '';
+        const img = new Image();
+        img.alt = '';
+        img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(c.svg)}`;
+        captchaImg.append(img);
+        $<HTMLInputElement>('[name=captchaValue]').value = '';
+      } catch (e) { fail(e); }
+    }
+
+    spec.addEventListener('change', () => loadDoctors());
+    doctor.addEventListener('change', loadClinics);
+    clinic.addEventListener('change', loadSlots);
+    $('[data-new-captcha]').addEventListener('click', newCaptcha);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!slot) return say('Выберите время приёма.');
+      const f = new FormData(form);
+      const v = (k: string) => String(f.get(k) || '').trim();
+      if (!v('surname') || !v('firstName')) return say('Укажите фамилию и имя.');
+      if (!v('birthDate')) return say('Укажите дату рождения.');
+      if (v('phone').replace(/\D/g, '').length < 10) return say('Проверьте номер телефона.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email'))) return say('Проверьте электронную почту.');
+      if (!v('captchaValue')) return say('Введите код с картинки.');
+      if (!f.get('consent')) return say('Нужно согласие на обработку персональных данных.');
+      const button = $<HTMLButtonElement>('button[type=submit]');
+      button.disabled = true;
+      say('');
+      try {
+        const res = await fetch(`${api}/book`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slot: slot.id, surname: v('surname'), firstName: v('firstName'), secondName: v('secondName'),
+            birthDate: v('birthDate'), phone: v('phone'), email: v('email'), captchaId, captchaValue: v('captchaValue'), consent: true,
+          }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok) {
+          const text = chosen.innerHTML;
+          for (const el of form.children as HTMLCollectionOf<HTMLElement>) if (el !== status && el.tagName !== 'H2') el.hidden = true;
+          say(`Вы записаны.<br>${text}<br>Если планы изменятся, позвоните ${phone}.`, true);
+          (window as any).ym?.(108194831, 'reachGoal', 'online_booking');
+          return;
+        }
+        if (body.code === 'captcha') { await newCaptcha(); return say(body.error); }
+        if (body.code === 'taken') { await loadSlots(); return say(body.error); }
+        throw new Error(body.error || 'Не получилось записаться.');
+      } catch (err) {
+        fail(err);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // Start: specialties; then the doctor from ?doctor= if there is one
+    (async () => {
+      try {
+        const specs = await get<Item[]>('specialties');
+        if (!specs.length) throw new Error('empty');
+        fill(spec, specs, 'Выберите специальность');
+        form.hidden = false;
+        const names = JSON.parse(form.dataset.doctors || '{}') as Record<string, string>;
+        const wanted = names[new URLSearchParams(location.search).get('doctor') || ''];
+        if (wanted) {
+          const found = await get<{ specId: string; doctorId: string }[]>('find', { name: wanted }).catch(() => []);
+          if (found.length) { spec.value = found[0].specId; await loadDoctors(found[0].doctorId); }
+        }
+      } catch {
+        form.remove(); // the phone below is the way to book
+      }
+    })();
+  }
+</script>

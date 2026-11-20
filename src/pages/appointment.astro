@@ -3,14 +3,13 @@ import { city } from '../data/city';
 // Booking. Same address as on the old site (/appointment/), which every old
 // page, ad and bookmark links to.
 //
-// The old site books through its own form, which talks to the clinic's
-// medical information system (МИС) via /local/Conversite/ajax/api_mis.php on
-// the Bitrix server. That form can't be copied as is: it needs the МИС API
-// address and keys, which must live on the server, never in this repository.
-// Until that connection is set up, this page books by phone.
+// With bookingFormOn the online form comes first (the МИС through our own
+// server, deploy/api/server.mjs); the phone stays below it in any case, and is
+// all there is while the form is off or the server can't be reached.
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
-import { clinics, phones } from '../data/site';
+import BookingForm from '../components/BookingForm.astro';
+import { clinics, bookingFormOn } from '../data/site';
 ---
 
 <Base
@@ -18,9 +17,10 @@ import { clinics, phones } from '../data/site';
   description="Запись к врачу и на диагностику в Медюнион, Красноярск и Канск. Позвоните +7 (391) 220-03-03: администратор подберёт врача, клинику и удобное время."
   url="/appointment/"
 >
-  <PageHead url="/appointment/" h1="Запись на приём" lead="Позвоните нам: администратор подберёт врача и удобное время, ответит на вопросы о подготовке и ценах." compact />
+  <PageHead url="/appointment/" h1="Запись на приём" lead={bookingFormOn ? 'Выберите врача и свободное время онлайн или позвоните нам: администратор подберёт врача, ответит на вопросы о подготовке и ценах.' : 'Позвоните нам: администратор подберёт врача и удобное время, ответит на вопросы о подготовке и ценах.'} compact />
 
   <div class="wrap page-body booking-page">
+    {bookingFormOn && <BookingForm />}
     <section class="booking-main info-card">
       <p class="info-price"><span>Единый номер для записи</span><a href={`tel:${city.phone.tel}`}>{city.phone.display}</a></p>
       <a class="btn btn-primary booking-call" href={`tel:${city.phone.tel}`}>Позвонить</a>

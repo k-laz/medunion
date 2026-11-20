@@ -142,3 +142,37 @@ sudo nginx -t && sudo systemctl reload nginx
 ```
 
 Then in Beget DNS change the `A` record of `kansk` to the server IP.
+
+## 7. Online booking (the МИС «Ариадна»)
+
+The form on /appointment/ talks to a small program on this server
+(`deploy/api/server.mjs`, Node.js, no packages), and it talks to the МИС.
+nginx sends `/api/` to it on 127.0.0.1:8787. The МИС address and token live
+only in `/etc/medunion-api.env` on the server (root, mode 600): never in
+GitHub, the site files or a chat. Patient data passes through to the МИС
+and is not stored or logged.
+
+Once, on the server (the repository copied there, as in step 1):
+
+```
+cd medunion && git pull
+sudo bash deploy/setup-api.sh          # Node.js 22, service, nginx /api/
+sudo nano /etc/medunion-api.env        # MIS_BASE_URL and MIS_API_TOKEN
+sudo systemctl restart medunion-api
+sudo bash -c 'set -a; . /etc/medunion-api.env; node /opt/medunion-api/server.mjs --check'
+curl -s http://127.0.0.1/api/booking/health
+```
+
+`--check` only reads (specialties, doctors, clinics, free time, a captcha, a
+search for a made-up patient) and books nothing. Its output has no secrets
+and no patient data.
+
+After that every GitHub deploy uploads `server.mjs` and restarts the service.
+The form appears on the site when `bookingFormOn` in `src/data/site.ts` is
+`true`; while it is `false`, or the program can't be reached, /appointment/
+books by phone.
+
+Useful: `sudo systemctl status medunion-api`, `sudo journalctl -u medunion-api -n 50`.
+
+After the launch, ask Решение for a new МИС token and put it in
+`/etc/medunion-api.env` (the old one is known to Conversite).

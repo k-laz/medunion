@@ -54,3 +54,23 @@ A patient review, for the clinic to check before it is published. Body:
 so a filled one is dropped silently. Answers `201`. The server sends the
 review to the clinic (Bitrix24 or email). Approved reviews are added to
 `src/content/reviews/reviews.json` and appear on the site with the next build.
+
+## Online booking: /api/booking/... (built, deploy/api/server.mjs)
+
+Every answer is `{ "ok": true, "data": ... }` or `{ "ok": false, "error": "текст для посетителя", "code"?: "captcha" | "taken" }`.
+
+| Request | Data |
+|---|---|
+| GET /api/booking/health | `{ ok, configured }` |
+| GET /api/booking/specialties | `[{ id, name }]` |
+| GET /api/booking/doctors?spec= | `[{ id, name, free? }]` |
+| GET /api/booking/clinics?spec=&doctor= | `[{ id, name }]` |
+| GET /api/booking/slots?spec=&doctor=&clinic= | `[{ id, start, end }]`, start like `21.11.2026 09:00` |
+| GET /api/booking/find?name= | `[{ specId, specName, doctorId, name }]`, a site doctor's name to МИС ids |
+| GET /api/booking/captcha | `{ id, svg }` |
+| POST /api/booking/book | body `{ slot, surname, firstName, secondName, birthDate (YYYY-MM-DD), phone, email, captchaId, captchaValue, consent: true }`, data `{ booked: true }` |
+
+Booking: the patient is looked up in the МИС by name and birth date
+(/record/patient/info); if not found, created in the patient portal
+(/api/patient, needs the captcha); then /record/rnumb/appointment. Five
+bookings per visitor per hour, 120 requests per minute.

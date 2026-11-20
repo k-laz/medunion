@@ -146,6 +146,10 @@ export const showSchedule = false;
 
 // Every "Записаться" button leads here.
 export const bookingPage = '/appointment/';
+// The online booking form on /appointment/ (МИС through our server,
+// deploy/api/server.mjs). Off until it has been tested on the server;
+// while off, that page books by phone.
+export const bookingFormOn = false;
 
 // Analytics, call tracking and chat only load on the real site.
 // Preview builds stay silent so test visits don't pollute Metrica.

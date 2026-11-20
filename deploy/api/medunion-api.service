@@ -1,0 +1,27 @@
+# systemd service for the booking API (deploy/api/server.mjs).
+# Installed by deploy/setup-api.sh as /etc/systemd/system/medunion-api.service
+[Unit]
+Description=Medunion booking API (МИС Ариадна)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=medunion-api
+Group=medunion-api
+EnvironmentFile=/etc/medunion-api.env
+ExecStart=/usr/bin/node /opt/medunion-api/server.mjs
+Restart=always
+RestartSec=3
+# The program needs nothing on disk but its own file
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target
