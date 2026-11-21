@@ -76,7 +76,7 @@ const pick = (o, ...keys) => {
 const personName = (o) =>
   String(
     pick(o, 'docname', 'doc_name', 'fio', 'name', 'text') ??
-      [pick(o, 'lastname', 'surname', 'family'), pick(o, 'firstname', 'name1'), pick(o, 'secondname', 'middlename', 'patronymic')].filter(Boolean).join(' '),
+      [pick(o, 'l_name', 'lastname', 'surname', 'family'), pick(o, 'f_name', 'firstname', 'name1'), pick(o, 's_name', 'secondname', 'middlename', 'patronymic')].filter(Boolean).join(' '),
   ).replace(/\s+/g, ' ').trim();
 
 // ---------------------------------------------------------------- the booking steps
@@ -298,13 +298,13 @@ if (process.argv.includes('--check')) {
     const specs = await specialties();
     console.log(`  ${specs.length} specialties, e.g. ${specs.slice(0, 5).map((x) => x.name).join('; ')}`);
     const spec = specs.find((x) => /терап|невр|гинек/i.test(x.name)) || specs[0];
-    if (!spec) process.exit(1);
+    if (!spec) { console.log('Check stopped: no specialties.'); process.exit(1); }
     const d = await mis('GET', '/record/doc/list', { query: { beginDate: '2015-01-01', endDate: end, specID: spec.id } });
     console.log(`doctors of «${spec.name}»: HTTP ${d.status}, fields: ${keys(d).join(', ')}`);
     const docs = await doctors(spec.id);
     console.log(`  ${docs.length} doctors, e.g. ${docs.slice(0, 3).map((x) => x.name).join('; ')}`);
     const doc = docs[0];
-    if (!doc) process.exit(1);
+    if (!doc) { console.log('Check stopped: no doctors read from that list.'); process.exit(1); }
     const c = await mis('GET', '/record/dep/list', { query: { doctorID: doc.id, specID: spec.id } });
     console.log(`clinics of ${doc.name}: HTTP ${c.status}, fields: ${keys(c).join(', ')}`);
     const deps = await clinics(spec.id, doc.id);
