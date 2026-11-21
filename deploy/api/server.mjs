@@ -96,7 +96,8 @@ async function specialties() {
     const list = dataOf(await mis('GET', '/record/spec/list', { query: { beginDate: '2015-01-01', endDate: end } })) || [];
     return list
       .map((s) => ({ id: String(pick(s, 'keyid', 'specid', 'id')), name: String(pick(s, 'text', 'name', 'specname') ?? '').trim() }))
-      .filter((s) => s.id && s.name)
+      // staff roles in the МИС list that patients don't book
+      .filter((s) => s.id && s.name && !/администратор|регистратур|кассир/i.test(s.name))
       .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   });
 }
@@ -104,7 +105,7 @@ async function specialties() {
 async function doctors(spec) {
   return cached(`docs:${spec}`, 5 * 60000, async () => {
     const [, end] = range();
-    const list = dataOf(await mis('GET', '/record/doc/list', { query: { specID: spec } })) || [];
+    const list = dataOf(await mis('GET', '/record/doc/list', { query: { beginDate: '2015-01-01', endDate: end, specID: spec } })) || [];
     return list
       .map((d) => ({ id: String(pick(d, 'doctorid', 'docid', 'keyid', 'id')), name: personName(d), free: Number(pick(d, 'rcount') ?? NaN) }))
       .filter((d) => d.id && d.name)
@@ -298,7 +299,7 @@ if (process.argv.includes('--check')) {
     console.log(`  ${specs.length} specialties, e.g. ${specs.slice(0, 5).map((x) => x.name).join('; ')}`);
     const spec = specs.find((x) => /терап|невр|гинек/i.test(x.name)) || specs[0];
     if (!spec) process.exit(1);
-    const d = await mis('GET', '/record/doc/list', { query: { specID: spec.id } });
+    const d = await mis('GET', '/record/doc/list', { query: { beginDate: '2015-01-01', endDate: end, specID: spec.id } });
     console.log(`doctors of «${spec.name}»: HTTP ${d.status}, fields: ${keys(d).join(', ')}`);
     const docs = await doctors(spec.id);
     console.log(`  ${docs.length} doctors, e.g. ${docs.slice(0, 3).map((x) => x.name).join('; ')}`);
