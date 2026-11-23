@@ -104,9 +104,8 @@ const head = isKansk
       h1: 'Медицинские центры Медюнион в&nbsp;Красноярске',
       lead: 'Диагностика и приём врачей для взрослых и детей. Три клиники в Красноярске и Канске.',
     };
-const heroPhones = isKansk
-  ? [{ label: 'Канск', phone: phones.kansk }, { label: 'Красноярск', phone: phones.main }]
-  : [{ label: 'Красноярск, обе клиники', phone: phones.main }, { label: 'Канск', phone: phones.kansk }];
+// Each site shows only its own city's number
+const heroPhones = isKansk ? [{ label: 'Канск', phone: phones.kansk }] : [{ label: 'Красноярск, обе клиники', phone: phones.main }];
 const reviews = (await getCollection('reviews')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 3);
 const bookingUrl = bookingPage; // our /appointment/ page
 const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';

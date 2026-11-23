@@ -60,7 +60,7 @@ export const clinics = {
     district: '',
     note: '',
     phone: phones.kansk,
-    phones: [phones.kansk, phones.main],
+    phones: [phones.kansk],
     // The old main site says 20:00 on weekdays, kansk.medunion.group says 18:30. Ask the clinic.
     hours: ['Пн–Пт 08:00–20:00', 'Сб 08:30–18:00', 'Вс выходной'],
     opened: '2015-11-19',
