@@ -112,7 +112,21 @@ sudo certbot renew --dry-run          # must end with "Congratulations, all simu
 systemctl list-timers | grep certbot  # the renewal timer is there
 ```
 
+Then close the server to requests by bare IP (the test site and its plain-http
+`/api/` stop answering; the site is only https://medunion.group):
+
+```bash
+sudo cp deploy/nginx/default.conf /etc/nginx/sites-available/default-drop
+sudo ln -sf /etc/nginx/sites-available/default-drop /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/medunion-test
+sudo nginx -t && sudo systemctl reload nginx
+```
+
 ## 5. After the switch
+
+- A month after: raise `Strict-Transport-Security` in the nginx config from `max-age=86400` to `max-age=31536000`.
+- Webvisor in Metrica: open a recorded visit and check it plays (the site's frame rules allow Metrica's addresses; if Yandex uses another one, add it to `frame-ancestors`).
+- Old site: remove the Conversite booking files (`local/Conversite/`) from the Bitrix site on Beget, then ask Решение for a new МИС token and put it in `/etc/medunion-api.env`.
 
 - Yandex Webmaster: check the site is still verified, submit `https://medunion.group/sitemap.xml`, and watch "Страницы в поиске" for a few weeks.
 - Metrica: confirm visits and goals keep coming in.
@@ -167,7 +181,9 @@ curl -s http://127.0.0.1/api/booking/health
 search for a made-up patient) and books nothing. Its output has no secrets
 and no patient data.
 
-After that every GitHub deploy uploads `server.mjs` and restarts the service.
+GitHub does not upload this program (it holds the МИС token, so a push to
+GitHub must not be able to change it). To update it: `git pull`, then
+`sudo bash deploy/setup-api.sh` again.
 The form appears on the site when `bookingFormOn` in `src/data/site.ts` is
 `true`; while it is `false`, or the program can't be reached, /appointment/
 books by phone.

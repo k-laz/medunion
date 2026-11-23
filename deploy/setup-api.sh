@@ -3,7 +3,8 @@
 # Run as root:  sudo bash setup-api.sh
 # Installs Node.js 22, a service user, the systemd service and the settings
 # file /etc/medunion-api.env (empty; you fill in the МИС address and token).
-# The GitHub deploy then uploads server.mjs to /opt/medunion-api and restarts it.
+# Run it again after `git pull` to update the program: GitHub does not upload
+# it, because it holds the МИС token (see .github/workflows/deploy.yml).
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -16,8 +17,9 @@ node -v
 
 echo "== Service user and folder"
 id medunion-api >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin medunion-api
-install -d -m 755 -o deploy -g deploy /opt/medunion-api
-install -m 644 -o deploy -g deploy api/server.mjs /opt/medunion-api/server.mjs
+# root owns the program: neither the deploy user nor the service can change it
+install -d -m 755 -o root -g root /opt/medunion-api
+install -m 644 -o root -g root api/server.mjs /opt/medunion-api/server.mjs
 
 echo "== Settings file /etc/medunion-api.env"
 if [ ! -f /etc/medunion-api.env ]; then
@@ -32,12 +34,9 @@ install -m 644 api/medunion-api.service /etc/systemd/system/medunion-api.service
 systemctl daemon-reload
 systemctl enable medunion-api
 
-echo "== Let the GitHub deploy restart it"
-cat > /etc/sudoers.d/medunion-api <<'SUDO'
-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart medunion-api
-SUDO
-chmod 440 /etc/sudoers.d/medunion-api
-visudo -cf /etc/sudoers.d/medunion-api
+# (an earlier version let the GitHub deploy restart the service; not any more)
+rm -f /etc/sudoers.d/medunion-api
+if grep -qE '^MIS_API_TOKEN=.+' /etc/medunion-api.env; then systemctl restart medunion-api; echo "   restarted"; fi
 
 echo "== nginx: /api/ on the test site"
 CONF=/etc/nginx/sites-available/medunion-test

@@ -81,7 +81,7 @@ const doctors = Object.fromEntries((await getCollection('doctors')).map((d) => [
     const first = doc ? doc.clinics : q.get('clinic') ? [q.get('clinic')!] : [];
     const list = box.querySelector('.review-site-list')!;
     for (const k of [...first].reverse()) {
-      const li = list.querySelector(`[data-clinic="${k}"]`);
+      const li = list.querySelector(`[data-clinic="${CSS.escape(k)}"]`);
       if (li) list.prepend(li);
     }
     if (doc) {

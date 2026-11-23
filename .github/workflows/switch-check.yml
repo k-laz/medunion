@@ -11,6 +11,9 @@ on:
         type: choice
         options: ['new server', 'live domain']
         default: 'new server'
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest

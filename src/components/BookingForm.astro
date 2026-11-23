@@ -55,7 +55,7 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
     </div>
     <label class="check">
       <input type="checkbox" name="consent" required />
-      <span>Согласен на <a href={consentPage} target="_blank">обработку персональных данных</a></span>
+      <span>Согласен на <a href={consentPage} target="_blank" rel="noopener">обработку персональных данных</a></span>
     </label>
     <button class="btn btn-primary" type="submit">Записаться</button>
   </div>
@@ -104,7 +104,8 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
       select.disabled = false;
     };
     const hideFrom = (...names: string[]) => names.forEach((n) => (step(n).hidden = true));
-    const fail = (e: unknown) => say(`${(e as Error).message} Запишитесь по телефону ${phone}.`);
+    const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const fail = (e: unknown) => say(`${esc((e as Error).message)} Запишитесь по телефону ${phone}.`);
 
     // "31.12.2026 09:30" -> { day: "31.12.2026", time: "09:30" }
     const split = (s: string) => {
@@ -183,7 +184,10 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
       slot = s;
       times.querySelectorAll('button').forEach((b) => b.classList.toggle('is-active', b === button));
       const { day, time } = split(s.start);
-      chosen.innerHTML = `<strong>${doctor.selectedOptions[0].text}</strong>, ${spec.selectedOptions[0].text.toLowerCase()}<br>${dayLabel(day)}, ${time}, ${clinic.selectedOptions[0].text}`;
+      // Names come from the МИС: put in as text, never as HTML
+      const who = document.createElement('strong');
+      who.textContent = doctor.selectedOptions[0].text;
+      chosen.replaceChildren(who, `, ${spec.selectedOptions[0].text.toLowerCase()}`, document.createElement('br'), `${dayLabel(day)}, ${time}, ${clinic.selectedOptions[0].text}`);
       step('patient').hidden = false;
       say('');
       if (!captchaId) newCaptcha();
@@ -233,14 +237,14 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
         });
         const body = await res.json().catch(() => ({}));
         if (res.ok && body.ok) {
-          const text = chosen.innerHTML;
           for (const el of form.children as HTMLCollectionOf<HTMLElement>) if (el !== status && el.tagName !== 'H2') el.hidden = true;
-          say(`Вы записаны.<br>${text}<br>Если планы изменятся, позвоните ${phone}.`, true);
+          say(`Вы записаны.<br><span data-booked></span><br>Если планы изменятся, позвоните ${phone}.`, true);
+          status.querySelector('[data-booked]')!.replaceChildren(...chosen.cloneNode(true).childNodes);
           (window as any).ym?.(108194831, 'reachGoal', 'online_booking');
           return;
         }
-        if (body.code === 'captcha') { await newCaptcha(); return say(body.error); }
-        if (body.code === 'taken') { await loadSlots(); return say(body.error); }
+        if (body.code === 'captcha') { await newCaptcha(); return say(esc(String(body.error))); }
+        if (body.code === 'taken') { await loadSlots(); return say(esc(String(body.error))); }
         throw new Error(body.error || 'Не получилось записаться.');
       } catch (err) {
         fail(err);
