@@ -15,7 +15,7 @@ const nav = [
   { href: '/contacts/', label: 'Контакты' },
 ];
 const current = Astro.url.pathname;
-// Main service directions for the mobile menu
+// Main service directions for the Услуги drop-down and the mobile menu
 const directions = childrenOf('/uslugi/', await getCollection('services')).map((d) => ({ href: d.data.url, label: shortName(d.data.url, d.data.h1) }));
 ---
 
@@ -42,7 +42,22 @@ const directions = childrenOf('/uslugi/', await getCollection('services')).map((
     </a>
 
     <nav class="main-nav" aria-label="Основное меню">
-      {nav.map((item) => <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>)}
+      {nav.map((item) =>
+        item.href === '/uslugi/' ? (
+          // Услуги: the main directions open on hover (or keyboard focus)
+          <div class="nav-drop">
+            <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined} aria-haspopup="true">{item.label}<span class="nav-chev" aria-hidden="true"></span></a>
+            <div class="nav-drop-panel">
+              <ul>
+                {directions.map((d) => <li><a href={d.href}>{d.label}</a></li>)}
+              </ul>
+              <a class="nav-drop-all" href="/uslugi/">Все услуги</a>
+            </div>
+          </div>
+        ) : (
+          <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>
+        ),
+      )}
     </nav>
 
     <div class="header-tools">

@@ -127,6 +127,27 @@ p { margin: 0 0 1rem; }
 .main-nav a { color: var(--ink); text-decoration: none; font-weight: 500; padding: 6px 0; border-bottom: 2px solid transparent; }
 .main-nav a:hover { color: var(--brand); }
 .main-nav a[aria-current] { border-bottom-color: var(--brand); }
+/* Услуги drop-down: opens on hover or keyboard focus, closes a moment after the pointer leaves */
+.nav-drop { position: relative; display: flex; }
+.nav-drop > a { display: inline-flex; align-items: center; gap: 6px; }
+.nav-chev { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+.nav-drop:hover .nav-chev, .nav-drop:focus-within .nav-chev { transform: translateY(1px) rotate(-135deg); }
+.nav-drop-panel {
+  position: absolute; top: 100%; left: -20px; z-index: 50; min-width: 280px;
+  margin-top: 18px; padding: 10px; background: #fff; border: 1px solid var(--line);
+  border-radius: var(--radius-sm); box-shadow: 0 12px 32px rgba(27,35,51,.12);
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity .15s .12s, transform .15s .12s, visibility 0s linear .27s;
+}
+/* invisible bridge over the gap, so the pointer can reach the panel */
+.nav-drop-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -20px; height: 20px; }
+.nav-drop:hover .nav-drop-panel, .nav-drop:focus-within .nav-drop-panel {
+  opacity: 1; visibility: visible; transform: none; transition: opacity .15s, transform .15s, visibility 0s;
+}
+.nav-drop-panel ul { list-style: none; margin: 0; padding: 0; }
+.main-nav .nav-drop-panel a { display: block; padding: 10px 12px; border: 0; border-radius: var(--radius-btn); font-weight: 400; white-space: nowrap; }
+.main-nav .nav-drop-panel a:hover { background: var(--surface); color: var(--brand); }
+.main-nav .nav-drop-panel .nav-drop-all { margin-top: 6px; border-top: 1px solid var(--line); border-radius: 0 0 var(--radius-btn) var(--radius-btn); color: var(--brand); font-weight: 500; }
 .header-tools { display: flex; gap: 4px; }
 .icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: none; color: var(--ink); cursor: pointer; }
 .icon-btn:hover { background: var(--surface); color: var(--brand); }
