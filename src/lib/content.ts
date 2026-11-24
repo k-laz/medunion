@@ -87,7 +87,8 @@ export const leadText = (t: string) => {
 };
 
 export const shortTeaser = (t: string) => {
-  const first = t.match(/^.{20,}?[.!?](\s|$)/)?.[0].trim() ?? t;
+  // (a teaser cut before a list ends with ":" on the old site: drop it)
+  const first = (t.match(/^.{20,}?[.!?](\s|$)/)?.[0].trim() ?? t).replace(/\s*[:;,–—-]+$/, '');
   return first.length <= 140 ? first : first.slice(0, 140).replace(/\s+\S*$/, '') + '…';
 };
 
