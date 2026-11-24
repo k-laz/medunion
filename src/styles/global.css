@@ -257,6 +257,8 @@ p { margin: 0 0 1rem; }
 .hero-phones dt { font-size: var(--step--1); color: var(--muted); }
 .hero-phones dd { margin: 2px 0 0; }
 .hero-phones .hero-phone { font-size: 1.25rem; white-space: nowrap; }
+.hero-phone-extra { display: inline-block; margin-top: 2px; color: var(--text); font-weight: 500; text-decoration: none; white-space: nowrap; }
+.hero-phone-extra:hover { color: var(--brand); }
 @media (max-width: 900px) {
   .hero-inner { grid-template-columns: 1fr; gap: 28px; padding-top: 32px; padding-bottom: 32px; }
 }

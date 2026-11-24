@@ -42,17 +42,83 @@ export async function breadcrumbs(url: string) {
 // diagnostic page, only doctors who do diagnostics are shown.
 // Diagnostic pages (by address) and who does that kind of diagnostics (by specialty).
 const DIAGNOSTICS: [RegExp, RegExp][] = [
+  [/\/eeg[^/]*\//, /невролог|функциональн/i],
   [/\/(mrt|mrt-1-5-tesla|mskt|rentgen|kt-rebenku|detskiy-rentgen-rebenku|mrt-detyam)\//, /рентгенолог/i],
   [/\/(ultrazvukovaya-diagnostika|uzi-detyam|ekho-serdtsa-detyam|neyrosonografiya[^/]*)\//, /ультразвук|узд|функциональн/i],
-  [/\/funktsionalnaya-diagnostika\//, /функциональн|ультразвук|аритмолог/i],
+  [/\/funktsionalnaya-diagnostika\//, /функциональн|аритмолог/i],
   [/\/fgds[^/]*\//, /эндоскопист/i],
   [/^\/uslugi\/diagnostika\//, /рентгенолог|ультразвук|узд|функциональн|эндоскопист|диагност/i],
 ];
+// The same for the clinic's directions: a page shows only doctors of its own
+// specialty (no ultrasound doctor on «Кардиология», no therapist on «Урология»).
+// Checked after DIAGNOSTICS, first match wins, so specific pages come first.
+const SPECIALTIES: [RegExp, RegExp][] = [
+  // children
+  [/^\/uslugi\/pediatriya1\/detskiy-travmatolog/, /травматолог|ортопед/i],
+  [/^\/uslugi\/pediatriya1\/massazh/, /массаж/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*nevrolog/, /невролог/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*urolog/, /уролог/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*(ginekolog)/, /гинеколог/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*otorinolaringolog/, /оториноларинголог|отоларинголог|лор/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*allergolog/, /аллерголог|иммунолог/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*dermatovenerolog/, /дерматолог|дерматовенеролог/i],
+  [/^\/uslugi\/pediatriya1\/[^/]*(pediatr|neonatolog|spravok)/, /педиатр|неонатолог/i],
+  // home visits
+  [/^\/uslugi\/vyezd-vracha-na-dom\/vyezd-terapevta/, /(^|[\s,])терапевт/i],
+  [/^\/uslugi\/vyezd-vracha-na-dom\/vyezd-pediatra/, /педиатр/i],
+  [/^\/uslugi\/vyezd-vracha-na-dom\/vyezd-nevrologa/, /невролог/i],
+  [/^\/uslugi\/vyezd-vracha-na-dom\/vyezd-immunologa/, /иммунолог/i],
+  // adults
+  [/^\/uslugi\/centr\/kardiologiya\//, /кардиолог|аритмолог/i],
+  [/^\/uslugi\/centr\/endokrinologiya\//, /(?<!гинеколог-)эндокринолог/i],
+  [/^\/uslugi\/centr\/gastroenterologiya\//, /гастроэнтеролог/i],
+  [/^\/uslugi\/centr\/ginekologiya\//, /гинеколог/i],
+  [/^\/uslugi\/centr\/khirurgiya\//, /(^|,\s*)хирург/i],
+  [/^\/uslugi\/centr\/lor-otolaringologiya\//, /оториноларинголог|отоларинголог|лор/i],
+  [/^\/uslugi\/centr\/onkologiya-i-mammologiya\//, /онколог|маммолог/i],
+  [/^\/uslugi\/centr\/proktologiya\//, /проктолог/i],
+  [/^\/uslugi\/centr\/travmatologiya-i-ortopediya\//, /травматолог|ортопед/i],
+  [/^\/uslugi\/centr\/urologiya\//, /уролог/i],
+  [/^\/uslugi\/centr\/nevrologiya\//, /невролог|нейрохирург/i],
+  [/^\/uslugi\/centr\/allergologiya-immunologiya\//, /аллерголог|иммунолог/i],
+  [/^\/uslugi\/centr\/terapiya\//, /(^|[\s,])терапевт/i],
+  [/^\/uslugi\/centr\/nefrologiya\//, /нефролог/i],
+  [/^\/uslugi\/centr\/revmatologiya\//, /ревматолог/i],
+  [/^\/uslugi\/centr\/massazh\//, /массаж/i],
+  [/^\/uslugi\/ortopediya-\//, /ортопед|травматолог/i],
+  [/^\/uslugi\/proczedurnyj-kabinet\/ekg/, /кардиолог|функциональн/i],
+];
+// Pages that also list every doctor of their kind, not only the linked ones.
+// Diagnostics only by who actually does it (not the catch-all rule: the lab
+// tests page shouldn't list every radiologist).
+const ADD: [RegExp, RegExp][] = [
+  [DIAGNOSTICS[0][0], /функциональн/i],
+  [DIAGNOSTICS[1][0], /рентгенолог/i],
+  [DIAGNOSTICS[2][0], /ультразвук|узд/i],
+  [DIAGNOSTICS[3][0], /функциональн/i],
+  [DIAGNOSTICS[4][0], /эндоскопист/i],
+  ...SPECIALTIES,
+];
 /** Does this doctor belong on this service page? */
 export const doctorFits = (serviceUrl: string, specialty: string) => {
-  const rule = DIAGNOSTICS.find(([page]) => page.test(serviceUrl));
+  const rule = [...DIAGNOSTICS, ...SPECIALTIES].find(([page]) => page.test(serviceUrl));
   return !rule || rule[1].test(specialty);
 };
+
+/** Doctors for a service page: the ones linked to it that fit, then every other
+ *  doctor of the page's specialty (so «Травматология» shows the traumatologists
+ *  even where the old site linked someone else). */
+export async function doctorsForService(serviceUrl: string, linked: string[]) {
+  const fits = (sp: string) => doctorFits(serviceUrl, sp);
+  const first = (await doctorsByIds(linked)).filter((x) => fits(x.data.specialty));
+  const add = ADD.find(([page]) => page.test(serviceUrl))?.[1];
+  if (!add) return first;
+  const ids = new Set(first.map((x) => x.id));
+  const more = (await getCollection('doctors'))
+    .filter((x) => !ids.has(x.id) && fits(x.data.specialty) && add.test(x.data.specialty))
+    .sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
+  return [...first, ...more];
+}
 
 /** Services that list this doctor. */
 export async function servicesOfDoctor(doctorId: string, specialty = '') {
