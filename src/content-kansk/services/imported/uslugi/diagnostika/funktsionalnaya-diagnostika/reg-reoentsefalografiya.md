@@ -29,7 +29,7 @@ teaser: "РЭГ - нетравматичный, неинвазивный, абс
 
 Если вы страдаете от головной боли, приступов мигрени, повышенного давления или боитесь инсульта – не спешите записываться на РЭГ.
 
-***Для начала посетите врача-невролога:*** **[Бибик Наталью Юрьевн](https://kansk.medunion.group/vrachi/vrachi-medyunion/boturkhodzhaev-murodkhudzha-abdumarufovich/)[у](https://kansk.medunion.group/vrachi/vrachi-medyunion/bibik-natalya-yurevna/),** **[Соболеву Татьяну Альбертовну](https://kansk.medunion.group/vrachi/vrachi-medyunion/boturkhodzhaev-murodkhudzha-abdumarufovich/) или врача-терапевта [Ботурходжаева](https://kansk.medunion.group/vrachi/vrachi-medyunion/boturkhodzhaev-murodkhudzha-abdumarufovich/)** **[Муродхуджу Абдумаруфовича](https://kansk.medunion.group/vrachi/vrachi-medyunion/boturkhodzhaev-murodkhudzha-abdumarufovich/),** **позвонив по тел. 8 (391) 200-03-03**
+***Для начала посетите [врача-невролога](/vrachi/vrachi-nevrologi/) или терапевта.*** Записаться можно по телефону +7 (39161) 4-10-04.
 
 ### **Показания к проведению РЭГ:**
 

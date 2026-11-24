@@ -1,4 +1,4 @@
-// Kept for reference: the one-off cleanup of conversion leftovers in service texts (Nov 2026).
+// Kept for reference: the one-off cleanup of conversion leftovers in service texts and articles (Nov 2026).
 // Cleans conversion leftovers in service texts (markdown bodies + description/teaser).
 // node clean-services.mjs <dir>...   prints a per-rule count; --dry to not write
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';

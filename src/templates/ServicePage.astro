@@ -40,9 +40,9 @@ const catalog = isCatalog
 const tabs = isCatalog ? [] : [
   children.length && { id: 'sub', label: 'Услуги раздела' },
   prices.length && { id: 'prices', label: 'Цены' },
-  doctors.length && { id: 'doctors', label: 'Врачи' },
   hasText && { id: 'about', label: 'Описание' },
   d.faq.length && { id: 'faq', label: 'Вопросы' },
+  doctors.length && { id: 'doctors', label: 'Врачи' },
 ].filter(Boolean) as { id: string; label: string }[];
 
 // Context links under the title, only where they apply: an offer for this
@@ -141,16 +141,6 @@ const reads = readUrls
     </section>
   )}
 
-  {doctors.length > 0 && (
-    <section id="doctors" class="block">
-      <h2>Врачи</h2>
-      <div class="doctor-grid">
-        {doctors.map((doc) => (
-          <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
-        ))}
-      </div>
-    </section>
-  )}
 
   {hasText && (
     <section id="about" class="block">
@@ -162,16 +152,6 @@ const reads = readUrls
     </section>
   )}
 
-  {related.length > 0 && (
-    <section class="block">
-      <h2>Смотрите также</h2>
-      <ul class="tile-grid">
-        {related.map((c) => (
-          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{shortName(c.data.url, c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
-        ))}
-      </ul>
-    </section>
-  )}
 
   {d.faq.length > 0 && (
     <section id="faq" class="block faq">
@@ -182,6 +162,28 @@ const reads = readUrls
           <p>{item.a}</p>
         </details>
       ))}
+    </section>
+  )}
+
+  {doctors.length > 0 && (
+    <section id="doctors" class="block">
+      <h2>Врачи</h2>
+      <div class="doctor-grid">
+        {doctors.map((doc) => (
+          <DoctorCard name={doc.data.name} specialty={doc.data.specialty} url={doc.data.url} photo={doc.data.photo} experienceYears={doc.data.experienceYears} clinicKeys={doc.data.clinics} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {related.length > 0 && (
+    <section class="block">
+      <h2>Смотрите также</h2>
+      <ul class="tile-grid">
+        {related.map((c) => (
+          <li><a class="tile" href={c.data.url}><span class="tile-text"><span class="tile-title">{shortName(c.data.url, c.data.h1)}</span>{c.data.teaser && <span class="tile-teaser">{shortTeaser(c.data.teaser)}</span>}</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></a></li>
+        ))}
+      </ul>
     </section>
   )}
   </div>
