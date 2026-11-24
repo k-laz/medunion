@@ -391,6 +391,33 @@ p { margin: 0 0 1rem; }
 .info-service:hover { color: var(--brand); }
 .info-note { margin: 0 0 16px; font-size: var(--step--1); color: var(--text); }
 
+/* Service pages: the services list in a left-hand column */
+.with-nav { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 48px; align-items: start; }
+.svc-nav {
+  position: sticky; top: calc(var(--header-h, 77px) + var(--tabs-h, 0px) + 24px); margin-top: 40px;
+  display: flex; flex-direction: column; max-height: calc(100vh - var(--header-h, 77px) - var(--tabs-h, 0px) - 48px);
+  font-size: var(--step--1);
+}
+.svc-nav-scroll { overflow-y: auto; overscroll-behavior: contain; padding-right: 6px; }
+.svc-nav-head { display: block; margin-bottom: 8px; padding: 0 10px 10px; border-bottom: 1px solid var(--line); font-family: var(--font-head); font-size: 1.05rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+.svc-nav-head:hover { color: var(--brand); }
+.svc-nav-list { list-style: none; margin: 0; padding: 0; }
+.svc-nav-list .svc-nav-list { margin: 2px 0 6px 10px; padding-left: 8px; border-left: 1px solid var(--line); }
+.svc-nav a { display: block; padding: 7px 10px; border-radius: var(--radius-btn); color: var(--text); text-decoration: none; line-height: 1.3; }
+.svc-nav a:hover { background: var(--surface); color: var(--brand); }
+.svc-nav .svc-nav-l0 > li > a { font-weight: 500; color: var(--ink); }
+.svc-nav a.on-path { color: var(--brand); }
+.svc-nav a[aria-current="page"] { background: var(--tint); color: var(--brand); font-weight: 600; }
+.with-nav .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.with-nav .doctor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Phones and tablets: the list goes under the content, not over it */
+@media (max-width: 900px) {
+  .with-nav { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .svc-nav { order: 2; position: static; max-height: none; margin-top: 8px; padding: 24px 0 0; border-top: 1px solid var(--line); }
+  .svc-nav-scroll { overflow: visible; }
+}
+@media (max-width: 640px) { .with-nav .tile-grid, .with-nav .doctor-grid { grid-template-columns: 1fr; } }
+
 /* Content with the booking card in a right-hand column */
 .with-aside { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; }
 .page-main { min-width: 0; }

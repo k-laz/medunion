@@ -6,6 +6,7 @@ import PriceList from '../components/PriceList.astro';
 import { currentPrices } from '../lib/prices';
 import DoctorCard from '../components/DoctorCard.astro';
 import SearchBox from '../components/SearchBox.astro';
+import ServiceNav from '../components/ServiceNav.astro';
 import { childrenOf, tileLabel, shortTeaser, leadText, shortName, doctorsByIds, doctorFits } from '../lib/content';
 import { integrations, phones, bookingPage } from '../data/site';
 import { saleInfo as loadSaleInfo } from '../lib/sales';
@@ -103,7 +104,13 @@ const reads = readUrls
   </nav>
 )}
 
-<div class="wrap page-body">
+<div class:list={['wrap', 'page-body', { 'with-nav': !isCatalog }]}>
+  {!isCatalog && (
+    <nav class="svc-nav" aria-label="Услуги">
+      <a class="svc-nav-head" href="/uslugi/">Все услуги</a>
+      <div class="svc-nav-scroll" data-svc-nav><ServiceNav current={d.url} all={allServices} /></div>
+    </nav>
+  )}
   <div class="page-main">
   {isCatalog && (
     <div class="catalog">
@@ -181,6 +188,14 @@ const reads = readUrls
 </div>
 
 <script>
+  // The services list scrolls on its own: start with the current page in view
+  for (const nav of document.querySelectorAll<HTMLElement>('[data-svc-nav]')) {
+    const here = nav.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!here || nav.scrollHeight <= nav.clientHeight) continue;
+    const top = here.getBoundingClientRect().top - nav.getBoundingClientRect().top;
+    if (top > nav.clientHeight - 60) nav.scrollTop = top - nav.clientHeight / 3;
+  }
+
   // Long descriptions start folded, like a "read more". The full text is
   // always in the page for search engines and screen readers.
   for (const box of document.querySelectorAll<HTMLElement>('[data-clamp]')) {

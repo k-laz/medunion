@@ -1,0 +1,34 @@
+---
+// Left-hand navigation on service pages: every main direction, and the
+// branch the visitor is in opened down to the current page.
+import type { CollectionEntry } from 'astro:content';
+import { childrenOf, shortName } from '../lib/content';
+
+interface Props {
+  current: string;
+  all: CollectionEntry<'services'>[];
+  parent?: string;
+  level?: number;
+}
+const { current, all, parent = '/uslugi/', level = 0 } = Astro.props;
+// Main directions in the same order as the /uslugi/ catalog; inside them, А to Я
+const ORDER = ['/uslugi/diagnostika/', '/uslugi/centr/', '/uslugi/pediatriya1/', '/uslugi/vyezd-vracha-na-dom/', '/uslugi/klinika-blokady-boli/', '/uslugi/proczedurnyj-kabinet/', '/uslugi/ortopediya-/'];
+const rank = (u: string) => (ORDER.indexOf(u) === -1 ? 99 : ORDER.indexOf(u));
+const items = childrenOf(parent, all)
+  .map((e) => ({ url: e.data.url, label: shortName(e.data.url, e.data.h1) }))
+  .sort((a, b) => (level === 0 ? rank(a.url) - rank(b.url) : 0) || a.label.localeCompare(b.label, 'ru'));
+const hasChildren = (url: string) => all.some((e) => e.data.url !== url && e.data.url.startsWith(url));
+---
+
+<ul class:list={['svc-nav-list', `svc-nav-l${Math.min(level, 3)}`]}>
+  {items.map((i) => {
+    const here = i.url === current;
+    const onPath = current.startsWith(i.url);
+    return (
+      <li class:list={{ 'is-open': onPath && hasChildren(i.url) }}>
+        <a href={i.url} aria-current={here ? 'page' : undefined} class:list={{ 'on-path': onPath && !here }}>{i.label}</a>
+        {onPath && hasChildren(i.url) && <Astro.self current={current} all={all} parent={i.url} level={level + 1} />}
+      </li>
+    );
+  })}
+</ul>
