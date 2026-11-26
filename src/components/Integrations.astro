@@ -1,5 +1,5 @@
 ---
-// Metrica, Top.Mail.Ru, Bitrix24 CRM and the messenger widget. They set
+// Metrica, Top.Mail.Ru, Bitrix24 CRM, Callibri call tracking and the messenger widget. They set
 // cookies, so under 152-ФЗ they load only after the visitor presses «Принять»
 // in the cookie banner (CookieNotice.astro; the choice is kept on the device as
 // localStorage 'cookie-consent' = 'all' | 'necessary'). They also load only on
@@ -7,12 +7,12 @@
 // server's bare IP (for testing) must not count visits or send chats to the
 // clinic's operators.
 import { integrations, isProduction } from '../data/site';
-const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
+const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId, callibri } = integrations;
 ---
 
 {isProduction && (
   <>
-    <script is:inline define:vars={{ metrikaId, b24: [bitrix24.callTracker, bitrix24.siteButton], dailyGrowWidgetId, topMailRuId }}>
+    <script is:inline define:vars={{ metrikaId, b24: [bitrix24.callTracker, bitrix24.siteButton], dailyGrowWidgetId, topMailRuId, callibri }}>
       var load = function () {
         if (window.__mdLoaded || !/(^|\.)medunion\.group$/.test(location.hostname)) return;
         window.__mdLoaded = true;
@@ -28,6 +28,10 @@ const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId } = integrations;
         var add = function (src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); };
         // Bitrix24: call tracking and the chat / callback button
         b24.forEach(function (u) { add(u + '?' + (Date.now() / 60000 | 0)); });
+
+        // Callibri: tracking phone numbers (Bitrix24 above doesn't swap numbers;
+        // only one of the two may, or they fight over the same numbers)
+        if (callibri) add(callibri);
 
         // daily-grow messenger widget
         window.dgSocialWidgetData = window.dgSocialWidgetData || [];

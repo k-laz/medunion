@@ -129,6 +129,13 @@ export const integrations = {
     siteButton: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js',
   },
   dailyGrowWidgetId: 'b4486417-63a6-4218-89b2-8db8a6f40779',
+  // Callibri call tracking: shows each visitor a tracking phone number so calls
+  // can be matched to the ad they came from (numbers are set in Callibri's
+  // account, Настройки → МультиТрекинг → Подмена). Empty string switches it off.
+  // Only call tracking is meant to be used: no Callibri chat or popups (the
+  // Bitrix24 button does that) and no form interceptor (it would also send the
+  // booking form's patient data to Callibri).
+  callibri: 'https://cdn.callibri.ru/callibri.js',
   // Top.Mail.Ru (VK) counter, used for VK ads. Same id as on the old site.
   topMailRuId: '3628693',
   // Yandex Webmaster ownership checks, copied from the old site's <head>.
