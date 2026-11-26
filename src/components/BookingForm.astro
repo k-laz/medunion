@@ -72,7 +72,7 @@ const site = await Promise.all(
     <div class="form-row">
       <div class="booking-second">
         <label><span>Отчество</span><input name="secondName" autocomplete="additional-name" maxlength="60" required /></label>
-        <label class="check"><input type="checkbox" name="noSecond" /><span>Нет отчества</span></label>
+        <small class="muted">Если отчества нет, запишитесь по телефону <a href={`tel:${city.phone.tel}`}>{city.phone.display}</a>: система записи без него не принимает.</small>
       </div>
       <label><span>Дата рождения</span><input name="birthDate" type="date" autocomplete="bday" required /></label>
     </div>
@@ -411,11 +411,6 @@ const site = await Promise.all(
       } catch (e) { fail(e); }
     }
     $('[data-new-captcha]').addEventListener('click', newCaptcha);
-    const secondInput = $<HTMLInputElement>('[name=secondName]');
-    $<HTMLInputElement>('[name=noSecond]').addEventListener('change', (e) => {
-      secondInput.disabled = (e.target as HTMLInputElement).checked;
-      if (secondInput.disabled) secondInput.value = '';
-    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -423,8 +418,8 @@ const site = await Promise.all(
       const f = new FormData(form);
       const v = (k: string) => String(f.get(k) || '').trim();
       if (!v('surname') || !v('firstName')) return say('Укажите фамилию и имя.');
-      const second = f.get('noSecond') ? '-' : v('secondName');
-      if (!second) return say('Укажите отчество или отметьте «Нет отчества».');
+      const second = v('secondName');
+      if (!second) return say(`Укажите отчество. Если его нет, запишитесь по телефону ${phone}.`);
       if (!v('birthDate')) return say('Укажите дату рождения.');
       if (v('phone').replace(/\D/g, '').length < 10) return say('Проверьте номер телефона.');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email'))) return say('Проверьте электронную почту.');

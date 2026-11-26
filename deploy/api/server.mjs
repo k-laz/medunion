@@ -264,9 +264,9 @@ function bookingInput(b) {
   const nameOk = (s) => /^[А-Яа-яЁёA-Za-z][А-Яа-яЁёA-Za-z' -]*$/.test(s);
   if (!/^\d+$/.test(p.slot)) throw new Problem(400, 'Выберите время приёма.');
   if (!nameOk(p.surname) || !nameOk(p.firstName)) throw new Problem(400, 'Укажите фамилию и имя.');
-  // The МИС refuses an empty отчество; people without one send «-»
-  if (!p.secondName) throw new Problem(400, 'Укажите отчество или отметьте «Нет отчества».');
-  if (p.secondName !== '-' && !nameOk(p.secondName)) throw new Problem(400, 'Проверьте отчество.');
+  // The МИС refuses an empty отчество, and «-» too (checked 25.11.2026)
+  if (!p.secondName) throw new Problem(400, 'Укажите отчество. Если его нет, запишитесь по телефону.');
+  if (!nameOk(p.secondName)) throw new Problem(400, 'Проверьте отчество.');
   const bd = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p.birthDate);
   const age = bd ? (Date.now() - Date.UTC(+bd[1], +bd[2] - 1, +bd[3])) / 31557600000 : -1;
   if (!(age > 0 && age < 120)) throw new Problem(400, 'Проверьте дату рождения.');

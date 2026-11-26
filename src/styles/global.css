@@ -986,8 +986,7 @@ li:nth-child(3n+3) > .post-card .post-card-pic.is-plain { background: var(--tone
 .booking-empty { margin: 0; }
 .booking-patient { gap: 14px; }
 .booking-second { display: grid; gap: 6px; }
-.booking-second .check { font-size: .85rem; color: var(--muted); }
-.review-form input:disabled { background: var(--surface); }
+.booking-second small { font-size: .8rem; line-height: 1.4; }
 .booking-chosen { margin: 0; padding: 12px 14px; border-radius: var(--radius-btn); background: var(--tint); }
 .booking-captcha { display: grid; grid-template-columns: 160px 1fr; gap: 12px; align-items: end; }
 .booking-captcha-img { height: 50px; border: 1px solid var(--line); border-radius: var(--radius-btn); background: #fff; display: grid; place-items: center; overflow: hidden; }
