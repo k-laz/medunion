@@ -65,7 +65,9 @@ Every answer is `{ "ok": true, "data": ... }` or `{ "ok": false, "error": "те�
 | GET /api/booking/specialties | `[{ id, name }]` |
 | GET /api/booking/doctors?spec= | `[{ id, name, free? }]` |
 | GET /api/booking/clinics?spec=&doctor= | `[{ id, name }]` |
-| GET /api/booking/slots?spec=&doctor=&clinic= | `[{ id, start, end }]`, start like `21.11.2026 09:00` |
+| GET /api/booking/slots?spec=&doctor=&clinic= | `[{ id, start, end, clinic }]`, start like `21.11.2026 09:00` |
+| GET /api/booking/all | `[{ id, name, specs: [{ id, name }] }]`, every doctor or room once (kept warm) |
+| GET /api/booking/nearest?spec= | free time of every doctor of a specialty, each slot with `doctor, doctorName, clinic, clinicName` («Любой врач») |
 | GET /api/booking/find?name= | `[{ specId, specName, doctorId, name }]`, a site doctor's name to МИС ids |
 | GET /api/booking/captcha | `{ id, svg }` |
 | POST /api/booking/book | body `{ slot, surname, firstName, secondName, birthDate (YYYY-MM-DD), phone, email, captchaId, captchaValue, consent: true }`, data `{ booked: true }` |

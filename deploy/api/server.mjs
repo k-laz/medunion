@@ -82,12 +82,21 @@ const personName = (o) =>
 // ---------------------------------------------------------------- the booking steps
 
 const cache = new Map();
-async function cached(key, ms, fn) {
+// Answers kept for a while. A stale answer is still served while a fresh one is
+// fetched in the background, and only one fetch per key runs at a time.
+function cached(key, ms, fn) {
   const hit = cache.get(key);
-  if (hit && hit.until > Date.now()) return hit.value;
-  const value = await fn();
-  cache.set(key, { value, until: Date.now() + ms });
-  return value;
+  if (hit?.has && hit.until > Date.now()) return Promise.resolve(hit.value);
+  if (!hit?.pending) {
+    const pending = Promise.resolve().then(fn).then(
+      (value) => { cache.set(key, { value, has: true, until: Date.now() + ms }); return value; },
+      (e) => { const h = cache.get(key); if (h) delete h.pending; if (!h?.has) cache.delete(key); throw e; },
+    );
+    pending.catch(() => {});
+    cache.set(key, { ...(hit || {}), pending });
+  }
+  const now = cache.get(key);
+  return now.has ? Promise.resolve(now.value) : now.pending;
 }
 
 async function specialties() {
@@ -128,7 +137,7 @@ async function slots(spec, doctor, clinic) {
   const list = dataOf(await mis('GET', '/record/rnumb/list', { query: { doctorID: doctor, specID: spec, beginDate: start, endDate: end } })) || [];
   return list
     .filter((t) => !clinic || String(pick(t, 'depid', 'dep_id')) === String(clinic))
-    .map((t) => ({ id: String(pick(t, 'rnumbid', 'keyid', 'id')), start: String(pick(t, 'dat_begin_str', 'dat_begin', 'begin') ?? ''), end: String(pick(t, 'dat_end_str', 'dat_end', 'end') ?? '') }))
+    .map((t) => ({ id: String(pick(t, 'rnumbid', 'keyid', 'id')), start: String(pick(t, 'dat_begin_str', 'dat_begin', 'begin') ?? ''), end: String(pick(t, 'dat_end_str', 'dat_end', 'end') ?? ''), clinic: String(pick(t, 'depid', 'dep_id') ?? '') }))
     .filter((t) => t.id && t.start)
     .sort((a, b) => toTime(a.start) - toTime(b.start));
 }
@@ -141,10 +150,9 @@ function toTime(s) {
 }
 
 /** Doctors whose name matches (for «Записаться» on a doctor's page): every specialty they see in. */
-async function findDoctor(name) {
-  const want = norm(name).split(' ').filter(Boolean);
-  if (!want.length) return [];
-  const all = await cached('alldocs', 10 * 60000, async () => {
+/** Every doctor (or room) of every specialty, as one list. Kept warm in the background. */
+async function everyone() {
+  return cached('alldocs', 10 * 60000, async () => {
     const out = [];
     const specs = await specialties();
     for (let i = 0; i < specs.length; i += 5) {
@@ -154,7 +162,42 @@ async function findDoctor(name) {
     }
     return out;
   });
-  return all.filter((d) => {
+}
+
+/** The booking page's list: each doctor once, with the specialties they can be booked for. */
+async function allDoctors() {
+  const byId = new Map();
+  for (const d of await everyone()) {
+    const e = byId.get(d.doctorId) || { id: d.doctorId, name: d.name, specs: [] };
+    if (!e.specs.some((x) => x.id === d.specId)) e.specs.push({ id: d.specId, name: d.specName });
+    byId.set(d.doctorId, e);
+  }
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+}
+
+/** «Любой врач»: the free time of every doctor of a specialty, with who and where. */
+async function nearest(spec) {
+  return cached(`nearest:${spec}`, 2 * 60000, async () => {
+    const docs = await doctors(spec);
+    const out = [];
+    for (let i = 0; i < docs.length; i += 4) {
+      const part = docs.slice(i, i + 4);
+      const got = await Promise.all(part.map(async (d) => {
+        const [deps, free] = await Promise.all([clinics(spec, d.id).catch(() => []), slots(spec, d.id, '').catch(() => [])]);
+        const depName = Object.fromEntries(deps.map((c) => [c.id, c.name]));
+        return free.filter((t) => depName[t.clinic]).map((t) => ({ ...t, doctor: d.id, doctorName: d.name, clinicName: depName[t.clinic] }));
+      }));
+      got.forEach((g) => out.push(...g));
+    }
+    return out.sort((a, b) => toTime(a.start) - toTime(b.start));
+  });
+}
+
+/** Doctors whose name matches (for «Записаться» on a doctor's page): every specialty they see in. */
+async function findDoctor(name) {
+  const want = norm(name).split(' ').filter(Boolean);
+  if (!want.length) return [];
+  return (await everyone()).filter((d) => {
     const have = norm(d.name).split(' ');
     return have[0] === want[0] && (!want[1] || !have[1] || have[1][0] === want[1][0]);
   });
@@ -167,18 +210,32 @@ async function captcha() {
   return { id: String(d.id), svg: String(d.svg) };
 }
 
+/** Why the МИС refused, for the log: its own message, with the patient's details blanked out. */
+function misReason(r, p) {
+  const j = r.json;
+  let msg = j ? (j.error ?? j.message ?? j.errors ?? (typeof j.data === 'string' ? j.data : undefined) ?? j) : r.text;
+  msg = typeof msg === 'string' ? msg : JSON.stringify(msg);
+  for (const v of [p.surname, p.firstName, p.secondName, p.email, p.phone].filter((x) => x && x.length > 1)) msg = msg.split(v).join('***');
+  return msg.replace(/\d{4,}|\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2}/g, '***').slice(0, 300);
+}
+
 async function book(p) {
   const birth = BIRTH_FORMAT === 'iso' ? p.birthDate : p.birthDate.split('-').reverse().join('.');
   // 1. the patient: found by name and birth date, or created in the patient portal
   const found = await mis('POST', '/record/patient/info', { body: { surname: p.surname, firstName: p.firstName, secondName: p.secondName, birthDate: birth } });
-  if (found.status !== 200) throw new Problem(502, 'Система записи клиники ответила ошибкой.', found.status);
+  if (found.status !== 200) {
+    log(`booking: patient search refused (${found.status}): ${misReason(found, p)}`);
+    throw new Problem(502, 'Система записи клиники ответила ошибкой.', found.status);
+  }
   let patient = found.json?.data?.keyid;
+  log(`booking: patient ${patient && patient !== 'Пациент не найден' ? 'found' : 'not found, creating'}`);
   if (!patient || patient === 'Пациент не найден') {
     const created = await mis('POST', '/api/patient', {
       body: { lastName: p.surname, firstName: p.firstName, secondName: p.secondName, birthDate: birth, email: p.email, phone: p.phone, captchaId: p.captchaId, captchaValue: p.captchaValue },
       headers: { sessiontoken: randomBytes(16).toString('hex') },
     });
     if (created.status !== 200 || !created.json?.success || !created.json?.data?.id) {
+      log(`booking: new patient refused (${created.status}): ${misReason(created, p)}`);
       const msg = String(created.json?.error ?? created.json?.message ?? '');
       if (/captcha|капч|код/i.test(msg)) throw new Problem(400, 'Неверный проверочный код. Введите новый.', 'captcha');
       throw new Problem(502, 'Не получилось зарегистрировать вас в системе записи.', created.status);
@@ -187,7 +244,8 @@ async function book(p) {
   }
   // 2. the appointment
   const r = await mis('GET', '/record/rnumb/appointment', { query: { rnumbID: p.slot }, headers: { patientid: String(patient) } });
-  if (r.status === 200 && r.json?.success) return { booked: true };
+  if (r.status === 200 && r.json?.success) { log('booking: done'); return { booked: true }; }
+  log(`booking: appointment refused (${r.status}): ${misReason(r, p)}`);
   const msg = String(r.json?.error ?? r.json?.message ?? '');
   if (/занят|busy|недоступ/i.test(msg)) throw new Problem(409, 'Это время уже заняли. Выберите другое.', 'taken');
   throw new Problem(502, 'Не получилось записать на это время.', r.status);
@@ -260,6 +318,8 @@ const routes = {
   'GET /api/booking/clinics': async (u) => clinics(idParam(u, 'spec'), idParam(u, 'doctor')),
   'GET /api/booking/slots': async (u) => slots(idParam(u, 'spec'), idParam(u, 'doctor'), u.searchParams.get('clinic') ? idParam(u, 'clinic') : ''),
   'GET /api/booking/find': async (u) => findDoctor(text(u.searchParams.get('name') || '', 80)),
+  'GET /api/booking/all': async () => allDoctors(),
+  'GET /api/booking/nearest': async (u) => nearest(idParam(u, 'spec')),
   'GET /api/booking/captcha': async () => captcha(),
   'POST /api/booking/book': async (u, req, ip) => {
     limit(ip, 'book', 5, 3600000);
@@ -317,9 +377,13 @@ if (process.argv.includes('--check')) {
     console.log(`captcha: ${cap.svg.startsWith('<svg') ? 'ok' : 'unexpected'}`);
     // Which birth date format the МИС takes: look up a made-up patient both ways
     // (a search only; nobody is created). The right format answers «Пациент не найден».
+    // ...and whether it takes an empty отчество (the old form always required one)
     for (const [fmt, bd] of [['ru', '01.01.1901'], ['iso', '1901-01-01']]) {
-      const r = await mis('POST', '/record/patient/info', { body: { surname: 'Проверкасайта', firstName: 'Тест', secondName: '', birthDate: bd } });
-      console.log(`patient search with birth date as ${fmt}: HTTP ${r.status}, answer: ${String(r.json?.data?.keyid ?? r.json?.error ?? r.json?.message ?? '').slice(0, 80)}`);
+      for (const second of ['Тестович', '']) {
+        const r = await mis('POST', '/record/patient/info', { body: { surname: 'Проверкасайта', firstName: 'Тест', secondName: second, birthDate: bd } });
+        const answer = r.json?.data?.keyid ?? r.json?.error ?? r.json?.message ?? r.json ?? r.text;
+        console.log(`patient search, birth date as ${fmt}, отчество ${second ? 'filled' : 'empty'}: HTTP ${r.status}, answer: ${(typeof answer === 'string' ? answer : JSON.stringify(answer)).slice(0, 120)}`);
+      }
     }
     console.log('Check done. Nothing was booked.');
     process.exit(0);
@@ -329,4 +393,11 @@ if (process.argv.includes('--check')) {
   }
 } else {
   server.listen(PORT, HOST, () => log(`medunion-api on ${HOST}:${PORT}, МИС ${BASE && TOKEN ? 'configured' : 'NOT configured'}`));
+  // The doctors list takes a few dozen МИС requests: build it now and keep it fresh,
+  // so visitors never wait for it
+  if (BASE && TOKEN) {
+    const warm = () => everyone().catch((e) => log(`warm-up failed: ${e.message}`));
+    warm();
+    setInterval(warm, 5 * 60000).unref();
+  }
 }

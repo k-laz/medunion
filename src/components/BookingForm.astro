@@ -1,41 +1,69 @@
 ---
 // Online booking, live from the МИС «Ариадна» through our server
-// (deploy/api/server.mjs, /api/booking/...). Steps: specialty, doctor, clinic,
-// time, then the patient's details. Opened from a doctor's page
-// (?doctor=/vrachi/.../), that doctor is chosen already.
+// (deploy/api/server.mjs, /api/booking/...).
+//   1. pick a doctor: cards with photo, filter by specialty, search by name;
+//      or «Любой врач» of a specialty: the nearest free time of all of them
+//   2. a week calendar of their free time (days without time are greyed out)
+//   3. the patient's details, then the booking
+// Opened from a doctor's page (?doctor=/vrachi/.../), that doctor is chosen already.
 // If the server can't be reached the form hides itself and the phone stays.
 import { getCollection } from 'astro:content';
 import { apiBase, consentPage } from '../data/site';
 import { city } from '../data/city';
-const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) => [d.data.url, d.data.name]));
+import { photoFor } from '../lib/content';
+
+// What the site knows about each doctor, to dress up the МИС's bare names
+const site = await Promise.all(
+  (await getCollection('doctors')).map(async (d) => {
+    const prices = (d.data.prices ?? []).map((p) => p.price).filter((p): p is number => typeof p === 'number' && p > 0);
+    return {
+      url: d.data.url,
+      name: d.data.name,
+      specialty: d.data.specialty,
+      qualification: d.data.qualification ?? '',
+      price: prices.length ? Math.min(...prices) : 0,
+      photo: (await photoFor(d.data.url, d.data.photo)) ?? '',
+    };
+  }),
+);
 ---
 
-<form class="review-form booking-form info-card" data-booking-form data-api={`${apiBase}/booking`} data-doctors={JSON.stringify(doctorNames)} data-phone={city.phone.display} data-tel={city.phone.tel} novalidate hidden>
-  <h2>Записаться онлайн</h2>
+<form class="review-form booking info-card" data-booking-form data-api={`${apiBase}/booking`} data-site={JSON.stringify(site)} data-phone={city.phone.display} data-tel={city.phone.tel} novalidate hidden>
+  <!-- 1. Doctor -->
+  <section class="booking-step" data-step="pick">
+    <div class="booking-filter">
+      <label class="booking-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <input type="search" name="q" placeholder="Врач или специальность" autocomplete="off" aria-label="Врач или специальность" />
+      </label>
+      <select name="spec" aria-label="Специальность"><option value="">Все специальности</option></select>
+    </div>
+    <div class="booking-docs" role="list"></div>
+    <p class="muted booking-none" hidden>Никого не нашли. Попробуйте другую специальность или позвоните нам.</p>
+  </section>
 
-  <div class="form-row">
-    <label>
-      <span>Специальность</span>
-      <select name="spec" required><option value="">Загружаем…</option></select>
-    </label>
-    <label>
-      <span>Врач</span>
-      <select name="doctor" required disabled><option value="">Сначала выберите специальность</option></select>
-    </label>
-  </div>
-  <label data-step="clinic" hidden>
-    <span>Клиника</span>
-    <select name="clinic" required></select>
-  </label>
+  <!-- 2. Time -->
+  <section class="booking-step" data-step="when" hidden>
+    <div class="booking-who"></div>
+    <div class="booking-chips" data-specs hidden></div>
+    <div class="booking-chips" data-clinics hidden></div>
+    <div class="booking-cal">
+      <h3 class="booking-cal-title">Выберите день и время</h3>
+      <div class="booking-cal-head">
+        <button type="button" class="booking-arrow" data-week="-1" aria-label="Предыдущая неделя">‹</button>
+        <strong class="booking-range"></strong>
+        <button type="button" class="booking-arrow" data-week="1" aria-label="Следующая неделя">›</button>
+      </div>
+      <div class="booking-week" role="tablist" aria-label="День"></div>
+      <p class="booking-dayname"></p>
+      <div class="booking-times" aria-label="Время"></div>
+      <p class="muted booking-empty" hidden></p>
+    </div>
+  </section>
 
-  <fieldset class="booking-slots" data-step="slots" hidden>
-    <legend>Свободное время</legend>
-    <div class="booking-days" role="tablist"></div>
-    <div class="booking-times"></div>
-    <p class="muted booking-empty" hidden></p>
-  </fieldset>
-
-  <div class="booking-patient" data-step="patient" hidden>
+  <!-- 3. Patient -->
+  <section class="booking-step booking-patient" data-step="patient" hidden>
+    <h3 class="booking-cal-title">Ваши данные</h3>
     <p class="booking-chosen"></p>
     <div class="form-row">
       <label><span>Фамилия</span><input name="surname" autocomplete="family-name" maxlength="60" required /></label>
@@ -58,158 +86,327 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
       <span>Согласен на <a href={consentPage} target="_blank" rel="noopener">обработку персональных данных</a></span>
     </label>
     <button class="btn btn-primary" type="submit">Записаться</button>
-  </div>
+  </section>
 
   <p class="form-status" role="status" hidden></p>
 </form>
 
 <script>
-  type Item = { id: string; name: string };
-  type Slot = { id: string; start: string; end: string };
+  type Spec = { id: string; name: string };
+  type Doc = { id: string; name: string; specs: Spec[] };
+  type Slot = { id: string; start: string; end: string; clinic: string; doctor?: string; doctorName?: string; clinicName?: string };
+  type SiteDoc = { url: string; name: string; specialty: string; qualification: string; price: number; photo: string };
 
   for (const form of document.querySelectorAll<HTMLFormElement>('[data-booking-form]')) {
     if (form.dataset.ready) continue;
     form.dataset.ready = '1';
     const api = form.dataset.api!;
     const phone = `<a href="tel:${form.dataset.tel}">${form.dataset.phone}</a>`;
-    const $ = <T extends HTMLElement>(s: string) => form.querySelector<T>(s)!;
-    const spec = $<HTMLSelectElement>('[name=spec]');
-    const doctor = $<HTMLSelectElement>('[name=doctor]');
-    const clinic = $<HTMLSelectElement>('[name=clinic]');
-    const step = (name: string) => $(`[data-step=${name}]`);
+    const $ = <T extends HTMLElement = HTMLElement>(s: string) => form.querySelector<T>(s)!;
+    const step = (n: string) => $(`[data-step=${n}]`);
     const status = $('.form-status');
-    const days = $('.booking-days');
+    const q = $<HTMLInputElement>('[name=q]');
+    const specSel = $<HTMLSelectElement>('[name=spec]');
+    const docsBox = $('.booking-docs');
+    const who = $('.booking-who');
+    const specChips = $('[data-specs]');
+    const clinicChips = $('[data-clinics]');
+    const week = $('.booking-week');
+    const range = $('.booking-range');
+    const dayName = $('.booking-dayname');
     const times = $('.booking-times');
     const empty = $('.booking-empty');
     const chosen = $('.booking-chosen');
     const captchaImg = $('.booking-captcha-img');
-    let slot: Slot | null = null;
-    let captchaId = '';
+    const weekArrows = form.querySelectorAll<HTMLButtonElement>('[data-week]');
 
+    const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text = '') => {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text) e.textContent = text;
+      return e;
+    };
     const say = (html: string, ok = false) => {
       status.hidden = !html;
       status.className = `form-status ${ok ? 'is-ok' : 'is-error'}`;
       status.innerHTML = html;
     };
-    async function get<T>(path: string, q: Record<string, string> = {}): Promise<T> {
-      const res = await fetch(`${api}/${path}?${new URLSearchParams(q)}`);
+    const fail = (e: unknown) => say(`${esc((e as Error).message)} Запишитесь по телефону ${phone}.`);
+    async function get<T>(path: string, params: Record<string, string> = {}): Promise<T> {
+      const res = await fetch(`${api}/${path}?${new URLSearchParams(params)}`);
       const body = await res.json().catch(() => ({}));
       if (!res.ok || !body.ok) throw new Error(body.error || 'Ошибка');
       return body.data as T;
     }
-    const fill = (select: HTMLSelectElement, items: Item[], placeholder: string) => {
-      select.innerHTML = '';
-      select.append(new Option(placeholder, ''));
-      for (const i of items) select.append(new Option(i.name, i.id));
-      select.disabled = false;
-    };
-    const hideFrom = (...names: string[]) => names.forEach((n) => (step(n).hidden = true));
-    const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-    const fail = (e: unknown) => say(`${esc((e as Error).message)} Запишитесь по телефону ${phone}.`);
 
-    // "31.12.2026 09:30" -> { day: "31.12.2026", time: "09:30" }
+    // ---- names: the МИС writes «Иванов Иван Иванович», the site the same, maybe with ё
+    const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е').replace(/[^а-яa-z\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    const key = (s: string) => norm(s).split(' ').slice(0, 2).join(' ');
+    const siteDocs = JSON.parse(form.dataset.site || '[]') as SiteDoc[];
+    const siteByName = new Map(siteDocs.map((d) => [key(d.name), d]));
+    const isRoom = (n: string) => /^(мрт|кт|мскт|рентген|узи|флюоро|маммо|кабинет)/i.test(n) || /\d/.test(n);
+    const initials = (n: string) => n.split(' ').slice(0, 2).map((w) => w[0] || '').join('').toUpperCase();
+    const rub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`;
+
+    // ---- dates: "30.11.2026 13:00" (or ISO) -> parts
     const split = (s: string) => {
       const m = s.match(/(\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2})\D+(\d{1,2}:\d{2})/);
       if (!m) return { day: s, time: '' };
       const day = m[1].includes('-') ? m[1].split('-').reverse().join('.') : m[1];
       return { day, time: m[2].padStart(5, '0') };
     };
-    const dayLabel = (d: string) => {
-      const [dd, mm, yyyy] = d.split('.').map(Number);
-      return new Date(yyyy, mm - 1, dd).toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
+    const toDate = (day: string) => { const [d, m, y] = day.split('.').map(Number); return new Date(y, m - 1, d); };
+    const dayKey = (d: Date) => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+    const monday = (d: Date) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+    const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+    const fmt = (d: Date, o: Intl.DateTimeFormatOptions) => d.toLocaleDateString('ru-RU', o);
+    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+    // ---- state
+    let all: Doc[] = [];
+    let current: { doc: Doc | null; spec: Spec; any: boolean } | null = null;
+    let slots: Slot[] = [];
+    let clinicNames: Record<string, string> = {};
+    let clinic = '';
+    let weekStart = monday(new Date());
+    let selectedDay = '';
+    let slot: Slot | null = null;
+    let captchaId = '';
+
+    const show = (name: 'pick' | 'when' | 'patient') => {
+      step('pick').hidden = name !== 'pick';
+      step('when').hidden = name === 'pick';
+      step('patient').hidden = name !== 'patient';
     };
 
-    async function loadDoctors(preselect = '') {
-      hideFrom('clinic', 'slots', 'patient');
-      say('');
-      doctor.disabled = true;
-      if (!spec.value) return;
-      try {
-        fill(doctor, await get<Item[]>('doctors', { spec: spec.value }), 'Выберите врача');
-        if (preselect) { doctor.value = preselect; await loadClinics(); }
-      } catch (e) { fail(e); }
+    // ================= 1. doctors =================
+    function avatar(name: string, info?: SiteDoc) {
+      const a = el('span', 'booking-avatar');
+      if (info?.photo) {
+        const img = el('img');
+        img.src = info.photo;
+        img.alt = '';
+        img.loading = 'lazy';
+        a.append(img);
+      } else a.append(el('span', '', isRoom(name) ? name.split(' ')[0] : initials(name)));
+      if (isRoom(name)) a.classList.add('is-room');
+      return a;
     }
-    async function loadClinics() {
-      hideFrom('clinic', 'slots', 'patient');
-      say('');
-      if (!doctor.value) return;
-      try {
-        const list = await get<Item[]>('clinics', { spec: spec.value, doctor: doctor.value });
-        if (!list.length) return say(`У этого врача нет открытой записи онлайн. Запишитесь по телефону ${phone}.`);
-        fill(clinic, list, 'Выберите клинику');
-        step('clinic').hidden = false;
-        if (list.length === 1) { clinic.value = list[0].id; await loadSlots(); }
-      } catch (e) { fail(e); }
+    function card(title: string, lines: string[], pic: HTMLElement, onClick: () => void) {
+      const b = el('button', 'booking-doc');
+      b.type = 'button';
+      b.setAttribute('role', 'listitem');
+      const text = el('span', 'booking-doc-text');
+      text.append(el('strong', '', title));
+      for (const [i, l] of lines.filter(Boolean).entries()) text.append(el('span', i ? 'booking-doc-meta' : 'booking-doc-spec', l));
+      b.append(pic, text, el('span', 'booking-doc-go'));
+      b.addEventListener('click', onClick);
+      return b;
     }
+    function renderDocs() {
+      const words = norm(q.value).split(' ').filter(Boolean);
+      const spec = specSel.value;
+      const list = all.filter((d) => {
+        if (spec && !d.specs.some((s) => s.id === spec)) return false;
+        if (!words.length) return true;
+        const info = siteByName.get(key(d.name));
+        const hay = norm([d.name, info?.specialty ?? '', ...d.specs.map((s) => s.name)].join(' '));
+        return words.every((w) => hay.includes(w));
+      });
+      docsBox.replaceChildren();
+      if (spec && !words.length && list.length > 1) {
+        const icon = el('span', 'booking-avatar is-any');
+        icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
+        const sp = all.flatMap((d) => d.specs).find((s) => s.id === spec)!;
+        docsBox.append(card('Любой врач', ['Ближайшее свободное время'], icon, () => open(null, sp)));
+      }
+      for (const d of list) {
+        const info = siteByName.get(key(d.name));
+        const specText = info?.specialty || d.specs.map((s) => s.name).join(', ');
+        const meta = [info?.qualification, info?.price ? `Приём от ${rub(info.price)}` : ''].filter(Boolean).join(' · ');
+        docsBox.append(card(d.name, [specText, meta], avatar(d.name, info), () => open(d)));
+      }
+      $('.booking-none').hidden = list.length > 0;
+    }
+    q.addEventListener('input', renderDocs);
+    specSel.addEventListener('change', renderDocs);
+
+    // ================= 2. calendar =================
+    async function open(doc: Doc | null, spec?: Spec) {
+      say('');
+      const specs = doc ? doc.specs : [spec!];
+      const chosenSpec = spec ?? specs.find((s) => s.id === specSel.value) ?? specs[0];
+      current = { doc, spec: chosenSpec, any: !doc };
+      // who
+      who.replaceChildren();
+      const info = doc ? siteByName.get(key(doc.name)) : undefined;
+      const pic = doc ? avatar(doc.name, info) : el('span', 'booking-avatar is-any', '');
+      if (!doc) pic.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
+      const text = el('span', 'booking-doc-text');
+      text.append(el('strong', '', doc ? doc.name : `Любой врач: ${chosenSpec.name.toLowerCase()}`));
+      text.append(el('span', 'booking-doc-spec', doc ? info?.specialty || chosenSpec.name : 'Ближайшее свободное время'));
+      const back = el('button', 'link-btn', doc ? 'Выбрать другого врача' : 'Выбрать врача');
+      back.type = 'button';
+      back.addEventListener('click', () => { show('pick'); say(''); step('pick').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      who.append(pic, text, back);
+      // several specialties: which one to book for
+      specChips.replaceChildren();
+      specChips.hidden = specs.length < 2;
+      if (specs.length > 1) for (const s of specs) {
+        const b = el('button', 'booking-chip', s.name);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(s.id === chosenSpec.id));
+        b.addEventListener('click', () => open(doc, s));
+        specChips.append(b);
+      }
+      show('when');
+      step('when').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      await loadSlots();
+    }
+
     async function loadSlots() {
-      hideFrom('slots', 'patient');
-      say('');
+      if (!current) return;
       slot = null;
-      if (!clinic.value) return;
+      week.replaceChildren();
+      times.replaceChildren();
+      dayName.textContent = '';
+      range.textContent = 'Загружаем свободное время…';
+      empty.hidden = true;
+      clinicChips.hidden = true;
+      step('patient').hidden = true;
       try {
-        const list = await get<Slot[]>('slots', { spec: spec.value, doctor: doctor.value, clinic: clinic.value });
-        days.innerHTML = '';
-        times.innerHTML = '';
-        step('slots').hidden = false;
-        empty.hidden = list.length > 0;
-        empty.innerHTML = `Свободного времени на ближайший месяц нет. Позвоните ${phone}: администратор предложит варианты.`;
-        const byDay = new Map<string, Slot[]>();
-        for (const s of list) { const d = split(s.start).day; byDay.set(d, [...(byDay.get(d) || []), s]); }
-        const showDay = (d: string) => {
-          days.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.day === d)));
-          times.innerHTML = '';
-          for (const s of byDay.get(d)!) {
-            const b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'chip';
-            b.textContent = split(s.start).time;
-            b.addEventListener('click', () => choose(s, b));
-            times.append(b);
-          }
-        };
-        for (const d of byDay.keys()) {
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.className = 'chip';
-          b.role = 'tab';
-          b.dataset.day = d;
-          b.textContent = dayLabel(d);
-          b.addEventListener('click', () => showDay(d));
-          days.append(b);
+        if (current.any) {
+          slots = await get<Slot[]>('nearest', { spec: current.spec.id });
+          clinicNames = Object.fromEntries(slots.map((s) => [s.clinic, s.clinicName || '']));
+        } else {
+          const [deps, free] = await Promise.all([
+            get<{ id: string; name: string }[]>('clinics', { spec: current.spec.id, doctor: current.doc!.id }),
+            get<Slot[]>('slots', { spec: current.spec.id, doctor: current.doc!.id }),
+          ]);
+          clinicNames = Object.fromEntries(deps.map((c) => [c.id, c.name]));
+          slots = free.filter((s) => clinicNames[s.clinic] !== undefined || !deps.length);
         }
-        if (byDay.size) showDay([...byDay.keys()][0]);
-      } catch (e) { fail(e); }
+      } catch (e) {
+        range.textContent = '';
+        return fail(e);
+      }
+      // clinics: start with the one that has the earliest free time
+      const ids = [...new Set(slots.map((s) => s.clinic))];
+      clinic = slots[0]?.clinic ?? '';
+      clinicChips.replaceChildren();
+      clinicChips.hidden = ids.length < 2;
+      if (ids.length > 1) for (const id of ids) {
+        const b = el('button', 'booking-chip', clinicNames[id] || 'Клиника');
+        b.type = 'button';
+        b.dataset.id = id;
+        b.addEventListener('click', () => { clinic = id; firstWeek(); });
+        clinicChips.append(b);
+      }
+      firstWeek();
     }
-    function choose(s: Slot, button: HTMLButtonElement) {
+
+    const inClinic = () => slots.filter((s) => !clinic || s.clinic === clinic);
+    function firstWeek() {
+      clinicChips.querySelectorAll<HTMLElement>('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === clinic)));
+      const list = inClinic();
+      if (!list.length) {
+        range.textContent = '';
+        empty.hidden = false;
+        empty.innerHTML = `Свободного времени на ближайший месяц нет. Позвоните ${phone}: администратор предложит варианты.`;
+        weekArrows.forEach((a) => (a.hidden = true));
+        return;
+      }
+      weekArrows.forEach((a) => (a.hidden = false));
+      selectedDay = split(list[0].start).day;
+      weekStart = monday(toDate(selectedDay));
+      drawWeek();
+    }
+
+    function drawWeek() {
+      const list = inClinic();
+      const byDay = new Map<string, Slot[]>();
+      for (const s of list) { const d = split(s.start).day; byDay.set(d, [...(byDay.get(d) || []), s]); }
+      const end = addDays(weekStart, 6);
+      range.textContent = weekStart.getMonth() === end.getMonth()
+        ? `${weekStart.getDate()} – ${fmt(end, { day: 'numeric', month: 'long' })}`
+        : `${fmt(weekStart, { day: 'numeric', month: 'long' })} – ${fmt(end, { day: 'numeric', month: 'long' })}`;
+      const last = list.length ? toDate(split(list[list.length - 1].start).day) : weekStart;
+      weekArrows[0].disabled = weekStart <= monday(new Date());
+      weekArrows[1].disabled = addDays(weekStart, 7) > last;
+      week.replaceChildren();
+      for (let i = 0; i < 7; i++) {
+        const date = addDays(weekStart, i);
+        const k = dayKey(date);
+        const has = byDay.has(k);
+        const b = el('button', 'booking-day');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.disabled = !has;
+        b.setAttribute('aria-selected', String(k === selectedDay));
+        b.setAttribute('aria-label', cap(fmt(date, { weekday: 'long', day: 'numeric', month: 'long' })) + (has ? '' : ', нет свободного времени'));
+        b.append(
+          el('span', 'booking-day-wd', fmt(date, { weekday: 'short' })),
+          el('span', 'booking-day-n', String(date.getDate())),
+          el('span', 'booking-day-m', fmt(date, { month: 'short' }).replace('.', '')),
+        );
+        b.addEventListener('click', () => { selectedDay = k; drawWeek(); });
+        week.append(b);
+      }
+      // the chosen day is in this week and has time, or take the week's first day with time
+      const inWeek = [...byDay.keys()].filter((k) => { const d = toDate(k); return d >= weekStart && d <= end; });
+      if (!inWeek.includes(selectedDay)) {
+        selectedDay = inWeek[0] ?? '';
+        week.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-selected', String(dayKey(addDays(weekStart, i)) === selectedDay)));
+      }
+      drawTimes(byDay.get(selectedDay) || []);
+    }
+    weekArrows.forEach((a) => a.addEventListener('click', () => { weekStart = addDays(weekStart, Number(a.dataset.week) * 7); drawWeek(); }));
+
+    function drawTimes(list: Slot[]) {
+      times.replaceChildren();
+      times.classList.toggle('with-names', !!current?.any);
+      if (!list.length) {
+        dayName.textContent = 'На этой неделе свободного времени нет';
+        return;
+      }
+      dayName.textContent = cap(fmt(toDate(selectedDay), { weekday: 'long', day: 'numeric', month: 'long' }));
+      for (const s of list) {
+        const b = el('button', 'booking-time');
+        b.type = 'button';
+        b.append(el('span', '', split(s.start).time));
+        if (current?.any && s.doctorName) b.append(el('small', '', s.doctorName.split(' ')[0]));
+        b.classList.toggle('is-active', slot?.id === s.id);
+        b.addEventListener('click', () => choose(s));
+        times.append(b);
+      }
+    }
+
+    // ================= 3. patient =================
+    function choose(s: Slot) {
       slot = s;
-      times.querySelectorAll('button').forEach((b) => b.classList.toggle('is-active', b === button));
+      drawTimes(inClinic().filter((x) => split(x.start).day === selectedDay));
+      const name = current?.any ? s.doctorName || '' : current?.doc?.name || '';
       const { day, time } = split(s.start);
-      // Names come from the МИС: put in as text, never as HTML
-      const who = document.createElement('strong');
-      who.textContent = doctor.selectedOptions[0].text;
-      chosen.replaceChildren(who, `, ${spec.selectedOptions[0].text.toLowerCase()}`, document.createElement('br'), `${dayLabel(day)}, ${time}, ${clinic.selectedOptions[0].text}`);
+      const strong = el('strong', '', name);
+      chosen.replaceChildren(strong, `, ${current!.spec.name.toLowerCase()}`, el('br'), `${cap(fmt(toDate(day), { weekday: 'long', day: 'numeric', month: 'long' }))}, ${time}`, el('br'), clinicNames[s.clinic] || s.clinicName || '');
       step('patient').hidden = false;
       say('');
       if (!captchaId) newCaptcha();
-      step('patient').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      step('patient').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     async function newCaptcha() {
       try {
         const c = await get<{ id: string; svg: string }>('captcha');
         captchaId = c.id;
-        // The МИС sends a picture as SVG markup; shown as an image so nothing in it runs
-        captchaImg.innerHTML = '';
+        // The МИС sends the picture as SVG markup: shown as an image, so nothing in it runs
         const img = new Image();
         img.alt = '';
         img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(c.svg)}`;
-        captchaImg.append(img);
+        captchaImg.replaceChildren(img);
         $<HTMLInputElement>('[name=captchaValue]').value = '';
       } catch (e) { fail(e); }
     }
-
-    spec.addEventListener('change', () => loadDoctors());
-    doctor.addEventListener('change', loadClinics);
-    clinic.addEventListener('change', loadSlots);
     $('[data-new-captcha]').addEventListener('click', newCaptcha);
 
     form.addEventListener('submit', async (e) => {
@@ -237,9 +434,10 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
         });
         const body = await res.json().catch(() => ({}));
         if (res.ok && body.ok) {
-          for (const el of form.children as HTMLCollectionOf<HTMLElement>) if (el !== status && el.tagName !== 'H2') el.hidden = true;
-          say(`Вы записаны.<br><span data-booked></span><br>Если планы изменятся, позвоните ${phone}.`, true);
+          form.querySelectorAll<HTMLElement>('.booking-step').forEach((s) => (s.hidden = true));
+          say(`<strong>Вы записаны.</strong><br><span data-booked></span><br>Если планы изменятся, позвоните ${phone}.`, true);
           status.querySelector('[data-booked]')!.replaceChildren(...chosen.cloneNode(true).childNodes);
+          status.scrollIntoView({ behavior: 'smooth', block: 'center' });
           (window as any).ym?.(108194831, 'reachGoal', 'online_booking');
           return;
         }
@@ -253,19 +451,21 @@ const doctorNames = Object.fromEntries((await getCollection('doctors')).map((d) 
       }
     });
 
-    // Start: specialties; then the doctor from ?doctor= if there is one
+    // ================= start =================
     (async () => {
       try {
-        const specs = await get<Item[]>('specialties');
-        if (!specs.length) throw new Error('empty');
-        fill(spec, specs, 'Выберите специальность');
+        all = await get<Doc[]>('all');
+        if (!all.length) throw new Error('empty');
+        const specs = new Map<string, string>();
+        all.forEach((d) => d.specs.forEach((s) => specs.set(s.id, s.name)));
+        [...specs].sort((a, b) => a[1].localeCompare(b[1], 'ru')).forEach(([id, name]) => specSel.append(new Option(name, id)));
         form.hidden = false;
-        const names = JSON.parse(form.dataset.doctors || '{}') as Record<string, string>;
-        const wanted = names[new URLSearchParams(location.search).get('doctor') || ''];
-        if (wanted) {
-          const found = await get<{ specId: string; doctorId: string }[]>('find', { name: wanted }).catch(() => []);
-          if (found.length) { spec.value = found[0].specId; await loadDoctors(found[0].doctorId); }
-        }
+        renderDocs();
+        // from a doctor's page: that doctor straight away
+        const url = new URLSearchParams(location.search).get('doctor') || '';
+        const info = siteDocs.find((d) => d.url === url);
+        const doc = info && all.find((d) => key(d.name) === key(info.name));
+        if (doc) open(doc);
       } catch {
         form.remove(); // the phone below is the way to book
       }
