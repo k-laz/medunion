@@ -21,8 +21,8 @@ const BASE = (process.env.MIS_BASE_URL || '').replace(/\/+$/, '');
 const TOKEN = process.env.MIS_API_TOKEN || '';
 const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';
-// How the МИС wants a birth date: 'ru' = 31.12.1990, 'iso' = 1990-12-31
-const BIRTH_FORMAT = process.env.MIS_BIRTHDATE_FORMAT === 'iso' ? 'iso' : 'ru';
+// How the МИС wants a birth date: 'iso' = 1990-12-31 (what it takes), 'ru' = 31.12.1990
+const BIRTH_FORMAT = process.env.MIS_BIRTHDATE_FORMAT === 'ru' ? 'ru' : 'iso'; // the МИС takes iso (checked 25.11.2026)
 const DAYS_AHEAD = Number(process.env.BOOKING_DAYS || 31);
 
 // ---------------------------------------------------------------- МИС calls
@@ -264,7 +264,9 @@ function bookingInput(b) {
   const nameOk = (s) => /^[А-Яа-яЁёA-Za-z][А-Яа-яЁёA-Za-z' -]*$/.test(s);
   if (!/^\d+$/.test(p.slot)) throw new Problem(400, 'Выберите время приёма.');
   if (!nameOk(p.surname) || !nameOk(p.firstName)) throw new Problem(400, 'Укажите фамилию и имя.');
-  if (p.secondName && !nameOk(p.secondName)) throw new Problem(400, 'Проверьте отчество.');
+  // The МИС refuses an empty отчество; people without one send «-»
+  if (!p.secondName) throw new Problem(400, 'Укажите отчество или отметьте «Нет отчества».');
+  if (p.secondName !== '-' && !nameOk(p.secondName)) throw new Problem(400, 'Проверьте отчество.');
   const bd = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p.birthDate);
   const age = bd ? (Date.now() - Date.UTC(+bd[1], +bd[2] - 1, +bd[3])) / 31557600000 : -1;
   if (!(age > 0 && age < 120)) throw new Problem(400, 'Проверьте дату рождения.');
@@ -379,10 +381,10 @@ if (process.argv.includes('--check')) {
     // (a search only; nobody is created). The right format answers «Пациент не найден».
     // ...and whether it takes an empty отчество (the old form always required one)
     for (const [fmt, bd] of [['ru', '01.01.1901'], ['iso', '1901-01-01']]) {
-      for (const second of ['Тестович', '']) {
+      for (const second of ['Тестович', '', '-']) {
         const r = await mis('POST', '/record/patient/info', { body: { surname: 'Проверкасайта', firstName: 'Тест', secondName: second, birthDate: bd } });
         const answer = r.json?.data?.keyid ?? r.json?.error ?? r.json?.message ?? r.json ?? r.text;
-        console.log(`patient search, birth date as ${fmt}, отчество ${second ? 'filled' : 'empty'}: HTTP ${r.status}, answer: ${(typeof answer === 'string' ? answer : JSON.stringify(answer)).slice(0, 120)}`);
+        console.log(`patient search, birth date as ${fmt}, отчество ${second === '-' ? '"-"' : second ? 'filled' : 'empty'}: HTTP ${r.status}, answer: ${(typeof answer === 'string' ? answer : JSON.stringify(answer)).slice(0, 120)}`);
       }
     }
     console.log('Check done. Nothing was booked.');

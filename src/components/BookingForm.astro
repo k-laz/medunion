@@ -70,7 +70,10 @@ const site = await Promise.all(
       <label><span>Имя</span><input name="firstName" autocomplete="given-name" maxlength="60" required /></label>
     </div>
     <div class="form-row">
-      <label><span>Отчество <small class="muted">если есть</small></span><input name="secondName" autocomplete="additional-name" maxlength="60" /></label>
+      <div class="booking-second">
+        <label><span>Отчество</span><input name="secondName" autocomplete="additional-name" maxlength="60" required /></label>
+        <label class="check"><input type="checkbox" name="noSecond" /><span>Нет отчества</span></label>
+      </div>
       <label><span>Дата рождения</span><input name="birthDate" type="date" autocomplete="bday" required /></label>
     </div>
     <div class="form-row">
@@ -408,6 +411,11 @@ const site = await Promise.all(
       } catch (e) { fail(e); }
     }
     $('[data-new-captcha]').addEventListener('click', newCaptcha);
+    const secondInput = $<HTMLInputElement>('[name=secondName]');
+    $<HTMLInputElement>('[name=noSecond]').addEventListener('change', (e) => {
+      secondInput.disabled = (e.target as HTMLInputElement).checked;
+      if (secondInput.disabled) secondInput.value = '';
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -415,6 +423,8 @@ const site = await Promise.all(
       const f = new FormData(form);
       const v = (k: string) => String(f.get(k) || '').trim();
       if (!v('surname') || !v('firstName')) return say('Укажите фамилию и имя.');
+      const second = f.get('noSecond') ? '-' : v('secondName');
+      if (!second) return say('Укажите отчество или отметьте «Нет отчества».');
       if (!v('birthDate')) return say('Укажите дату рождения.');
       if (v('phone').replace(/\D/g, '').length < 10) return say('Проверьте номер телефона.');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email'))) return say('Проверьте электронную почту.');
@@ -428,7 +438,7 @@ const site = await Promise.all(
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            slot: slot.id, surname: v('surname'), firstName: v('firstName'), secondName: v('secondName'),
+            slot: slot.id, surname: v('surname'), firstName: v('firstName'), secondName: second,
             birthDate: v('birthDate'), phone: v('phone'), email: v('email'), captchaId, captchaValue: v('captchaValue'), consent: true,
           }),
         });
