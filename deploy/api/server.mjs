@@ -215,8 +215,15 @@ function misReason(r, p) {
   const j = r.json;
   let msg = j ? (j.error ?? j.message ?? j.errors ?? (typeof j.data === 'string' ? j.data : undefined) ?? j) : r.text;
   msg = typeof msg === 'string' ? msg : JSON.stringify(msg);
+  // An error page instead of JSON: keep its readable text (the <pre> part of an Express error, or all text)
+  if (/^\s*</.test(msg)) {
+    const pre = msg.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i)?.[1];
+    msg = (pre ?? msg.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')).replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  }
+  msg = msg.replace(/\s+/g, ' ').trim();
   for (const v of [p.surname, p.firstName, p.secondName, p.email, p.phone].filter((x) => x && x.length > 1)) msg = msg.split(v).join('***');
-  return msg.replace(/\d{4,}|\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2}/g, '***').slice(0, 300);
+  return msg.replace(/\d{4,}|\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2}/g, '***').slice(0, 500);
 }
 
 async function book(p) {
@@ -235,7 +242,8 @@ async function book(p) {
       headers: { sessiontoken: randomBytes(16).toString('hex') },
     });
     if (created.status !== 200 || !created.json?.success || !created.json?.data?.id) {
-      log(`booking: new patient refused (${created.status}): ${misReason(created, p)}`);
+      const shape = (v) => String(v).replace(/[А-Яа-яЁё]/g, 'а').replace(/[A-Za-z]/g, 'a').replace(/\d/g, '9');
+      log(`booking: new patient refused (${created.status}): ${misReason(created, p)} | sent phone ${shape(p.phone)}, birth date ${shape(birth)}, email ${shape(p.email).replace(/a+/g, 'a')}, captcha ${p.captchaValue.length} chars`);
       const msg = String(created.json?.error ?? created.json?.message ?? '');
       if (/captcha|капч|код/i.test(msg)) throw new Problem(400, 'Неверный проверочный код. Введите новый.', 'captcha');
       throw new Problem(502, 'Не получилось зарегистрировать вас в системе записи.', created.status);
