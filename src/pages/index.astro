@@ -39,10 +39,11 @@ const directions = [...specialties, ...topSections]
   .sort((a, b) => a.label.localeCompare(b.label, 'ru'));
 
 const features = [
-  { url: '/uslugi/diagnostika/mrt/', title: 'МРТ открытого типа', text: 'Исследование без замкнутого тоннеля. Есть и высокопольный томограф 1,5 Тесла.', tone: 'blue' },
+  // Kansk has neither the 1,5 Тесла scanner nor КТ
+  { url: '/uslugi/diagnostika/mrt/', title: 'МРТ открытого типа', text: isKansk ? 'Исследование без замкнутого тоннеля: удобно, если тяжело лежать в узком пространстве.' : 'Исследование без замкнутого тоннеля. Есть и высокопольный томограф 1,5 Тесла.', tone: 'blue' },
   { url: '/uslugi/vyezd-vracha-na-dom/', title: 'Выезд врача на дом', text: 'Педиатр, невролог и другие специалисты приедут к вам.', tone: 'green' },
   { url: '/uslugi/klinika-blokady-boli/', title: 'Клиника блокады боли', text: 'Лечебные блокады нервов и суставов.', tone: 'sand' },
-  { url: '/uslugi/pediatriya1/', title: 'Детское отделение', text: 'Педиатр, детские специалисты, УЗИ, МРТ и КТ для детей.', tone: 'rose' },
+  { url: '/uslugi/pediatriya1/', title: 'Детское отделение', text: isKansk ? 'Педиатр, детские специалисты, УЗИ и МРТ для детей.' : 'Педиатр, детские специалисты, УЗИ, МРТ и КТ для детей.', tone: 'rose' },
 ].filter((f) => byUrl.has(f.url));
 
 const doctors = (await getCollection('doctors'))
@@ -155,7 +156,7 @@ const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true
     </section>
 
     {features.length > 0 && (
-      <section class="block feature-grid" aria-label="Особые направления">
+      <section class="block feature-grid" aria-label="Особые направления" style={`--n: ${features.length}`}>
         {features.map((f) => (
           <a class={`feature feature-${f.tone}`} href={f.url}>
             <h3>{f.title}</h3>

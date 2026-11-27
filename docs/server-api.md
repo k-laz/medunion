@@ -51,9 +51,11 @@ A patient review, for the clinic to check before it is published. Body:
 ```
 
 `website` is a hidden field: real people leave it empty, spam bots fill it,
-so a filled one is dropped silently. Answers `201`. The server sends the
-review to the clinic (Bitrix24 or email). Approved reviews are added to
-`src/content/reviews/reviews.json` and appear on the site with the next build.
+so a filled one is dropped silently. Built in deploy/api/server.mjs: the review
+becomes a Bitrix24 lead («Отзыв с сайта о враче …: ★★★★☆», name, phone, text)
+through the incoming webhook in `B24_WEBHOOK` (/etc/medunion-api.env). Three
+reviews per visitor per hour. Approved reviews are added at /admin/ → «Отзывы»
+(`src/content/reviews/reviews.json`) and appear on the site with the next build.
 
 ## Online booking: /api/booking/... (built, deploy/api/server.mjs)
 

@@ -4,13 +4,15 @@
 // The doctor can be preselected with ?doctor=/vrachi/.../ in the address.
 import { getCollection } from 'astro:content';
 import { apiBase, social } from '../data/site';
+import { city } from '../data/city';
 interface Props { id?: string }
 const { id = 'review-form' } = Astro.props;
 const telegram = social.find((s) => s.key === 'telegram')!.url;
 const doctors = (await getCollection('doctors')).sort((a, b) => a.data.name.localeCompare(b.data.name, 'ru'));
 ---
 
-<form class="review-form info-card" id={id} data-review-form data-api={`${apiBase}/reviews`} data-telegram={telegram} novalidate>
+<form class="review-form info-card" id={id} data-review-form data-api={`${apiBase}/reviews`} data-telegram={telegram} data-phone={city.phone.display} data-tel={city.phone.tel} novalidate>
+  <input type="hidden" name="site" value={city.name} />
 
   <fieldset class="stars-field">
     <legend>Ваша оценка</legend>
@@ -87,14 +89,14 @@ const doctors = (await getCollection('doctors')).sort((a, b) => a.data.name.loca
         const res = await fetch(form.dataset.api!, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...Object.fromEntries(f), rating: Number(f.get('rating')), consent: true }),
+          body: JSON.stringify({ ...Object.fromEntries(f), doctorName: select.value ? select.selectedOptions[0].text : '', rating: Number(f.get('rating')), consent: true }),
         });
         if (!res.ok) throw new Error(String(res.status));
         form.reset();
         say('Спасибо! Отзыв отправлен, он появится на сайте после проверки.', true);
       } catch {
         const tg = form.dataset.telegram;
-        say(`Не получилось отправить отзыв. Пожалуйста, напишите его нам в <a href="${tg}" target="_blank" rel="noopener">Telegram</a> или позвоните <a href="tel:+73912200303">+7 (391) 220-03-03</a>.`);
+        say(`Не получилось отправить отзыв. Пожалуйста, напишите его нам в <a href="${tg}" target="_blank" rel="noopener">Telegram</a> или позвоните <a href="tel:${form.dataset.tel}">${form.dataset.phone}</a>.`);
       } finally {
         button.disabled = false;
       }

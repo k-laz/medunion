@@ -24,6 +24,11 @@ const HOST = process.env.HOST || '127.0.0.1';
 // How the МИС wants a birth date: 'iso' = 1990-12-31 (what it takes), 'ru' = 31.12.1990
 const BIRTH_FORMAT = process.env.MIS_BIRTHDATE_FORMAT === 'ru' ? 'ru' : 'iso'; // the МИС takes iso (checked 25.11.2026)
 const DAYS_AHEAD = Number(process.env.BOOKING_DAYS || 31);
+// Reviews from the site go to Bitrix24 as leads, through an incoming webhook
+// (Bitrix24: Разработчикам → Другое → Входящий вебхук, rights: CRM).
+// Its address is a password: only in /etc/medunion-api.env, like the МИС token.
+const B24 = (process.env.B24_WEBHOOK || '').replace(/\/*$/, '/');
+
 
 // ---------------------------------------------------------------- МИС calls
 
@@ -329,6 +334,51 @@ const idParam = (u, k) => {
   return v;
 };
 
+// ---------------------------------------------------------------- reviews
+
+async function review(b) {
+  if (b.website) return { sent: true }; // the hidden field: only bots fill it
+  const r = {
+    rating: Number(b.rating),
+    author: text(b.author, 60),
+    phone: text(b.phone, 30).replace(/[^\d+]/g, ''),
+    text: typeof b.text === 'string' ? b.text.trim().slice(0, 3000) : '',
+    doctor: text(b.doctor, 200),
+    doctorName: text(b.doctorName, 100),
+    site: text(b.site, 40),
+  };
+  if (!(r.rating >= 1 && r.rating <= 5)) throw new Problem(400, 'Поставьте оценку от 1 до 5.');
+  if (!r.author) throw new Problem(400, 'Напишите, как к вам обращаться.');
+  if (r.text.length < 20) throw new Problem(400, 'Отзыв слишком короткий.');
+  if (r.phone && !/^\+?\d{10,12}$/.test(r.phone)) throw new Problem(400, 'Проверьте номер телефона.');
+  if (r.doctor && !/^\/vrachi\/[\w\/-]+\/$/.test(r.doctor)) r.doctor = '';
+  if (b.consent !== true) throw new Problem(400, 'Нужно согласие на обработку персональных данных.');
+  if (!/^https:\/\/[\w.-]+\/rest\/\d+\/\w+\/$/.test(B24)) throw new Problem(503, 'Отзывы временно не принимаются.');
+  const about = r.doctorName ? `о враче ${r.doctorName}` : 'о клинике';
+  const fields = {
+    TITLE: `Отзыв с сайта ${about}: ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}`,
+    NAME: r.author,
+    SOURCE_ID: 'WEB',
+    SOURCE_DESCRIPTION: `Форма «Оставить отзыв»${r.site ? `, сайт: ${r.site}` : ''}`,
+    COMMENTS: [`Оценка: ${r.rating} из 5`, `Отзыв ${about}${r.doctor ? ` (https://medunion.group${r.doctor})` : ''}`, '', r.text, '', 'Опубликовать на сайте после проверки: админка → Отзывы.'].join('\n'),
+    ...(r.phone ? { PHONE: [{ VALUE: r.phone, VALUE_TYPE: 'WORK' }] } : {}),
+  };
+  let res;
+  try {
+    res = await fetch(B24 + 'crm.lead.add.json', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fields, params: { REGISTER_SONET_EVENT: 'Y' } }), signal: AbortSignal.timeout(15000) });
+  } catch (e) {
+    log(`review: Bitrix24 unreachable (${e.name})`);
+    throw new Problem(502, 'Не получилось отправить отзыв.');
+  }
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok || !out.result) {
+    log(`review: Bitrix24 refused (${res.status}): ${String(out.error_description || out.error || '').slice(0, 200)}`);
+    throw new Problem(502, 'Не получилось отправить отзыв.');
+  }
+  log(`review: sent to Bitrix24 (lead ${out.result}, rating ${r.rating})`);
+  return { sent: true };
+}
+
 // ---------------------------------------------------------------- limits per visitor
 
 const hits = new Map();
@@ -361,7 +411,7 @@ async function readJson(req) {
 }
 
 const routes = {
-  'GET /api/booking/health': async () => ({ ok: true, configured: Boolean(BASE && TOKEN) }),
+  'GET /api/booking/health': async () => ({ ok: true, configured: Boolean(BASE && TOKEN), reviews: Boolean(B24) }),
   'GET /api/booking/specialties': async () => specialties(),
   'GET /api/booking/doctors': async (u) => doctors(idParam(u, 'spec')),
   'GET /api/booking/clinics': async (u) => inCity(await clinics(idParam(u, 'spec'), idParam(u, 'doctor')), cityParam(u)),
@@ -370,6 +420,10 @@ const routes = {
   'GET /api/booking/all': async (u) => allDoctors(cityParam(u)),
   'GET /api/booking/nearest': async (u) => nearest(idParam(u, 'spec'), cityParam(u)),
   'GET /api/booking/captcha': async () => captcha(),
+  'POST /api/reviews': async (u, req, ip) => {
+    limit(ip, 'review', 3, 3600000);
+    return review(await readJson(req));
+  },
   'POST /api/booking/book': async (u, req, ip) => {
     limit(ip, 'book', 5, 3600000);
     return book(bookingInput(await readJson(req)));
@@ -400,7 +454,7 @@ const server = http.createServer(async (req, res) => {
 if (process.argv.includes('--check')) {
   const keys = (r) => (Array.isArray(r.json?.data) ? Object.keys(r.json.data[0] || {}) : Object.keys(r.json?.data || r.json || {}));
   try {
-    console.log(`МИС address ${BASE ? 'set' : 'NOT SET'}, token ${TOKEN ? 'set' : 'NOT SET'}, birth dates as ${BIRTH_FORMAT}`);
+    console.log(`МИС address ${BASE ? 'set' : 'NOT SET'}, token ${TOKEN ? 'set' : 'NOT SET'}, birth dates as ${BIRTH_FORMAT}, Bitrix24 webhook for reviews ${B24 ? 'set' : 'not set'}`);
     const [, end] = range();
     const s = await mis('GET', '/record/spec/list', { query: { beginDate: '2015-01-01', endDate: end } });
     console.log(`specialties: HTTP ${s.status}, fields: ${keys(s).join(', ')}`);

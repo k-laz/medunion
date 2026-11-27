@@ -55,6 +55,8 @@ const lists = {
   __PRICES_KANSK__: await prices('src/data/prices-kansk'),
   __DOCTORS_KRASNOYARSK__: await doctors('src/content/doctors'),
   __DOCTORS_KANSK__: await doctors('src/content-kansk/doctors'),
+  // Reviews: doctors of both cities, each once
+  __DOCTORS_ALL__: [...new Map([...(await doctors('src/content/doctors')), ...(await doctors('src/content-kansk/doctors'))].map((o) => [o.value, o])).values()],
   __SECTIONS_KRASNOYARSK__: await sections('src/content/services'),
   __SECTIONS_KANSK__: await sections('src/content-kansk/services'),
 };

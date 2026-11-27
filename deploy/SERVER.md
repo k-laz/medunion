@@ -188,6 +188,12 @@ The form appears on the site when `bookingFormOn` in `src/data/site.ts` is
 `true`; while it is `false`, or the program can't be reached, /appointment/
 books by phone.
 
+Reviews from the site's «Оставить отзыв» form go to Bitrix24 as leads. In
+Bitrix24: Приложения → Разработчикам → Другое → Входящий вебхук, rights «CRM
+(crm)»; put the address it shows in `/etc/medunion-api.env` as
+`B24_WEBHOOK=https://b24-medunion.bitrix24.ru/rest/1/.../` and restart the
+service. The address works like a password.
+
 Useful: `sudo systemctl status medunion-api`, `sudo journalctl -u medunion-api -n 50`.
 
 After the launch, ask Решение for a new МИС token and put it in

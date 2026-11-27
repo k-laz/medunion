@@ -396,6 +396,39 @@ collections:
     sortable_fields: [h1]
     fields: *sale_fields
 
+  - name: reviews
+    label: Отзывы
+    description: >-
+      Отзывы пациентов на сайте. Новые отзывы с формы «Оставить отзыв» приходят в Битрикс24 лидами
+      («Отзыв с сайта…»). Проверьте отзыв, затем добавьте его сюда: нажмите «Добавить», перенесите имя,
+      оценку, текст и врача. Отзыв появится на сайте через 1–2 минуты после сохранения.
+    files:
+      - name: reviews
+        label: Все отзывы
+        file: src/content/reviews/reviews.json
+        format: json
+        fields:
+          - name: reviews
+            label: Отзывы
+            label_singular: отзыв
+            widget: list
+            root: true
+            add_to_top: true
+            summary: '{{fields.date}} · {{fields.author}}'
+            fields:
+              - { name: id, label: Номер, widget: string, hint: 'Любой, но разный у всех отзывов: дата и номер за день, например 2026-11-27-1' }
+              - { name: date, label: Дата, widget: datetime, time_format: false, format: 'YYYY-MM-DD' }
+              - { name: author, label: Имя автора, widget: string }
+              - { name: rating, label: Оценка, widget: number, value_type: int, min: 1, max: 5, required: false }
+              - name: doctor
+                label: Врач
+                widget: select
+                required: false
+                hint: 'Если отзыв о враче: он появится и на странице врача.'
+                options: __DOCTORS_ALL__
+              - { name: text, label: Текст отзыва, widget: text }
+              - { name: reply, label: Ответ клиники, widget: text, required: false }
+
   - name: services
     label: Услуги Красноярск
     label_singular: Услуга
