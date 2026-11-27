@@ -33,10 +33,12 @@ const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId, callibri } = integr
         // only one of the two may, or they fight over the same numbers)
         if (callibri) add(callibri);
 
-        // daily-grow messenger widget
-        window.dgSocialWidgetData = window.dgSocialWidgetData || [];
-        window.dgSocialWidgetData.push({ widgetId: dailyGrowWidgetId, apiUrl: 'https://app.daily-grow.com/sw/api/v1' });
-        add('https://app.daily-grow.com/social-widget/init.js');
+        // daily-grow messenger widget (off while dailyGrowWidgetId is empty)
+        if (dailyGrowWidgetId) {
+          window.dgSocialWidgetData = window.dgSocialWidgetData || [];
+          window.dgSocialWidgetData.push({ widgetId: dailyGrowWidgetId, apiUrl: 'https://app.daily-grow.com/sw/api/v1' });
+          add('https://app.daily-grow.com/social-widget/init.js');
+        }
 
         // Top.Mail.Ru counter (VK ads)
         var _tmr = window._tmr || (window._tmr = []);

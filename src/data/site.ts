@@ -128,7 +128,9 @@ export const integrations = {
     callTracker: 'https://cdn-ru.bitrix24.ru/b37371128/crm/tag/call.tracker.js',
     siteButton: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js',
   },
-  dailyGrowWidgetId: 'b4486417-63a6-4218-89b2-8db8a6f40779',
+  // Off: the Bitrix24 chat button covers this (two chat buttons cover the page).
+  // The old site's widget id, to bring it back: 'b4486417-63a6-4218-89b2-8db8a6f40779'
+  dailyGrowWidgetId: '',
   // Callibri call tracking: shows each visitor a tracking phone number so calls
   // can be matched to the ad they came from (numbers are set in Callibri's
   // account, Настройки → МультиТрекинг → Подмена). Empty string switches it off.
