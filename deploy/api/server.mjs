@@ -421,6 +421,23 @@ if (process.argv.includes('--check')) {
         console.log(`register, ${label}: HTTP ${r.status}, answer: ${misReason({ json, text }, {})}`.slice(0, 260));
       }
     }
+    // Every clinic (department) the МИС books into, with how many doctors work there:
+    // for telling Krasnoyarsk and Kansk apart on the two sites
+    if (process.argv.includes('--clinics')) {
+      const pairs = await everyone();
+      const seen = new Map();
+      for (let i = 0; i < pairs.length; i += 5) {
+        const part = pairs.slice(i, i + 5);
+        const lists = await Promise.all(part.map((d) => clinics(d.specId, d.doctorId).catch(() => [])));
+        part.forEach((d, n) => lists[n].forEach((c) => {
+          const e = seen.get(c.id) || { name: c.name, doctors: new Set() };
+          e.doctors.add(d.doctorId);
+          seen.set(c.id, e);
+        }));
+      }
+      console.log(`clinics in the МИС (${seen.size}):`);
+      for (const [id, c] of [...seen].sort((a, b) => a[1].name.localeCompare(b[1].name, 'ru'))) console.log(`  clinic ${id}: ${c.name} (${c.doctors.size} doctors)`);
+    }
     console.log('Check done. Nothing was booked.');
     process.exit(0);
   } catch (e) {
