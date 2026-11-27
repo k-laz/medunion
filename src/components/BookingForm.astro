@@ -9,7 +9,7 @@
 // If the server can't be reached the form hides itself and the phone stays.
 import { getCollection } from 'astro:content';
 import { apiBase, consentPage } from '../data/site';
-import { city } from '../data/city';
+import { city, isKansk } from '../data/city';
 import { photoFor } from '../lib/content';
 
 // What the site knows about each doctor, to dress up the МИС's bare names
@@ -28,7 +28,7 @@ const site = await Promise.all(
 );
 ---
 
-<form class="review-form booking info-card" data-booking-form data-api={`${apiBase}/booking`} data-site={JSON.stringify(site)} data-phone={city.phone.display} data-tel={city.phone.tel} novalidate hidden>
+<form class="review-form booking info-card" data-booking-form data-api={`${apiBase}/booking`} data-city={isKansk ? 'kansk' : 'krasnoyarsk'} data-site={JSON.stringify(site)} data-phone={city.phone.display} data-tel={city.phone.tel} novalidate hidden>
   <!-- 1. Doctor -->
   <section class="booking-step" data-step="pick">
     <div class="booking-filter">
@@ -140,7 +140,10 @@ const site = await Promise.all(
       status.innerHTML = html;
     };
     const fail = (e: unknown) => say(`${esc((e as Error).message)} Запишитесь по телефону ${phone}.`);
+    // Each site books only its own city's clinics and doctors
+    const cityId = form.dataset.city || '';
     async function get<T>(path: string, params: Record<string, string> = {}): Promise<T> {
+      if (cityId && ['all', 'clinics', 'nearest'].includes(path)) params = { ...params, city: cityId };
       const res = await fetch(`${api}/${path}?${new URLSearchParams(params)}`);
       const body = await res.json().catch(() => ({}));
       if (!res.ok || !body.ok) throw new Error(body.error || 'Ошибка');
@@ -298,7 +301,7 @@ const site = await Promise.all(
             get<Slot[]>('slots', { spec: current.spec.id, doctor: current.doc!.id }),
           ]);
           clinicNames = Object.fromEntries(deps.map((c) => [c.id, c.name]));
-          slots = free.filter((s) => clinicNames[s.clinic] !== undefined || !deps.length);
+          slots = free.filter((s) => clinicNames[s.clinic] !== undefined); // only this city's clinics
         }
       } catch (e) {
         range.textContent = '';

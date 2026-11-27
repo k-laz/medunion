@@ -132,7 +132,13 @@ async function clinics(spec, doctor) {
   return cached(`deps:${spec}:${doctor}`, 5 * 60000, async () => {
     const list = dataOf(await mis('GET', '/record/dep/list', { query: { doctorID: doctor, specID: spec } })) || [];
     return list
-      .map((c) => ({ id: String(pick(c, 'depid', 'dep_id', 'keyid', 'id')), name: String(pick(c, 'depname', 'dep_name', 'text', 'name') ?? '').trim() }))
+      .map((c) => {
+        // «г. Красноярск, ул.Академика Курчатова, 17 стр. 15»: the city apart, the rest as the clinic's name
+        const raw = String(pick(c, 'depname', 'dep_name', 'text', 'name') ?? '').trim();
+        const city = /канск/i.test(raw) ? 'kansk' : /красноярск/i.test(raw) ? 'krasnoyarsk' : '';
+        const name = raw.replace(/^г\.\s*[^,]+,\s*/, '').replace(/(ул|пр|пер)\.(?=\S)/g, '$1. ').replace(/\s+/g, ' ');
+        return { id: String(pick(c, 'depid', 'dep_id', 'keyid', 'id')), name: name || raw, city };
+      })
       .filter((c) => c.id && c.name);
   });
 }
@@ -169,10 +175,33 @@ async function everyone() {
   });
 }
 
+/** Each site books only its own city's clinics: ?city=krasnoyarsk or ?city=kansk. */
+const cityParam = (u) => {
+  const c = u.searchParams.get('city') || '';
+  if (c && !['krasnoyarsk', 'kansk'].includes(c)) throw new Problem(400, 'Нет такого города.');
+  return c;
+};
+const inCity = (list, city) => (city ? list.filter((c) => c.city === city) : list);
+
+/** Every doctor-specialty pair with the clinics it books into (kept warm, like everyone()). */
+async function everyoneWithClinics() {
+  return cached('alldocs-deps', 10 * 60000, async () => {
+    const pairs = await everyone();
+    const out = [];
+    for (let i = 0; i < pairs.length; i += 5) {
+      const part = pairs.slice(i, i + 5);
+      const lists = await Promise.all(part.map((d) => clinics(d.specId, d.doctorId).catch(() => [])));
+      part.forEach((d, n) => out.push({ ...d, clinics: lists[n] }));
+    }
+    return out;
+  });
+}
+
 /** The booking page's list: each doctor once, with the specialties they can be booked for. */
-async function allDoctors() {
+async function allDoctors(city = '') {
   const byId = new Map();
-  for (const d of await everyone()) {
+  const pairs = city ? (await everyoneWithClinics()).filter((d) => inCity(d.clinics, city).length) : await everyone();
+  for (const d of pairs) {
     const e = byId.get(d.doctorId) || { id: d.doctorId, name: d.name, ...(d.note ? { note: d.note } : {}), specs: [] };
     if (!e.specs.some((x) => x.id === d.specId)) e.specs.push({ id: d.specId, name: d.specName });
     byId.set(d.doctorId, e);
@@ -181,14 +210,16 @@ async function allDoctors() {
 }
 
 /** «Любой врач»: the free time of every doctor of a specialty, with who and where. */
-async function nearest(spec) {
-  return cached(`nearest:${spec}`, 2 * 60000, async () => {
+async function nearest(spec, city = '') {
+  return cached(`nearest:${spec}:${city}`, 2 * 60000, async () => {
     const docs = await doctors(spec);
     const out = [];
     for (let i = 0; i < docs.length; i += 4) {
       const part = docs.slice(i, i + 4);
       const got = await Promise.all(part.map(async (d) => {
-        const [deps, free] = await Promise.all([clinics(spec, d.id).catch(() => []), slots(spec, d.id, '').catch(() => [])]);
+        const deps = inCity(await clinics(spec, d.id).catch(() => []), city);
+        if (!deps.length) return [];
+        const free = await slots(spec, d.id, '').catch(() => []);
         const depName = Object.fromEntries(deps.map((c) => [c.id, c.name]));
         return free.filter((t) => depName[t.clinic]).map((t) => ({ ...t, doctor: d.id, doctorName: d.name, clinicName: depName[t.clinic] }));
       }));
@@ -333,11 +364,11 @@ const routes = {
   'GET /api/booking/health': async () => ({ ok: true, configured: Boolean(BASE && TOKEN) }),
   'GET /api/booking/specialties': async () => specialties(),
   'GET /api/booking/doctors': async (u) => doctors(idParam(u, 'spec')),
-  'GET /api/booking/clinics': async (u) => clinics(idParam(u, 'spec'), idParam(u, 'doctor')),
+  'GET /api/booking/clinics': async (u) => inCity(await clinics(idParam(u, 'spec'), idParam(u, 'doctor')), cityParam(u)),
   'GET /api/booking/slots': async (u) => slots(idParam(u, 'spec'), idParam(u, 'doctor'), u.searchParams.get('clinic') ? idParam(u, 'clinic') : ''),
   'GET /api/booking/find': async (u) => findDoctor(text(u.searchParams.get('name') || '', 80)),
-  'GET /api/booking/all': async () => allDoctors(),
-  'GET /api/booking/nearest': async (u) => nearest(idParam(u, 'spec')),
+  'GET /api/booking/all': async (u) => allDoctors(cityParam(u)),
+  'GET /api/booking/nearest': async (u) => nearest(idParam(u, 'spec'), cityParam(u)),
   'GET /api/booking/captcha': async () => captcha(),
   'POST /api/booking/book': async (u, req, ip) => {
     limit(ip, 'book', 5, 3600000);
@@ -449,7 +480,7 @@ if (process.argv.includes('--check')) {
   // The doctors list takes a few dozen МИС requests: build it now and keep it fresh,
   // so visitors never wait for it
   if (BASE && TOKEN) {
-    const warm = () => everyone().catch((e) => log(`warm-up failed: ${e.message}`));
+    const warm = () => everyoneWithClinics().catch((e) => log(`warm-up failed: ${e.message}`));
     warm();
     setInterval(warm, 5 * 60000).unref();
   }
