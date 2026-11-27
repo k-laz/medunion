@@ -246,7 +246,10 @@ async function book(p) {
       log(`booking: new patient refused (${created.status}): ${misReason(created, p)} | sent phone ${shape(p.phone)}, birth date ${shape(birth)}, email ${shape(p.email).replace(/a+/g, 'a')}, captcha ${p.captchaValue.length} chars`);
       const msg = String(created.json?.error ?? created.json?.message ?? '');
       if (/captcha|капч|код/i.test(msg)) throw new Problem(400, 'Неверный проверочный код. Введите новый.', 'captcha');
-      throw new Problem(502, 'Не получилось зарегистрировать вас в системе записи.', created.status);
+      // Registering new patients doesn't work yet (the МИС answers «Ошибка доступа»,
+      // waiting for Решение): send them to the phone, and let returning patients
+      // check their details
+      throw new Problem(409, 'Мы не нашли вас в базе пациентов. Проверьте фамилию, имя, отчество и дату рождения: они должны совпадать с данными в клинике. Если вы у нас впервые, запишитесь по телефону.', 'not_found');
     }
     patient = created.json.data.id;
   }

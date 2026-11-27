@@ -448,6 +448,7 @@ const site = await Promise.all(
         }
         if (body.code === 'captcha') { await newCaptcha(); return say(esc(String(body.error))); }
         if (body.code === 'taken') { await loadSlots(); return say(esc(String(body.error))); }
+        if (body.code === 'not_found') { await newCaptcha(); return say(`${esc(String(body.error).replace(/ по телефону\.$/, ''))} по телефону ${phone}.`); }
         throw new Error(body.error || 'Не получилось записаться.');
       } catch (err) {
         fail(err);
