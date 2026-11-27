@@ -395,6 +395,24 @@ if (process.argv.includes('--check')) {
         console.log(`patient search, birth date as ${fmt}, отчество ${second === '-' ? '"-"' : second ? 'filled' : 'empty'}: HTTP ${r.status}, answer: ${(typeof answer === 'string' ? answer : JSON.stringify(answer)).slice(0, 120)}`);
       }
     }
+    // New-patient registration (/api/patient): with a captcha that can't be right,
+    // so the МИС stops before creating anyone. Tried with and without each header,
+    // to see which one its «Ошибка доступа» is about.
+    if (process.argv.includes('--check-register')) {
+      const body = { lastName: 'Проверкасайта', firstName: 'Тест', secondName: 'Тестович', birthDate: BIRTH_FORMAT === 'iso' ? '1901-01-01' : '01.01.1901', email: 'check@example.com', phone: '+70000000000', captchaId: 'site-check', captchaValue: '0' };
+      const variants = [
+        ['token + sessiontoken (as the old site)', { sessiontoken: randomBytes(16).toString('hex') }, true],
+        ['sessiontoken, no token', { sessiontoken: randomBytes(16).toString('hex') }, false],
+        ['token, no sessiontoken', {}, true],
+      ];
+      for (const [label, headers, withToken] of variants) {
+        const url = new URL(BASE + '/api/patient');
+        const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(withToken ? { 'api-token': TOKEN } : {}), ...headers }, body: JSON.stringify(body), signal: AbortSignal.timeout(20000) }).catch((e) => ({ status: 0, text: async () => e.message }));
+        const text = await r.text();
+        let json; try { json = JSON.parse(text); } catch {}
+        console.log(`register, ${label}: HTTP ${r.status}, answer: ${misReason({ json, text }, {})}`.slice(0, 260));
+      }
+    }
     console.log('Check done. Nothing was booked.');
     process.exit(0);
   } catch (e) {
