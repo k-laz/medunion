@@ -38,6 +38,10 @@ const site = await Promise.all(
       </label>
       <select name="spec" aria-label="Специальность"><option value="">Все специальности</option></select>
     </div>
+    <div class="booking-specs" data-spec-list>
+      <p class="booking-hint">Выберите специальность или найдите врача по фамилии</p>
+      <div class="booking-spec-grid"></div>
+    </div>
     <div class="booking-docs" role="list"></div>
     <p class="muted booking-none" hidden>Никого не нашли. Попробуйте другую специальность или позвоните нам.</p>
   </section>
@@ -96,7 +100,7 @@ const site = await Promise.all(
 
 <script>
   type Spec = { id: string; name: string };
-  type Doc = { id: string; name: string; specs: Spec[] };
+  type Doc = { id: string; name: string; note?: string; specs: Spec[] };
   type Slot = { id: string; start: string; end: string; clinic: string; doctor?: string; doctorName?: string; clinicName?: string };
   type SiteDoc = { url: string; name: string; specialty: string; qualification: string; price: number; photo: string };
 
@@ -148,7 +152,7 @@ const site = await Promise.all(
     const key = (s: string) => norm(s).split(' ').slice(0, 2).join(' ');
     const siteDocs = JSON.parse(form.dataset.site || '[]') as SiteDoc[];
     const siteByName = new Map(siteDocs.map((d) => [key(d.name), d]));
-    const isRoom = (n: string) => /^(мрт|кт|мскт|рентген|узи|флюоро|маммо|кабинет)/i.test(n) || /\d/.test(n);
+    const isRoom = (n: string) => /^(мрт|кт|мскт|рентген|узи|флюоро|маммо|кабинет)/i.test(n);
     const initials = (n: string) => n.split(' ').slice(0, 2).map((w) => w[0] || '').join('').toUpperCase();
     const rub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`;
 
@@ -217,6 +221,11 @@ const site = await Promise.all(
         const hay = norm([d.name, info?.specialty ?? '', ...d.specs.map((s) => s.name)].join(' '));
         return words.every((w) => hay.includes(w));
       });
+      // Nothing chosen yet: the specialties to pick from, not 60 doctors at once
+      const start = !spec && !words.length;
+      $('[data-spec-list]').hidden = !start;
+      docsBox.hidden = start;
+      if (start) { $('.booking-none').hidden = true; return; }
       docsBox.replaceChildren();
       if (spec && !words.length && list.length > 1) {
         const icon = el('span', 'booking-avatar is-any');
@@ -227,7 +236,8 @@ const site = await Promise.all(
       for (const d of list) {
         const info = siteByName.get(key(d.name));
         const specText = info?.specialty || d.specs.map((s) => s.name).join(', ');
-        const meta = [info?.qualification, info?.price ? `Приём от ${rub(info.price)}` : ''].filter(Boolean).join(' · ');
+        const age = d.note && /\d/.test(d.note) ? `приём ${d.note}` : d.note ?? '';
+        const meta = [age && age.charAt(0).toUpperCase() + age.slice(1), info?.qualification, info?.price ? `Приём от ${rub(info.price)}` : ''].filter(Boolean).join(' · ');
         docsBox.append(card(d.name, [specText, meta], avatar(d.name, info), () => open(d)));
       }
       $('.booking-none').hidden = list.length > 0;
@@ -464,7 +474,16 @@ const site = await Promise.all(
         if (!all.length) throw new Error('empty');
         const specs = new Map<string, string>();
         all.forEach((d) => d.specs.forEach((s) => specs.set(s.id, s.name)));
-        [...specs].sort((a, b) => a[1].localeCompare(b[1], 'ru')).forEach(([id, name]) => specSel.append(new Option(name, id)));
+        const grid = $('.booking-spec-grid');
+        [...specs].sort((a, b) => a[1].localeCompare(b[1], 'ru')).forEach(([id, name]) => {
+          specSel.append(new Option(name, id));
+          const n = all.filter((d) => d.specs.some((x) => x.id === id)).length;
+          const b = el('button', 'booking-spec');
+          b.type = 'button';
+          b.append(el('span', '', name), el('small', '', String(n)));
+          b.addEventListener('click', () => { specSel.value = id; renderDocs(); });
+          grid.append(b);
+        });
         form.hidden = false;
         renderDocs();
         // from a doctor's page: that doctor straight away

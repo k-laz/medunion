@@ -116,9 +116,14 @@ async function doctors(spec) {
     const [, end] = range();
     const list = dataOf(await mis('GET', '/record/doc/list', { query: { beginDate: '2015-01-01', endDate: end, specID: spec } })) || [];
     return list
-      .map((d) => ({ id: String(pick(d, 'doctorid', 'docid', 'keyid', 'id')), name: personName(d), free: Number(pick(d, 'rcount') ?? NaN) }))
+      .map((d) => {
+        // The МИС adds notes to names: «Евпак Алексей Вячеславович (С 18 Лет)». Name and note apart.
+        const full = personName(d);
+        const note = [...full.matchAll(/\(([^)]*)\)/g)].map((m) => m[1].trim().toLowerCase()).filter(Boolean).join(', ');
+        const name = full.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+        return { id: String(pick(d, 'doctorid', 'docid', 'keyid', 'id')), name, ...(note ? { note } : {}) };
+      })
       .filter((d) => d.id && d.name)
-      .map((d) => (Number.isFinite(d.free) ? d : { id: d.id, name: d.name }))
       .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   });
 }
@@ -158,7 +163,7 @@ async function everyone() {
     for (let i = 0; i < specs.length; i += 5) {
       const part = specs.slice(i, i + 5);
       const lists = await Promise.all(part.map((s) => doctors(s.id).catch(() => [])));
-      part.forEach((s, n) => lists[n].forEach((d) => out.push({ specId: s.id, specName: s.name, doctorId: d.id, name: d.name })));
+      part.forEach((s, n) => lists[n].forEach((d) => out.push({ specId: s.id, specName: s.name, doctorId: d.id, name: d.name, note: d.note })));
     }
     return out;
   });
@@ -168,7 +173,7 @@ async function everyone() {
 async function allDoctors() {
   const byId = new Map();
   for (const d of await everyone()) {
-    const e = byId.get(d.doctorId) || { id: d.doctorId, name: d.name, specs: [] };
+    const e = byId.get(d.doctorId) || { id: d.doctorId, name: d.name, ...(d.note ? { note: d.note } : {}), specs: [] };
     if (!e.specs.some((x) => x.id === d.specId)) e.specs.push({ id: d.specId, name: d.specName });
     byId.set(d.doctorId, e);
   }

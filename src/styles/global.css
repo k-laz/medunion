@@ -935,6 +935,11 @@ li:nth-child(3n+3) > .post-card .post-card-pic.is-plain { background: var(--tone
 .booking-search { position: relative; display: block !important; }
 .booking-search svg { position: absolute; left: 14px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%); fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
 .review-form .booking-search input:not([type=radio]):not([type=checkbox]) { padding-left: 44px; }
+.booking-hint { margin: 0 0 10px; color: var(--muted); font-size: var(--step--1); }
+.booking-spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.booking-spec { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: var(--radius-btn); background: #fff; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.booking-spec:hover { border-color: var(--brand); color: var(--brand); }
+.booking-spec small { color: var(--muted); font-size: .8rem; }
 .booking-docs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .booking-doc, .booking-who {
   display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 16px;
