@@ -103,8 +103,8 @@ export const reviewFormPage = '/ostavit-otzyv-o-nashej-rabote/napisat/';
 // The review form on that page sends to our server (POST /api/reviews), which
 // passes it to Bitrix24 as a lead (B24_WEBHOOK in /etc/medunion-api.env).
 // The review platforms (2ГИС, ПроДокторов, Яндекс Карты) stay in the side panel.
-// false: the page shows only the platforms.
-export const reviewFormOn = true;
+// false: the page shows only the platforms (paused 26.11.2026; turn on once B24_WEBHOOK is set on the server).
+export const reviewFormOn = false;
 
 // Legal details shown in the footer. Copied from the "Сведения о медицинской
 // организации" page of the old site; check against the current license.
