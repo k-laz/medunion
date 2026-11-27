@@ -69,5 +69,8 @@ for (const [from, to] of hidden) {
   const re = new RegExp(`^location = "${from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}" .*$`, 'm');
   conf = re.test(conf) ? conf.replace(re, line) : conf.replace(/\n?$/, `\n${line}\n`);
 }
+// Keep the query string (utm_*, yclid from Yandex Direct, gclid...): nginx's
+// `return` drops it unless it is added, and ads lose their attribution
+conf = conf.replace(/return 301 ([^;$]+);/g, 'return 301 $1$is_args$args;');
 await writeFile(output, conf);
 console.log(`Hidden pages: ${hidden.length - gone.length} redirected, old addresses without a page: ${gone.length} redirected (${output})`);
