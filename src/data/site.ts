@@ -127,7 +127,9 @@ export const integrations = {
   metrikaId: 108194831,
   bitrix24: {
     callTracker: 'https://cdn-ru.bitrix24.ru/b37371128/crm/tag/call.tracker.js',
-    siteButton: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js',
+    // The floating chat and callback button: off (26.11.2026). Empty string = off;
+    // to bring it back: 'https://cdn-ru.bitrix24.ru/b37371128/crm/site_button/loader_2_9x00z3.js'
+    siteButton: '',
   },
   // Off: the Bitrix24 chat button covers this (two chat buttons cover the page).
   // The old site's widget id, to bring it back: 'b4486417-63a6-4218-89b2-8db8a6f40779'

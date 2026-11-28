@@ -27,7 +27,7 @@ const { metrikaId, bitrix24, dailyGrowWidgetId, topMailRuId, callibri } = integr
 
         var add = function (src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); };
         // Bitrix24: call tracking and the chat / callback button
-        b24.forEach(function (u) { add(u + '?' + (Date.now() / 60000 | 0)); });
+        b24.forEach(function (u) { if (u) add(u + '?' + (Date.now() / 60000 | 0)); });
 
         // Callibri: tracking phone numbers (Bitrix24 above doesn't swap numbers;
         // only one of the two may, or they fight over the same numbers)
